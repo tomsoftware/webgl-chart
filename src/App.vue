@@ -17,12 +17,18 @@ import { LayoutBorder } from './c/layout-border';
 import { Color } from './c/color';
 import { Font } from './c/font';
 import { Alignment } from './c/alignment';
+import { Scale } from './c/scales/scale';
 
 
-const rotation = ref<number>(0);
-const translation = ref<number>(0);
+const scaleXStart = ref<number>(0);
+const scaleXEnd = ref<number>(10);
 
-const headlineText = ref<string>('Hallo World gg!');
+const scaleX = new Scale(scaleXStart.value, scaleXEnd.value);
+
+const scaleYStart = ref<number>(-10);
+const scaleYEnd = ref<number>(10);
+
+const scaleY = new Scale(scaleYStart.value, scaleYEnd.value);
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
@@ -31,30 +37,40 @@ const time = new GpuBuffer(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
 // generate series data
-const series1 = new Series(time)
+const series1 = new Series(time, null)
     .generate((t) => Math.sin(t * 2 * Math.PI) * 10)
     .setColor(1, 0, 0)
   
-const series2 = new Series(time)
+const series2 = new Series(time, null)
     .generate((t) => Math.cos(t * 2 * Math.PI) * 10)
     .setColor(0, 1, 0)
 
-let text1 = new GpuText(headlineText.value);
-const text2 = new GpuText("let's go!");
-const text3 = new GpuText("next Text!");
 
-watch(() => headlineText.value, (newValue) => {
-  text1 = new GpuText(newValue);
+watch(() => scaleXStart.value, (newValue) => {
+  scaleX.min = +newValue;
 });
 
+watch(() => scaleXEnd.value, (newValue) => {
+  scaleX.max = +newValue;
+});
+
+watch(() => scaleYStart.value, (newValue) => {
+  scaleY.min = +newValue;
+});
+
+watch(() => scaleYEnd.value, (newValue) => {
+  scaleY.max = +newValue;
+});
+
+
 // define axis
-const xAxis = new HorizontalAxis(new GpuText('X Axis'))
+const xAxis = new HorizontalAxis(new GpuText('X Axis'), scaleX)
   .setBorderColor(Color.red)
   .setPossition(HorizontalAxisPossition.Bottom)
   .setGridColor(Color.brown);
 
 const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1', Alignment.centerCenter, new Font('Arial', 20, Color.purple)).setRotation(90));
-const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90))
+const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90), scaleY)
   .setGridColor(Color.blue);
 const yAxis3 = new VerticalAxis(new GpuText('Y right').setRotation(90))
   .setPossition(VerticalAxisPossition.Right);
@@ -108,9 +124,10 @@ const data1 = new ChartConfig()
 
       chartBorder.draw(context, baseContainer);
 
-      const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95 + (context.time % 1000) * 0.001, 0);
-      series1.draw(context, trafoSeries);
-      series2.draw(context, trafoSeries);
+      ///const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95 + (context.time % 1000) * 0.001, 0);
+
+      series1.draw(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+      series2.draw(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
 
       headline.draw(context, headlineLayout, Alignment.centerCenter, new Matrix3x3());
       legend.draw(context, legnedLayout, Alignment.centerCenter, new Matrix3x3());
@@ -133,25 +150,31 @@ const data1 = new ChartConfig()
 
 const data2 = new ChartConfig()
     .setRenderCallback((context) => {
-  
+      context.calculateLayout(baseContainer);
+      context.layoutCache.draw(context);
+
       const trafo = new Matrix3x3();
 
       const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95, 0);
-      series1.draw(context, trafoSeries);
+      series1.draw(context, scaleX, scaleY, xAxisCell, trafoSeries);
   });
 
 
 </script>
 
 <template>
-  <input type="text" v-model="headlineText" />
   Frame rate: {{ data1.maxFrameRate.value }}
   <input type="range" min="0" max="100" v-model="data1.maxFrameRate.value" />
 
-  trans: <div style="width:30pt; display: inline-block;">{{translation }}</div>
-  <input type="range" min="0" max="10" step="0.01" v-model="translation" />
-  rot: <div style="width:30pt; display: inline-block;">{{rotation }}</div>
-  <input type="range" min="-180" max="180" step="1" v-model="rotation" />
+  scaleX start: <div style="width:30pt; display: inline-block;">{{scaleXStart }}</div>
+  <input type="range" min="0" max="2000" step="0.001" v-model="scaleXStart" />
+  scaleX end: <div style="width:30pt; display: inline-block;">{{scaleXEnd }}</div>
+  <input type="range" min="0" max="2000" step="0.001" v-model="scaleXEnd" />
+
+  scaleY start: <div style="width:30pt; display: inline-block;">{{scaleYStart }}</div>
+  <input type="range" min="-20" max="20" step="0.001" v-model="scaleYStart" />
+  scaleY end: <div style="width:30pt; display: inline-block;">{{scaleYEnd }}</div>
+  <input type="range" min="-20" max="20" step="0.001" v-model="scaleYEnd" />
 
  <div class="grid-container">
   <div class="grid-item">
