@@ -14,7 +14,12 @@ export class Scale {
 
     public calculateTicks() {
         const range = this.range;
-        const step = Math.pow(10, Math.floor(Math.log10(range)));
+        let step = Math.pow(10, Math.floor(Math.log10(range)));
+
+        if (range / step < 5) {
+            step = step / 10;
+        }
+
         let pos = this.min;
         const result = [];
         while(pos <= this.max) {

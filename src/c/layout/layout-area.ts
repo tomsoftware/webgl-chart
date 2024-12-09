@@ -1,5 +1,7 @@
+import type { Alignment } from "../alignment";
 import { Matrix3x3 } from "../matrix-3x3";
 import { Vector2 } from "../vector-2";
+
 
 export class LayoutArea {
     public left: number;
@@ -13,6 +15,22 @@ export class LayoutArea {
 
     public get bottom(): number {
         return this.top + this.height;
+    }
+
+    /** return a transformation to move the given part to the given Alignment */
+    public getAligned(alignment: Alignment | null): Matrix3x3 {
+        let x: number;
+        let y: number;
+
+        if (alignment == null) {
+           return this.toMaxtrix();
+        }
+        else {
+            x = alignment.alignX * this.width;
+            y = alignment.alignY * this.height;
+        }
+        
+        return this.toMaxtrix().translate(x, y);
     }
 
     /** Top left corner */
@@ -33,6 +51,26 @@ export class LayoutArea {
     /** Bottom left corner */
     public get p3(): Vector2 {
         return new Vector2(this.left, this.bottom);
+    }
+
+    /** scale the line between p0 and p1 */
+    public p0p1(scale: number): Vector2 {
+        return new Vector2(this.left + this.width * scale, this.top);
+    }
+
+    /** scale the line between p1 and p2 */
+    public p1p2(scale: number): Vector2 {
+        return new Vector2(this.right, this.top + this.height * scale);
+    }
+
+    /** scale the line between p2 and p3 */
+    public p2p3(scale: number): Vector2 {
+        return new Vector2(this.left + this.width * scale, this.bottom);
+    }
+
+    /** scale the line between p0 and p3 */
+    public p0p3(scale: number): Vector2 {
+        return new Vector2(this.left, this.top + this.height * scale);
     }
 
     constructor(left: number, top: number, width: number, height: number) {

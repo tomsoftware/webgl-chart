@@ -35,24 +35,44 @@ export class Matrix3x3 implements IUniformValue {
     }
 
     public translate(x: number, y: number): Matrix3x3 {
+        if (x == 0 && y == 0) {
+            return this;
+        }
+
         return Matrix3x3.multiply(Matrix3x3.translate(x, y), this.values);
     }
 
     public scale(sx: number, sy?: number): Matrix3x3 {
+        if (sx == 1 && sy == 1) {
+            return this;
+        }
+
         return Matrix3x3.multiply(Matrix3x3.scale(sx, sy), this.values);
     }
 
     public rotateDeg(alpha: number): Matrix3x3 {
-        return Matrix3x3.multiply(Matrix3x3.rotateRad(alpha * Math.PI / 180), this.values);
+        if (alpha == 0) {
+            return this;
+        }
+        return Matrix3x3.multiply(Matrix3x3.rotateDeg(alpha), this.values);
     }
 
     public rotateRad(theta: number): Matrix3x3 {
+        if (theta == 0) {
+            return this;
+        }
+
         return Matrix3x3.multiply(Matrix3x3.rotateRad(theta), this.values);
     }
     
     public multiply(other: Float32Array | number[]) {
         return Matrix3x3.multiply(this, other);
     } 
+
+
+    public static rotateDeg(alpha: number): Matrix3x3 {
+        return Matrix3x3.rotateRad(alpha * Math.PI / 180)
+    }
 
     public static rotateRad(theta: number): Matrix3x3 {
         const cosTheta = Math.cos(theta);
