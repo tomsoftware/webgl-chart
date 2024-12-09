@@ -13,6 +13,10 @@ export class Font {
         return (this.fontSize * devicePixelRatio) + this.fontSizeType + ' ' + this.fontName;
     }
 
+    public get key() {
+        return this.fontName + '|' + this.fontSize + '|' + this.color.toHexString();
+    }
+
     public get fillStyle(): string {
         return this.color.toCss();
     }

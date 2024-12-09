@@ -3,7 +3,6 @@ import chart from './components/chart.vue'
 import { ChartConfig } from './components/chart-config'
 import { Matrix3x3 } from './c/matrix-3x3';
 import { Series } from './c/series';
-import { Grid } from './c/grid';
 import { GpuBuffer } from './c/gpu-buffer';
 import { GpuText } from './c/gpu-text';
 import { ref, watch } from 'vue';
@@ -17,11 +16,12 @@ import { IntersectedLayout } from './c/layout/intersected-layout';
 import { LayoutBorder } from './c/layout-border';
 import { Color } from './c/color';
 import { Font } from './c/font';
+import { Alignment } from './c/alignment';
 
 
 const rotation = ref<number>(0);
 const translation = ref<number>(0);
-  
+
 const headlineText = ref<string>('Hallo World gg!');
 
 // generate time data
@@ -47,21 +47,16 @@ watch(() => headlineText.value, (newValue) => {
   text1 = new GpuText(newValue);
 });
 
-// setup grid
-const grid = new Grid()
-    .generateHoritontal(10)
-    .generateVertical(10)
-    .setColor(0.9, 0.9, 0.9);
-
-
 // define axis
 const xAxis = new HorizontalAxis(new GpuText('X Axis'))
   .setBorderColor(Color.red)
-  .setPossition(HorizontalAxisPossition.Bottom);
+  .setPossition(HorizontalAxisPossition.Bottom)
+  .setGridColor(Color.brown);
 
-const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1', new Font('Arial', 20, Color.purple)));
-const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2'));
-const yAxis3 = new VerticalAxis(new GpuText('Y right'))
+const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1', Alignment.centerCenter, new Font('Arial', 20, Color.purple)).setRotation(90));
+const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90))
+  .setGridColor(Color.blue);
+const yAxis3 = new VerticalAxis(new GpuText('Y right').setRotation(90))
   .setPossition(VerticalAxisPossition.Right);
 
 
@@ -94,6 +89,7 @@ const xAxisCell = innerContainer.addLayout(new IntersectedLayout(rowAxisCell, co
 const yAxis1Cell = innerContainer.addLayout(new IntersectedLayout(columnAxis1CellLeft, rowChartCell));
 const yAxis2Cell = innerContainer.addLayout(new IntersectedLayout(columnAxis2CellLeft, rowChartCell));
 const yAxis3Cell = innerContainer.addLayout(new IntersectedLayout(columnAxisCellRight, rowChartCell));
+const chartCell = innerContainer.addLayout(new IntersectedLayout(columnChartCell, rowChartCell));
 
 
 const chartBorder = new LayoutBorder(Color.green);
@@ -112,15 +108,12 @@ const data1 = new ChartConfig()
 
       chartBorder.draw(context, baseContainer);
 
-      const trafo = new Matrix3x3();
-      grid.draw(context, trafo);
-
       const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95 + (context.time % 1000) * 0.001, 0);
       series1.draw(context, trafoSeries);
       series2.draw(context, trafoSeries);
 
-      headline.draw(context, headlineLayout, new Matrix3x3());
-      legend.draw(context, legnedLayout, new Matrix3x3());
+      headline.draw(context, headlineLayout, Alignment.centerCenter, new Matrix3x3());
+      legend.draw(context, legnedLayout, Alignment.centerCenter, new Matrix3x3());
 
       //text1.draw(context, new Matrix3x3().translate(0.5, 0.2));
       //text2.draw(context, new Matrix3x3().rotateDeg(rotation.value).translate(translation.value, 0.2));
@@ -129,9 +122,9 @@ const data1 = new ChartConfig()
       // new LayoutBorder(Color.blue).draw(context, columnChartCell);
       // new LayoutBorder(Color.red).draw(context, columnAxisCellRight);
       
-      xAxis.draw(context, xAxisCell);
+      xAxis.draw(context, xAxisCell, chartCell);
       yAxis1.draw(context, yAxis1Cell);
-      yAxis2.draw(context, yAxis2Cell);
+      yAxis2.draw(context, yAxis2Cell, chartCell);
       yAxis3.draw(context, yAxis3Cell);
 
       context.flushTextures();
@@ -142,7 +135,6 @@ const data2 = new ChartConfig()
     .setRenderCallback((context) => {
   
       const trafo = new Matrix3x3();
-      grid.draw(context, trafo);
 
       const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95, 0);
       series1.draw(context, trafoSeries);

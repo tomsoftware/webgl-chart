@@ -53,7 +53,7 @@ class TextureSlot {
 
 /** Handels a Texure map in that many small textures can be saved */
 export class TextureMap implements IUniformValue {
-    private textures = new Map<object, TextureMapItem>();
+    private textures = new Map<string, TextureMapItem>();
     private buffer: Uint32Array;
     private width = 2 << 8; // 2^10 = 1024
     private height = this.width; // quadratic texture
@@ -128,7 +128,8 @@ export class TextureMap implements IUniformValue {
     }
 
     public addTexture(context: Context, texture: TextureGenerator): TextureMapItem | null {
-        const item = this.textures.get(texture);
+        const textureKey = texture.textureKey;
+        const item = this.textures.get(textureKey);
         if (item != null) {
             return item;
         }
@@ -148,7 +149,7 @@ export class TextureMap implements IUniformValue {
 
         // create a new texture map item
         const newItem = new TextureMapItem(slot.x, slot.y, textData.width, textData.height, this.width, this.height);
-        this.textures.set(texture, newItem);
+        this.textures.set(textureKey, newItem);
 
         return newItem;
     }
