@@ -50,7 +50,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider{
         const positionScaleing = area.width / this.scale.range;
 
         for (const tick of ticks) {
-            const m = new Matrix3x3().translate(tick * positionScaleing, 0);
+            const m = new Matrix3x3().translate((tick - this.scale.min) * positionScaleing, 0);
             context.drawLine(area.p0.transform(m), area.p0p3(0.1).transform(m), this.tickColor);
             const text = new GpuText(tick.toLocaleString());
             text.draw(context, axisLayout, Alignment.leftTop, m.translate(0, area.height * 0.5));

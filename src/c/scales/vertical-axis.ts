@@ -52,7 +52,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         const positionScaleing = area.height / this.scale.range;
 
         for (const tick of ticks) {
-            const m = new Matrix3x3().translate(0, tick * positionScaleing);
+            const m = new Matrix3x3().translate(0, (this.scale.max - tick) * positionScaleing);
             if (this.possition === VerticalAxisPossition.Right) {
                 context.drawLine(area.p0.transform(m), area.p0p1(0.1).transform(m), this.tickColor);
             }

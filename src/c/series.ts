@@ -1,6 +1,8 @@
 import { Context } from "./context";
 import { GpuBuffer } from "./gpu-buffer";
+import type { LayoutNode } from "./layout/layout-node";
 import { Matrix3x3 } from "./matrix-3x3";
+import type { Scale } from "./scales/scale";
 import { Vector4 } from "./vector-4";
 
 export class Series {
@@ -70,11 +72,18 @@ export class Series {
         }
         `;
 
-    public draw(context: Context, trafo: Matrix3x3) {
+    public draw(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode, trafo: Matrix3x3) {
         if (this.data == null) {
             return;
         }
-    
+        const chartArea = chartLayout?.getArea(context.layoutCache);
+
+        const s = Matrix3x3.translate(-scaleX.min, -scaleY.min).scale(chartArea.width / scaleX.range, chartArea.height / scaleY.range);
+        const p = context.projectionMatrix;
+        const l = chartArea.toMaxtrix();
+
+        const m = p.multiply(l.values).multiply(s.values);
+
         // create and use shader program
         const program = context.useProgram(Series.Id, Series.vertexShader, Series.fragmentShader);
 
@@ -83,7 +92,7 @@ export class Series {
         context.setBuffer(program, 'y', this.data);
 
         // set uniforms
-        context.setUniform(program, 'uniformTrafo', trafo);
+        context.setUniform(program, 'uniformTrafo', m);
         context.setUniform(program, 'uniformColor', this.color);
 
         // draw buffer / series data

@@ -117,6 +117,11 @@ export class Context {
             throw new Error('Context.setUniform: gl is null');
         }
 
+        if (value == null) {
+            console.error(`Context.setUniform: value is null for ${name}`);
+            return;
+        }
+
         const variableLoc = program.getUniformLocation(name);
         if (variableLoc == null) {
             console.error(`Context.setUniform: variableLoc is null for ${name}`);
