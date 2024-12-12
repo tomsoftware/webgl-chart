@@ -1,3 +1,8 @@
+import type { A } from "vitest/dist/chunks/environment.LoooBwUu.js";
+import type { EventValue } from "../event-handler/event-value";
+import type { LayoutArea } from "../layout/layout-area";
+import type { LayoutNode } from "../layout/layout-node";
+
 /** Scales are used to scale axis and chart-data */
 export class Scale {
     public min: number;
@@ -68,6 +73,17 @@ export class Scale {
         else {
             return Scale.calcTicksNegative(step, start, this.min, this.max);
         }
-        
+    }
+    
+    public pan(value: number) {
+        const panValue = this.range * value;
+        this.min -= panValue;
+        this.max -= panValue;
+    }
+
+    public zoom(value: number) {
+        const zoomValue = this.range * value;
+        this.min -= zoomValue;
+        this.max += zoomValue;
     }
 }
