@@ -23,17 +23,19 @@ export class Vector4 implements IUniformValue {
         gl.uniform4fv(variableLoc, this.values);
     }
 
-    public set(a: number, b: number, c: number, d: number) {
+    public set(a: number, b: number, c: number, d: number): Vector4 {
         this.values[0] = a;
         this.values[1] = b;
         this.values[2] = c;
         this.values[3] = d;
+        return this;
     }
 
-    public setZero() {
+    public setZero(): Vector4 {
         this.values[0] = 0;
         this.values[1] = 0;
         this.values[2] = 0;
         this.values[3] = 0;
+        return this;
     }
 }

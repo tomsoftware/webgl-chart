@@ -36,4 +36,9 @@ export class Vector2 {
 
         return new Vector2(this.x * sx, this.y * sy);
     }
+
+    /** subtract: this-v */
+    public sub(v: Vector2): Vector2 {
+        return new Vector2(this.x - v.x, this.y - v.y);
+    }
 }

@@ -33,6 +33,11 @@ export class LayoutArea {
         return this.toMaxtrix().translate(x, y);
     }
 
+    /** return ture if the given point is in the area */
+    public contains(pos: Vector2): boolean {
+        return pos.x >= this.left && pos.x <= this.right && pos.y >= this.top && pos.y <= this.bottom;
+    }
+
     /** Top left corner */
     public get p0(): Vector2 {
         return new Vector2(this.left, this.top);

@@ -5,7 +5,6 @@ import { Matrix3x3 } from './c/matrix-3x3';
 import { Series } from './c/series';
 import { GpuBuffer } from './c/gpu-buffer';
 import { GpuText } from './c/gpu-text';
-import { ref, watch } from 'vue';
 import { LayoutCell } from './c/layout/layout-cell';
 import { VerticalAxis, VerticalAxisPossition } from './c/scales/vertical-axis';
 import { HorizontalAxis, HorizontalAxisPossition } from './c/scales/horizontal-axis';
@@ -18,17 +17,15 @@ import { Color } from './c/color';
 import { Font } from './c/font';
 import { Alignment } from './c/alignment';
 import { Scale } from './c/scales/scale';
+import { EventDispatcher } from './c/event-handler/event-handler';
+import { EventTypes } from './c/event-handler/event-value';
 
+const eventDispatcher = new EventDispatcher();
 
-const scaleXStart = ref<number>(0);
-const scaleXEnd = ref<number>(10);
+// const scaleXStart = ref<number>(0);
 
-const scaleX = new Scale(scaleXStart.value, scaleXEnd.value);
-
-const scaleYStart = ref<number>(-10);
-const scaleYEnd = ref<number>(10);
-
-const scaleY = new Scale(scaleYStart.value, scaleYEnd.value);
+const scaleX = new Scale(0, 10);
+const scaleY = new Scale(-10, 10);
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
@@ -40,38 +37,28 @@ const time = new GpuBuffer(itemCount)
 const series1 = new Series(time, null)
     .generate((t) => Math.sin(t * 2 * Math.PI) * 10)
     .setColor(1, 0, 0)
+    .setPointSize(4);
   
 const series2 = new Series(time, null)
     .generate((t) => Math.cos(t * 2 * Math.PI) * 10)
     .setColor(0, 1, 0)
 
-
+/*
 watch(() => scaleXStart.value, (newValue) => {
   scaleX.min = +newValue;
 });
-
-watch(() => scaleXEnd.value, (newValue) => {
-  scaleX.max = +newValue;
-});
-
-watch(() => scaleYStart.value, (newValue) => {
-  scaleY.min = +newValue;
-});
-
-watch(() => scaleYEnd.value, (newValue) => {
-  scaleY.max = +newValue;
-});
-
+*/
 
 // define axis
 const xAxis = new HorizontalAxis(new GpuText('X Axis'), scaleX)
-  .setBorderColor(Color.red)
+  .setBorderColor(Color.darkGray)
   .setPossition(HorizontalAxisPossition.Bottom)
-  .setGridColor(Color.brown);
+  .setGridColor(Color.lightGray);
 
 const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1', Alignment.centerCenter, new Font('Arial', 20, Color.purple)).setRotation(90));
 const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90), scaleY)
-  .setGridColor(Color.blue);
+  .setBorderColor(Color.darkGray)
+  .setGridColor(Color.lightGray);
 const yAxis3 = new VerticalAxis(new GpuText('Y right').setRotation(90))
   .setPossition(VerticalAxisPossition.Right);
 
@@ -113,11 +100,31 @@ const chartBorder = new LayoutBorder(Color.green);
 console.log('itemCount: ', itemCount);
 
 
+eventDispatcher.on(EventTypes.Wheel, columnChartCell, (event) => {
+  scaleX.zoom(0.2 * Math.sign(event.wheelDelta));
+});
+
+eventDispatcher.on(EventTypes.Pan, columnChartCell, (event, _layoutNode, area) => {
+  scaleX.pan(event.panDeletaX / area.width);
+});
+
+
+eventDispatcher.on(EventTypes.Wheel, yAxis2Cell, (event) => {
+  scaleY.zoom(0.2 * Math.sign(event.wheelDelta));
+});
+
+eventDispatcher.on(EventTypes.Pan, yAxis2Cell, (event, _layoutNode, area) => {
+  scaleY.pan(-event.panDeletaY / area.height);
+});
+
+
 // set render callback
 const data1 = new ChartConfig()
     .setRenderCallback((context) => {
   
       context.calculateLayout(baseContainer);
+
+      eventDispatcher.dispatch(context);
       // context.layoutCache.draw(context);
 
       // yAxisCell.setMinWidth();
@@ -147,6 +154,9 @@ const data1 = new ChartConfig()
       context.flushTextures();
   });
 
+function onBind(element: HTMLElement | null): void {
+  eventDispatcher.bind(element)
+}
 
 const data2 = new ChartConfig()
     .setRenderCallback((context) => {
@@ -166,20 +176,16 @@ const data2 = new ChartConfig()
   Frame rate: {{ data1.maxFrameRate.value }}
   <input type="range" min="0" max="100" v-model="data1.maxFrameRate.value" />
 
+  <!--
   scaleX start: <div style="width:30pt; display: inline-block;">{{scaleXStart }}</div>
   <input type="range" min="0" max="2000" step="0.001" v-model="scaleXStart" />
-  scaleX end: <div style="width:30pt; display: inline-block;">{{scaleXEnd }}</div>
-  <input type="range" min="0" max="2000" step="0.001" v-model="scaleXEnd" />
-
-  scaleY start: <div style="width:30pt; display: inline-block;">{{scaleYStart }}</div>
-  <input type="range" min="-20" max="20" step="0.001" v-model="scaleYStart" />
-  scaleY end: <div style="width:30pt; display: inline-block;">{{scaleYEnd }}</div>
-  <input type="range" min="-20" max="20" step="0.001" v-model="scaleYEnd" />
+  -->
 
  <div class="grid-container">
   <div class="grid-item">
     <chart
       :data="data1"
+      @on-bind="onBind"
     />
   </div>
   <div class="grid-item">

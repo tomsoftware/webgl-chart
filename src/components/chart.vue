@@ -3,8 +3,10 @@ import { ref, onMounted, onBeforeUpdate, watch } from 'vue'
 import { GpuChart } from '../c/gpu-chart';
 import { ChartConfig } from './chart-config';
 
-
 const chartCanvas = ref<HTMLCanvasElement>();
+const emit = defineEmits<{
+  onBind: [element: HTMLElement]
+}>();
 
 const gpuChart = new GpuChart();
 
@@ -25,6 +27,7 @@ onMounted(() => {
   if (cav == null) {
     return;
   }
+
   console.log('mounted', cav);
 
   gpuChart.bind(cav);
@@ -36,6 +39,7 @@ onMounted(() => {
     props.data.onRender(context)
   });
 
+  emit('onBind', cav);
 
   gpuChart.render();
 });

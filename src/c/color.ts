@@ -60,19 +60,26 @@ export class Color {
         );
     }
 
+    public static grayFromBytes(v: number) {
+        return new Color(v / 255, v / 255, v / 255, 1);
+    }
+
     public static red = new Color(1, 0, 0, 1);
     public static blue = new Color(0, 0, 1, 1);
     public static green = new Color(0, 1, 0, 1);
-    public static yellow = new Color(1, 1, 0, 1);
+    public static yellow = Color.fromBytes(255, 255, 0);
     public static black = new Color(0, 0, 0, 1);
     public static white = new Color(1, 1, 1, 1);
     public static cyan = new Color(0, 1, 1, 1);
-    public static magenta = new Color(1, 0, 1, 1);
+    public static magenta = Color.fromBytes(255, 0, 255);
     public static orange = new Color(1, 0.5, 0, 1);
     public static purple = new Color(0.5, 0, 0.5, 1);
     public static brown = new Color(0.6, 0.3, 0, 1);
-    public static gray = new Color(0.5, 0.5, 0.5, 1);
-    public static lightGray = new Color(0.827, 0.827, 0.827, 1);
+    public static gray = Color.grayFromBytes(190);
+    public static lightGray = Color.grayFromBytes(211);
+    public static darkGray = Color.grayFromBytes(169);
+    public static whiteSmoke = Color.grayFromBytes(245);
+
 
     public static colorList = [
         Color.fromBytes(54, 162, 235), // blue
