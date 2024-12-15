@@ -98,8 +98,7 @@ export class GpuChart {
             this.renderCallback(context);
         }
         
-        context.flushTextures(Matrix3x3.Identity);
-        context.flushLines(Matrix3x3.Identity);
+        context.flush(Matrix3x3.Identity);
 
         return this;
     }

@@ -55,7 +55,7 @@ class TextureSlot {
 export class TextureMap implements IUniformValue {
     private textures = new Map<string, TextureMapItem>();
     private buffer: Uint32Array;
-    private width = 2 << 8; // 2^10 = 1024
+    private width = 2 << 7; // 2^8 = 256
     private height = this.width; // quadratic texture
     public gpuTextureIsDirty: boolean = false;
     private textureId: WebGLTexture | null = null;
@@ -123,8 +123,8 @@ export class TextureMap implements IUniformValue {
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     }
 
     public addTexture(context: Context, texture: TextureGenerator): TextureMapItem | null {
