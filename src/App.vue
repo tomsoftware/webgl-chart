@@ -3,7 +3,7 @@ import chart from './components/chart.vue'
 import { ChartConfig } from './components/chart-config'
 import { Matrix3x3 } from './c/matrix-3x3';
 import { Series } from './c/series';
-import { GpuBuffer } from './c/gpu-buffer';
+import { GpuFloatBuffer } from './c/gpu-float-buffer';
 import { GpuText } from './c/gpu-text';
 import { LayoutCell } from './c/layout/layout-cell';
 import { VerticalAxis, VerticalAxisPossition } from './c/scales/vertical-axis';
@@ -19,6 +19,8 @@ import { Alignment } from './c/alignment';
 import { Scale } from './c/scales/scale';
 import { EventDispatcher } from './c/event-handler/event-handler';
 import { EventTypes } from './c/event-handler/event-value';
+import { RectDrawer } from './c/rect-drawer';
+import { Vector2 } from './c/vector-2';
 
 const eventDispatcher = new EventDispatcher();
 
@@ -30,19 +32,19 @@ const scaleY = new Scale(-10, 10);
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
 
-const time = new GpuBuffer(itemCount)
+const time = new GpuFloatBuffer(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
 // generate series data
 const series1 = new Series(time, null)
     .generate((t) => Math.sin(t * 2 * Math.PI) * 10)
     .setColor(1, 0, 0)
-    .setPointSize(4);
+    .setPointSize(5);
   
 const series2 = new Series(time, null)
     .generate((t) => Math.cos(t * 2 * Math.PI) * 10)
     .setColor(0, 1, 0)
-
+    .setPointSize(4)
 /*
 watch(() => scaleXStart.value, (newValue) => {
   scaleX.min = +newValue;
@@ -118,6 +120,9 @@ eventDispatcher.on(EventTypes.Pan, yAxis2Cell, (event, _layoutNode, area) => {
 });
 
 
+const rec = new RectDrawer();
+rec.addRect(new Vector2(0.4, 0.3), new Vector2(0.1, 0.04), Color.fromBytes(255,0,0,100));
+
 // set render callback
 const data1 = new ChartConfig()
     .setRenderCallback((context) => {
@@ -132,9 +137,6 @@ const data1 = new ChartConfig()
       chartBorder.draw(context, baseContainer);
 
       ///const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95 + (context.time % 1000) * 0.001, 0);
-
-      series1.draw(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
-      series2.draw(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
 
       headline.draw(context, headlineLayout, Alignment.centerCenter, new Matrix3x3());
       legend.draw(context, legnedLayout, Alignment.centerCenter, new Matrix3x3());
@@ -151,7 +153,19 @@ const data1 = new ChartConfig()
       yAxis2.draw(context, yAxis2Cell, chartCell);
       yAxis3.draw(context, yAxis3Cell);
 
-      context.flushTextures();
+      // flush lines and textes
+      context.flush();
+
+      // draw the series
+      series1.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+      series1.drawLines(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+
+      series2.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+      series2.drawLines(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+
+
+      rec.draw(context, context.projectionMatrix);
+
   });
 
 function onBind(element: HTMLElement | null): void {
@@ -166,7 +180,7 @@ const data2 = new ChartConfig()
       const trafo = new Matrix3x3();
 
       const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95, 0);
-      series1.draw(context, scaleX, scaleY, xAxisCell, trafoSeries);
+      series1.drawPoints(context, scaleX, scaleY, xAxisCell, trafoSeries);
   });
 
 

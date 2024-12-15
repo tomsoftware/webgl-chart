@@ -4,7 +4,7 @@ import type { IUniformValue } from "./unniform";
 import type { Vector2 } from "./vector-2";
 import type { LayoutNode } from "./layout/layout-node";
 import { Canvas2d } from "./canvas-2d";
-import { GpuBuffer } from "./gpu-buffer";
+import { GpuFloatBuffer } from "./gpu-float-buffer";
 import { GpuBufferState } from "./gpu-buffer-state";
 import { GpuProgram } from "./gpu-program";
 import { TextureMapDrawer } from "./gpu-texture-map-drawer";
@@ -19,7 +19,7 @@ import { TextureMapItem } from "./texture-map-item";
 export class Context {
     public gl!: WebGLRenderingContext;
     public programes = new Map<string, GpuProgram>();
-    public buffers = new Map<GpuBuffer, GpuBufferState>();
+    public buffers = new Map<GpuFloatBuffer, GpuBufferState>();
     private textureDrawer = new TextureMapDrawer(new TextureMap());
     private lineDrawer = new LineDrawer();
     /** width of the canvas we draw to */
@@ -77,7 +77,7 @@ export class Context {
         this.lineDrawer.dispose(this.gl);
     }
 
-    public setBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null) {
+    public setBuffer(program: GpuProgram, name: string, buffer: GpuFloatBuffer | null) {
         if (buffer == null) {
             return;
         }
@@ -172,6 +172,12 @@ export class Context {
         this.lineDrawer.draw(this, m);
         this.lineDrawer.clear();
     }
+
+    /** flush all pending batches */
+    public flush(trafo?: Matrix3x3) {
+        this.flushTextures(trafo);
+        this.flushLines(trafo);
+}
 
     /** create and use a gl-shader-program */
     public useProgram(id: string, vertexShader: string, fragmentShader: string) {

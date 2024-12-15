@@ -1,11 +1,11 @@
-import type { GpuBuffer } from "./gpu-buffer";
+import type { GpuFloatBuffer } from "./gpu-float-buffer";
 
 export class GpuBufferState {
-    private data: GpuBuffer;
+    private data: GpuFloatBuffer;
     private buffer: WebGLBuffer | null = null;
     private lastDataVersion = -1;
 
-    constructor(data: GpuBuffer) {
+    constructor(data: GpuFloatBuffer) {
         this.data = data;
     }
 

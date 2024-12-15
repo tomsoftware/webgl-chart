@@ -8,7 +8,7 @@ export class TextureMapItem {
 
     constructor(x: number, y: number, width: number, height: number, textureMapWidth: number, textureMapHeight: number) {
         this.relativeX = x / textureMapWidth;
-        this.relativeY = y / textureMapWidth;
+        this.relativeY = y / textureMapHeight;
         this.width = width;
         this.height = height;
         this.relativeWidth = width / textureMapWidth;

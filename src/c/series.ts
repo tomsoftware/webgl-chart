@@ -1,7 +1,7 @@
 import type { LayoutNode } from "./layout/layout-node";
 import type { Scale } from "./scales/scale";
 import { Context } from "./context";
-import { GpuBuffer } from "./gpu-buffer";
+import { GpuFloatBuffer } from "./gpu-float-buffer";
 import { Matrix3x3 } from "./matrix-3x3";
 import { Vector4 } from "./vector-4";
 import { GpuNumber } from "./gpu-number";
@@ -10,14 +10,16 @@ import { Vector2 } from "./vector-2";
 export class Series {
     public color = new Vector4(1, 0, 0, 0.5);
     public bbox = new Vector4(0, 0, 1, 1);
-    private time: GpuBuffer | null = null;
-    private data: GpuBuffer | null = null;
+    private time: GpuFloatBuffer | null = null;
+    private data: GpuFloatBuffer | null = null;
     private pointSize: GpuNumber = new GpuNumber(2);
-
+    private minMaxPointSizeCache: number[] = [];
+  
     /** this is a unique id to identyfy the shader programms */
-    private static Id = 'gpu-series';
+    private static IdPoint = 'gpu-series-point';
+    private static IdLine = 'gpu-series-line';
 
-    constructor(time: GpuBuffer, data: GpuBuffer | null = null) {
+    constructor(time: GpuFloatBuffer, data: GpuFloatBuffer | null = null) {
         this.time = time;
         this.data = data;
     }
@@ -39,18 +41,8 @@ export class Series {
             return this;
         }
 
-        if (this.data == null) {
-            this.data = new GpuBuffer(this.time.length);
-        }
-        if (this.data.length != this.time.length) {
-            this.data = new GpuBuffer(this.time.length);
-        }
 
-        const timeData = this.time.data;
-        const destData = this.data.data;
-        for (let i = 0; i < this.time.length; i++) {
-            destData[i] = calc(timeData[i]);
-        }
+        this.data = GpuFloatBuffer.generateFrom(this.time, calc);
 
         return this;
     }
@@ -119,8 +111,16 @@ export class Series {
         }
         `;
 
+    /** read the min-max-point size from gpu */
+    private getMinMaxPointSize(gl: WebGLRenderingContext) {
+        if (this.minMaxPointSizeCache.length !== 0) {
+            return this.minMaxPointSizeCache;
+        }
+        this.minMaxPointSizeCache = gl.getParameter(WebGLRenderingContext.ALIASED_POINT_SIZE_RANGE);
+        return this.minMaxPointSizeCache;
+    }
 
-    public draw(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode, trafo: Matrix3x3) {
+    public drawPoints(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode, trafo: Matrix3x3) {
         if (this.data == null) {
             return;
         }
@@ -133,7 +133,7 @@ export class Series {
         const m = p.multiply(l.values).multiply(s.values);
 
         // create and use shader program
-        const program = context.useProgram(Series.Id, Series.vertexShaderPoint, Series.fragmentShaderPoint);
+        const program = context.useProgram(Series.IdPoint, Series.vertexShaderPoint, Series.fragmentShaderPoint);
 
         // bind data buffer to attribute
         context.setBuffer(program, 'x', this.time);
@@ -142,7 +142,7 @@ export class Series {
         // set uniforms
         context.setUniform(program, 'uniformTrafo', m);
         context.setUniform(program, 'uniformColor', this.color);
-        context.setUniform(program, 'uniformPointSize', this.pointSize);
+        context.setUniform(program, 'uniformPointSize', this.pointSize.boundFromArray(this.getMinMaxPointSize(context.gl)));
 
         // set clipping bounds
         const p1 = new Vector2(chartArea.left, chartArea.top).transform(p);
@@ -152,5 +152,39 @@ export class Series {
         // draw buffer / series data
         const offset = 0;
         context.gl.drawArrays(WebGLRenderingContext.POINTS, offset, this.data.count);
+    }
+
+    public drawLines(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode, trafo: Matrix3x3) {
+        if (this.data == null) {
+            return;
+        }
+        const chartArea = chartLayout?.getArea(context.layoutCache);
+  
+        const s = Matrix3x3.translate(-scaleX.min, scaleY.max).scale(chartArea.width / scaleX.range, chartArea.height / scaleY.range);
+        const p = context.projectionMatrix;
+        const l = chartArea.toMaxtrix();
+  
+        const m = p.multiply(l.values).multiply(s.values);
+  
+        // create and use shader program
+        const program = context.useProgram(Series.IdLine, Series.vertexShaderLine, Series.fragmentShaderLine);
+  
+        // bind data buffer to attribute
+        context.setBuffer(program, 'x', this.time);
+        context.setBuffer(program, 'y', this.data);
+  
+        // set uniforms
+        context.setUniform(program, 'uniformTrafo', m);
+        context.setUniform(program, 'uniformColor', this.color);
+        context.setUniform(program, 'uniformPointSize', this.pointSize);
+  
+        // set clipping bounds
+        const p1 = new Vector2(chartArea.left, chartArea.top).transform(p);
+        const p2 = new Vector2(chartArea.right, chartArea.bottom).transform(p);
+        context.setUniform(program, 'uniformBounds', this.bbox.set(p1.x, p1.y, p2.x, p2.y));
+  
+        // draw buffer / series data
+        const offset = 0;
+        context.gl.drawArrays(WebGLRenderingContext.LINE_STRIP, offset, this.data.count);
     }
 }

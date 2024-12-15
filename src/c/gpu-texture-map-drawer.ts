@@ -1,5 +1,5 @@
 import { Context } from "./context";
-import { GpuBuffer } from "./gpu-buffer";
+import { GpuFloatBuffer } from "./gpu-float-buffer";
 import { Matrix3x3 } from "./matrix-3x3";
 import type { TextureGenerator } from "./texture-generator";
 import { TextureMap } from "./texture-map";
@@ -7,8 +7,8 @@ import { TextureMapItem } from "./texture-map-item";
 import { Vector2 } from "./vector-2";
 
 export class TextureMapDrawer {
-    private positionLocation = new GpuBuffer(0, 2);
-    private texcoordLocation = new GpuBuffer(0, 2);
+    private positionLocation = new GpuFloatBuffer(0, 2);
+    private texcoordLocation = new GpuFloatBuffer(0, 2);
     private textureMap: TextureMap;
 
     /** this is a unique id to identyfy the shader programms */
@@ -95,10 +95,10 @@ export class TextureMapDrawer {
         varying vec2 v_texcoord;
 
         // The texture.
-        uniform sampler2D u_texture;
+        uniform sampler2D uniformTexture;
 
         void main() {
-            gl_FragColor = texture2D(u_texture, v_texcoord);
+            gl_FragColor = texture2D(uniformTexture, v_texcoord);
             // gl_FragColor = vec4(1,0,0,1);
         }
         `;
@@ -120,7 +120,7 @@ export class TextureMapDrawer {
 
         // set uniforms
         context.setUniform(program, 'uniformTrafo', trafo);
-        context.setUniform(program, 'u_texture', this.textureMap);
+        context.setUniform(program, 'uniformTexture', this.textureMap);
 
         // draw buffer / series data
         const offset = 0;
