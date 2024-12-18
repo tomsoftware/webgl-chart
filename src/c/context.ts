@@ -1,11 +1,11 @@
 import type { Color } from "./color";
 import type { TextureGenerator } from "./texture-generator";
 import type { IUniformValue } from "./unniform";
-import type { Vector2 } from "./vector-2";
+import { Vector2 } from "./vector-2";
 import type { LayoutNode } from "./layout/layout-node";
 import { Canvas2d } from "./canvas-2d";
-import { GpuFloatBuffer } from "./gpu-float-buffer";
-import { GpuBufferState } from "./gpu-buffer-state";
+import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
+import { GlBufferTypes, GpuBufferState } from "./buffers/gpu-buffer-state";
 import { GpuProgram } from "./gpu-program";
 import { TextureMapDrawer } from "./gpu-texture-map-drawer";
 import { LayoutArea } from "./layout/layout-area";
@@ -14,12 +14,13 @@ import { LineDrawer } from "./line-drawer";
 import { Matrix3x3 } from "./matrix-3x3";
 import { TextureMap } from "./texture-map";
 import { TextureMapItem } from "./texture-map-item";
+import type { GpuBuffer } from "./buffers/gpu-buffer";
 
 /** The context provides functions and data used for one draw interation */
 export class Context {
     public gl!: WebGLRenderingContext;
     public programes = new Map<string, GpuProgram>();
-    public buffers = new Map<GpuFloatBuffer, GpuBufferState>();
+    public buffers = new Map<GpuBuffer, GpuBufferState>();
     private textureDrawer = new TextureMapDrawer(new TextureMap());
     private lineDrawer = new LineDrawer();
     /** width of the canvas we draw to */
@@ -31,6 +32,7 @@ export class Context {
     private offscreenCanvas2d: Canvas2d;
     public layoutCache = new LayoutStore();
     public projectionMatrix = Matrix3x3.Identity;
+    public pixelScale = new Vector2();
 
     public constructor(devicePixelRatio: number = 1) {
         this.offscreenCanvas2d = new Canvas2d(300, 100, devicePixelRatio);
@@ -57,7 +59,7 @@ export class Context {
         this.lineDrawer.clear();
 
         this.projectionMatrix = Matrix3x3.projection(1, height / width);
-
+        this.pixelScale = new Vector2(1 / width, 1 / width);
         return this;
     }
 
@@ -77,7 +79,7 @@ export class Context {
         this.lineDrawer.dispose(this.gl);
     }
 
-    public setBuffer(program: GpuProgram, name: string, buffer: GpuFloatBuffer | null) {
+    public setArrayBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null) {
         if (buffer == null) {
             return;
         }
@@ -93,15 +95,38 @@ export class Context {
         }
 
         // update the data in the gpu
-        state.setData(this.gl);
+        state.setData(this.gl, GlBufferTypes.ARRAY_BUFFER);
 
         const variableLoc = program.getAttribLocation(name);
         if (variableLoc == null) {
             throw new Error(`Context.setBuffer: variableLoc is null for ${name}`);
         }
 
-        state.bindBuffer(this.gl, variableLoc);
+        state.bindBuffer(this.gl, GlBufferTypes.ARRAY_BUFFER);
+        state.setVertexAttribPointer(this.gl, variableLoc);
     }
+
+    public setElementBuffer(buffer: GpuBuffer | null) {
+        if (buffer == null) {
+            return;
+        }
+
+        if (!this.buffers.has(buffer)) {
+            const state = new GpuBufferState(buffer);
+            this.buffers.set(buffer, state);
+        }
+
+        const state = this.buffers.get(buffer);
+        if (state == null) {
+            throw new Error(`Context.setElementBuffer: buffer can't be created`);
+        }
+
+        // update the data in the gpu
+        state.setData(this.gl, GlBufferTypes.ELEMENT_ARRAY_BUFFER);
+
+        state.bindBuffer(this.gl, GlBufferTypes.ELEMENT_ARRAY_BUFFER);
+    }
+
 
     public addTexture(src: TextureGenerator): TextureMapItem | null {
         if (src == null) {

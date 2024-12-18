@@ -1,5 +1,7 @@
-export class GpuFloatBuffer {
-    private buffer: Float32Array;
+import type { GpuBuffer } from "./gpu-buffer";
+
+export class GpuShortBuffer implements GpuBuffer {
+    private buffer: Uint16Array;
     private bufferOffset = 0;
     private bufferEnd = 0;
 
@@ -12,7 +14,7 @@ export class GpuFloatBuffer {
     }
 
     constructor(size: number, componentsPerIteration = 1) {
-        this.buffer = new Float32Array(size * componentsPerIteration);
+        this.buffer = new Uint16Array(size * componentsPerIteration);
         this.bufferEnd = this.buffer.length;
 
         this.componentsPerIteration = componentsPerIteration;
@@ -41,10 +43,10 @@ export class GpuFloatBuffer {
         newItems = Math.max(Math.max(newItems, 32), this.buffer.length / 2);
 
 
-        console.log('GpuFloatBuffer: increese Capacity', newItems);
+        console.log('GpuBufferShort: increese Capacity', newItems);
 
         // make the buffer larger
-        const newBuffer = new Float32Array(this.buffer.length + Math.max(32, newItems));
+        const newBuffer = new Uint16Array(this.buffer.length + Math.max(32, newItems));
         newBuffer.set(this.buffer);
         this.buffer = newBuffer;
     }
@@ -81,7 +83,7 @@ export class GpuFloatBuffer {
 
     /** this is the real buffer length */
     public get length(): number {
-        return this.bufferOffset - this.bufferEnd;
+        return this.bufferEnd - this.bufferOffset;
     }
 
     /** this is the number of items in the buffer */
@@ -89,31 +91,7 @@ export class GpuFloatBuffer {
         return this.data.length / this.componentsPerIteration;
     }
 
-    public static generateFrom(src: GpuFloatBuffer, calc: (srcValue: number) => number): GpuFloatBuffer {
-        const srcData = src.data;
-        const newBuffer = new GpuFloatBuffer(srcData.length);
-        const newData = newBuffer.data;
-        
-        for (let i = 0; i < newData.length; i++) {
-            newData[i] = calc(srcData[i]);
-        }
-    
-        return newBuffer;
-    }
-
-    public generate(calc: (index: number) => number): GpuFloatBuffer {
-        const data = this.data;
-        for (let i = 0; i < this.data.length; i++) {
-            data[i] = calc(i);
-        }
-
-        this.updateDataVersion();
-
-        return this;
-    }
-
-    public bindBuffer(gl: WebGLRenderingContext, variableLoc: GLint) {
-
+    public setVertexAttribPointer(gl: WebGLRenderingContext, variableLoc: GLint) {
         // Tell the attribute how to get data out of idBuffer (ARRAY_BUFFER)
         const normalize = false; // don't normalize the data
         const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
@@ -121,7 +99,7 @@ export class GpuFloatBuffer {
         gl.vertexAttribPointer(
             variableLoc,
             this.componentsPerIteration,
-            gl.FLOAT,
+            gl.UNSIGNED_SHORT,
             normalize,
             stride,
             offset

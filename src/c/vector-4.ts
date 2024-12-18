@@ -38,4 +38,12 @@ export class Vector4 implements IUniformValue {
         this.values[3] = 0;
         return this;
     }
+
+    public setFromArray(color: number[]) {
+        this.values[0] = color[0] ?? 0;
+        this.values[1] = color[1] ?? 0;
+        this.values[2] = color[2] ?? 0;
+        this.values[3] = color[3] ?? 1;
+        return this;
+      }
 }

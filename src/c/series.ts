@@ -1,15 +1,17 @@
 import type { LayoutNode } from "./layout/layout-node";
 import type { Scale } from "./scales/scale";
 import { Context } from "./context";
-import { GpuFloatBuffer } from "./gpu-float-buffer";
+import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { Matrix3x3 } from "./matrix-3x3";
 import { Vector4 } from "./vector-4";
 import { GpuNumber } from "./gpu-number";
 import { Vector2 } from "./vector-2";
+import type { Color } from "./color";
 
 export class Series {
     public color = new Vector4(1, 0, 0, 0.5);
     public bbox = new Vector4(0, 0, 1, 1);
+    public thickness: number = 1;
     private time: GpuFloatBuffer | null = null;
     private data: GpuFloatBuffer | null = null;
     private pointSize: GpuNumber = new GpuNumber(2);
@@ -25,9 +27,15 @@ export class Series {
     }
 
     /** set the color of the series */
-    public setColor(r: number, g: number, b: number, a: number = 1): Series {
-        this.color.set(r, g, b, a);
+    public setColor(color: Color): Series {
+        this.color.setFromArray(color.toArray());
         return this;
+    }
+
+    /** set the line thickness */
+    public setThickness(thickness: number) {
+      this.thickness = Math.max(0, +thickness);
+      return this;
     }
 
     /** set the point size of the series */
@@ -136,8 +144,8 @@ export class Series {
         const program = context.useProgram(Series.IdPoint, Series.vertexShaderPoint, Series.fragmentShaderPoint);
 
         // bind data buffer to attribute
-        context.setBuffer(program, 'x', this.time);
-        context.setBuffer(program, 'y', this.data);
+        context.setArrayBuffer(program, 'x', this.time);
+        context.setArrayBuffer(program, 'y', this.data);
 
         // set uniforms
         context.setUniform(program, 'uniformTrafo', m);
@@ -154,27 +162,29 @@ export class Series {
         context.gl.drawArrays(WebGLRenderingContext.POINTS, offset, this.data.count);
     }
 
-    public drawLines(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode, trafo: Matrix3x3) {
+    public drawLines(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode) {
         if (this.data == null) {
             return;
         }
+        if (this.thickness < 1) {
+          // dont draw lines with no thickness
+          return;
+        }
+
         const chartArea = chartLayout?.getArea(context.layoutCache);
   
         const s = Matrix3x3.translate(-scaleX.min, scaleY.max).scale(chartArea.width / scaleX.range, chartArea.height / scaleY.range);
         const p = context.projectionMatrix;
         const l = chartArea.toMaxtrix();
   
-        const m = p.multiply(l.values).multiply(s.values);
-  
         // create and use shader program
         const program = context.useProgram(Series.IdLine, Series.vertexShaderLine, Series.fragmentShaderLine);
   
         // bind data buffer to attribute
-        context.setBuffer(program, 'x', this.time);
-        context.setBuffer(program, 'y', this.data);
+        context.setArrayBuffer(program, 'x', this.time);
+        context.setArrayBuffer(program, 'y', this.data);
   
         // set uniforms
-        context.setUniform(program, 'uniformTrafo', m);
         context.setUniform(program, 'uniformColor', this.color);
         context.setUniform(program, 'uniformPointSize', this.pointSize);
   
@@ -182,9 +192,27 @@ export class Series {
         const p1 = new Vector2(chartArea.left, chartArea.top).transform(p);
         const p2 = new Vector2(chartArea.right, chartArea.bottom).transform(p);
         context.setUniform(program, 'uniformBounds', this.bbox.set(p1.x, p1.y, p2.x, p2.y));
-  
+
         // draw buffer / series data
         const offset = 0;
-        context.gl.drawArrays(WebGLRenderingContext.LINE_STRIP, offset, this.data.count);
+        const count = this.data.count;
+        const pixleScale = context.pixelScale;
+
+        // pure man's thick line -> just draw the line multiple times
+        const baseOffset = (this.thickness % 2 == 0) ? 0.5 : 0.0; // returns 0 or 0.5
+        const baseOffsetY = pixleScale.y * baseOffset;
+
+        for (let i = 0; i < this.thickness; i++) {
+          const sign = (i % 2 === 0) ? 1 : -1;
+          const f = sign * (i + 1) >> 1; // f is oscillates around the center: 0, -1, 1, -2, 2 or -0.5
+
+          const lineThicknessShift = Matrix3x3.translate(0, baseOffsetY + pixleScale.y * f);
+
+          const m = p.multiply(l.values).multiply(lineThicknessShift.values).multiply(s.values);
+          context.setUniform(program, 'uniformTrafo', m);
+          context.gl.drawArrays(WebGLRenderingContext.LINE_STRIP, offset, count);
+          
+        }
+
     }
 }

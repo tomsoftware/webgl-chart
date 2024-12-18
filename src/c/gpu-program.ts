@@ -91,7 +91,7 @@ export class GpuProgram {
 
         const index = this.gl.getAttribLocation(this.program, name);
         if (index === -1) {
-            throw new Error(`Shader program Attribe not found: ${name}`);
+            console.error(`Shader program Attribe not found: ${name}`);
         }
         return index;
     }
