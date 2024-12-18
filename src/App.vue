@@ -3,7 +3,7 @@ import chart from './components/chart.vue'
 import { ChartConfig } from './components/chart-config'
 import { Matrix3x3 } from './c/matrix-3x3';
 import { Series } from './c/series';
-import { GpuFloatBuffer } from './c/gpu-float-buffer';
+import { GpuFloatBuffer } from './c/buffers/gpu-buffer-float';
 import { GpuText } from './c/gpu-text';
 import { LayoutCell } from './c/layout/layout-cell';
 import { VerticalAxis, VerticalAxisPossition } from './c/scales/vertical-axis';
@@ -21,10 +21,13 @@ import { EventDispatcher } from './c/event-handler/event-handler';
 import { EventTypes } from './c/event-handler/event-value';
 import { RectDrawer } from './c/rect-drawer';
 import { Vector2 } from './c/vector-2';
+import { ref } from 'vue';
 
 const eventDispatcher = new EventDispatcher();
-
-// const scaleXStart = ref<number>(0);
+const showLines = ref<boolean>(true);
+const showDots = ref<boolean>(true);
+const lineThickness = ref<number>(1);
+const radius = ref<number>(0.1);
 
 const scaleX = new Scale(0, 10);
 const scaleY = new Scale(-10, 10);
@@ -37,13 +40,13 @@ const time = new GpuFloatBuffer(itemCount)
 
 // generate series data
 const series1 = new Series(time, null)
-    .generate((t) => Math.sin(t * 2 * Math.PI) * 10)
-    .setColor(1, 0, 0)
+    .generate((t) => Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
+    .setColor(Color.red)
     .setPointSize(5);
   
 const series2 = new Series(time, null)
     .generate((t) => Math.cos(t * 2 * Math.PI) * 10)
-    .setColor(0, 1, 0)
+    .setColor(Color.green)
     .setPointSize(4)
 /*
 watch(() => scaleXStart.value, (newValue) => {
@@ -121,7 +124,7 @@ eventDispatcher.on(EventTypes.Pan, yAxis2Cell, (event, _layoutNode, area) => {
 
 
 const rec = new RectDrawer();
-rec.addRect(new Vector2(0.4, 0.3), new Vector2(0.1, 0.04), Color.fromBytes(255,0,0,100));
+
 
 // set render callback
 const data1 = new ChartConfig()
@@ -157,12 +160,24 @@ const data1 = new ChartConfig()
       context.flush();
 
       // draw the series
-      series1.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
-      series1.drawLines(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+      if (showDots.value) {
+        series1.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+      }
+      if (showLines.value) {
+        series1.setThickness(lineThickness.value).drawLines(context, scaleX, scaleY, chartCell);
+      }
+      
+      if (showDots.value) {
+        series2.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+      }
+      if (showLines.value) {
+        series2.drawLines(context, scaleX, scaleY, chartCell);
+      }
 
-      series2.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
-      series2.drawLines(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
-
+      rec.clear();
+      rec.addRect(new Vector2(0.4, 0.01),  new Vector2(0.1, 0.1),  Color.red,   radius.value);
+      rec.addRect(new Vector2(0.25, 0.01), new Vector2(0.1, 0.05), Color.black, radius.value);
+      rec.addRect(new Vector2(0.1, 0.01),  new Vector2(0.1, 0.1),  Color.blue,  1.0);
 
       rec.draw(context, context.projectionMatrix);
 
@@ -190,6 +205,25 @@ const data2 = new ChartConfig()
   Frame rate: {{ data1.maxFrameRate.value }}
   <input type="range" min="0" max="100" v-model="data1.maxFrameRate.value" />
 
+  <label>
+    <input type="checkbox" v-model="showDots" />
+    show Dots
+  </label>
+  <label>
+    <input type="checkbox" v-model="showLines" />
+    show Lines
+  </label>
+  <label> 
+    <input type="number" min="0" max="100" v-model="lineThickness" />
+    Lines thickness
+  </label>
+
+  <label>
+  radius: {{ radius }}
+  <input type="range" min="0" max="1" step="0.01" v-model="radius" />
+  </label>
+
+  
   <!--
   scaleX start: <div style="width:30pt; display: inline-block;">{{scaleXStart }}</div>
   <input type="range" min="0" max="2000" step="0.001" v-model="scaleXStart" />

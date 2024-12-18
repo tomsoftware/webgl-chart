@@ -2,7 +2,7 @@ import type { Color } from "./color";
 import type { Context } from "./context";
 import type { Matrix3x3 } from "./matrix-3x3";
 import type { Vector2 } from "./vector-2";
-import { GpuFloatBuffer } from "./gpu-float-buffer";
+import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 
 /** Draw a batch of lines */
 export class LineDrawer {
@@ -17,8 +17,8 @@ export class LineDrawer {
         const program = context.useProgram(LineDrawer.Id, LineDrawer.vertexShader, LineDrawer.fragmentShader);
 
         // bind data buffer to attribute
-        context.setBuffer(program, 'coordinates', this.lines);
-        context.setBuffer(program, 'colors', this.colors);
+        context.setArrayBuffer(program, 'coordinates', this.lines);
+        context.setArrayBuffer(program, 'colors', this.colors);
 
         // set uniforms
         context.setUniform(program, 'uniformTrafo', trafo);

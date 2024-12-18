@@ -1,5 +1,5 @@
 import { Context } from "./context";
-import { GpuFloatBuffer } from "./gpu-float-buffer";
+import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { Matrix3x3 } from "./matrix-3x3";
 import type { TextureGenerator } from "./texture-generator";
 import { TextureMap } from "./texture-map";
@@ -115,8 +115,8 @@ export class TextureMapDrawer {
         const program = context.useProgram(TextureMapDrawer.Id, TextureMapDrawer.vertexShader, TextureMapDrawer.fragmentShader);
 
         // bind data buffer to attribute
-        context.setBuffer(program, 'position', this.positionLocation);
-        context.setBuffer(program, 'texcoord', this.texcoordLocation);
+        context.setArrayBuffer(program, 'position', this.positionLocation);
+        context.setArrayBuffer(program, 'texcoord', this.texcoordLocation);
 
         // set uniforms
         context.setUniform(program, 'uniformTrafo', trafo);

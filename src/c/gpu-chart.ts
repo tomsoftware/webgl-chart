@@ -18,6 +18,7 @@ export class GpuChart {
     private frameDelay: number = 10;
     // time of last frame
     private lastFrame: number = 0;
+    private previousRenderTimestamp = 0;
 
     /** set max framerate */
     public setMaxFrameRate(fps: number): GpuChart {
@@ -62,21 +63,34 @@ export class GpuChart {
         this.gl = null;
     }
 
+
+    private renderInternal = (time: number) => {
+        if (this.previousRenderTimestamp == time) {
+            return;
+        }
+
+        if (this.previousRenderTimestamp !== 0) {
+            console.log('drawScene: '+ Math.round(time - this.previousRenderTimestamp) +' ms');
+            this.previousRenderTimestamp = 0;
+        }
+
+        // reduce frame rate
+        if (Math.abs(this.lastFrame - time) > this.frameDelay) {
+            this.previousRenderTimestamp = time;
+            this.drawScene(time);
+            this.lastFrame = time;
+        }
+
+        // call for the next frame
+        requestAnimationFrame(this.renderInternal);
+    }
+
     /**
      * trigger a new rendering. The rendering calls are reduced to a
      * max framerate and syncronized
      **/
     public render(): void {
-        requestAnimationFrame((time) => {
-            // reduce frame rate
-            if (Math.abs(this.lastFrame - time) > this.frameDelay) {
-                const startTime = Date.now();
-                this.drawScene(time);
-                this.lastFrame = time;
-                console.log('drawScene: ', Date.now() - startTime, ' ms');
-            }
-            this.render();
-        });
+        requestAnimationFrame(this.renderInternal);
     }
 
     public setRenderCallback(callback: RenderCallback): void {
