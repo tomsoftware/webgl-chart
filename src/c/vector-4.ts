@@ -46,4 +46,6 @@ export class Vector4 implements IUniformValue {
         this.values[3] = color[3] ?? 1;
         return this;
       }
+
+    public static readonly zero = new Vector4(0, 0, 0, 0);
 }

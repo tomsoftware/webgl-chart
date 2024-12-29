@@ -20,8 +20,8 @@ import { Scale } from './c/scales/scale';
 import { EventDispatcher } from './c/event-handler/event-handler';
 import { EventTypes } from './c/event-handler/event-value';
 import { RectDrawer } from './c/rect-drawer';
-import { Vector2 } from './c/vector-2';
 import { ref } from 'vue';
+import { Annotations } from './c/annotation/annotations';
 
 const eventDispatcher = new EventDispatcher();
 const showLines = ref<boolean>(true);
@@ -40,8 +40,8 @@ const time = new GpuFloatBuffer(itemCount)
 
 // generate series data
 const series1 = new Series(time, null)
-    .generate((t) => Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
-    .setColor(Color.red)
+    .generate((t) => 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
+    .setColor(Color.blue)
     .setPointSize(5);
   
 const series2 = new Series(time, null)
@@ -53,6 +53,13 @@ watch(() => scaleXStart.value, (newValue) => {
   scaleX.min = +newValue;
 });
 */
+const annotations = new Annotations();
+annotations.addBox(5.5, 3, 9, -3, Color.purple, 1);
+annotations.addVerticalLine(1.5,  Color.red, 0.05)
+  .addLabel(new GpuText('hallo'), Color.cyan);
+annotations.addVerticalLine(7.5, Color.red, 0.05);
+annotations.addHorizontalLine(9, Color.red, 0.05)
+
 
 // define axis
 const xAxis = new HorizontalAxis(new GpuText('X Axis'), scaleX)
@@ -119,7 +126,7 @@ eventDispatcher.on(EventTypes.Wheel, yAxis2Cell, (event) => {
 });
 
 eventDispatcher.on(EventTypes.Pan, yAxis2Cell, (event, _layoutNode, area) => {
-  scaleY.pan(-event.panDeletaY / area.height);
+  scaleY.pan(- event.panDeletaY / area.height);
 });
 
 
@@ -159,6 +166,8 @@ const data1 = new ChartConfig()
       // flush lines and textes
       context.flush();
 
+      annotations.draw(context, scaleX, scaleY, chartCell);
+
       // draw the series
       if (showDots.value) {
         series1.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
@@ -174,12 +183,16 @@ const data1 = new ChartConfig()
         series2.drawLines(context, scaleX, scaleY, chartCell);
       }
 
+      /*
       rec.clear();
-      rec.addRect(new Vector2(0.4, 0.01),  new Vector2(0.1, 0.1),  Color.red,   radius.value);
-      rec.addRect(new Vector2(0.25, 0.01), new Vector2(0.1, 0.05), Color.black, radius.value);
-      rec.addRect(new Vector2(0.1, 0.01),  new Vector2(0.1, 0.1),  Color.blue,  1.0);
+      rec.addRect2(new Vector2(0.5, 0.1),  new Vector2(0.2, 0.1),  Color.red,   radius.value);
+      rec.addRect2(new Vector2(0.33, 0.1), new Vector2(0.1, 0.1), Color.black, radius.value);
+      rec.addRect2(new Vector2(0.1, 0.1),  new Vector2(0.1, 0.1),  Color.blue,  1.0);
+      rec.addRect2(new Vector2(0.21, 0.1),  new Vector2(0.1, 0.1),  Color.purple,  1.0);
 
-      rec.draw(context, context.projectionMatrix);
+      rec.draw(context, chartCell, context.projectionMatrix);
+      */
+
 
   });
 
@@ -219,7 +232,8 @@ const data2 = new ChartConfig()
   </label>
 
   <label>
-  radius: {{ radius }}
+  radius:
+  <div style="width:3em; display: inline-block;">{{ radius }}</div>
   <input type="range" min="0" max="1" step="0.01" v-model="radius" />
   </label>
 

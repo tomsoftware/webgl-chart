@@ -1,6 +1,7 @@
 import type { Matrix3x3 } from "./matrix-3x3";
+import type { IUniformValue } from "./unniform";
 
-export class Vector2 {
+export class Vector2 implements IUniformValue{
     public x: number;
     public y: number;
 
@@ -40,5 +41,13 @@ export class Vector2 {
     /** subtract: this-v */
     public sub(v: Vector2): Vector2 {
         return new Vector2(this.x - v.x, this.y - v.y);
+    }
+
+    public add(v: Vector2): Vector2 {
+        return new Vector2(this.x + v.x, this.y + v.y);
+    }
+
+    public bindUniform(gl: WebGLRenderingContext, variableLoc: WebGLUniformLocation): void {
+        gl.uniform2fv(variableLoc, this.values);
     }
 }
