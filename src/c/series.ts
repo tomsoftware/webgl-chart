@@ -134,7 +134,7 @@ export class Series {
         }
         const chartArea = chartLayout?.getArea(context.layoutCache);
 
-        const s = Matrix3x3.translate(-scaleX.min, scaleY.max).scale(chartArea.width / scaleX.range, chartArea.height / scaleY.range);
+        const s = Matrix3x3.translate(-scaleX.min, -scaleY.max).scale(chartArea.width / scaleX.range, -chartArea.height / scaleY.range);
         const p = context.projectionMatrix;
         const l = chartArea.toMaxtrix();
 
@@ -173,7 +173,7 @@ export class Series {
 
         const chartArea = chartLayout?.getArea(context.layoutCache);
   
-        const s = Matrix3x3.translate(-scaleX.min, scaleY.max).scale(chartArea.width / scaleX.range, chartArea.height / scaleY.range);
+        const s = Matrix3x3.translate(-scaleX.min, -scaleY.max).scale(chartArea.width / scaleX.range, -chartArea.height / scaleY.range);
         const p = context.projectionMatrix;
         const l = chartArea.toMaxtrix();
   

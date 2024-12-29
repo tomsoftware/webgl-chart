@@ -9,8 +9,8 @@ export class ChartConfig {
         return this;
     }
 
-    /** the max-framerate the chart is redrawn */
-    public maxFrameRate = ref<number>(1);
+    /** the max-framerate the chart is redrawn  */
+    public maxFrameRate = ref<number>(2 /* FPS */);
     
     /** set the maximum number of frames per second */
     public setMaxFrameRate(maxFrameRate: number) {
