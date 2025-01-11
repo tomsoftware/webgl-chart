@@ -8,8 +8,8 @@ export class GpuChart {
     private element: HTMLCanvasElement | null = null;
     private resizeObserver: ResizeObserver | null = null;
     private errorHandler = new ErrorHandler();
-    private width: number = 1;
-    private height: number = 1;
+    private width: number = 0;
+    private height: number = 0;
     private devicePixelRatio: number = window.devicePixelRatio;
     private gl: WebGLRenderingContext | null = null;
     private context: Context | null = new Context(window.devicePixelRatio);
@@ -101,6 +101,11 @@ export class GpuChart {
     public drawScene(time: number): GpuChart {
         const gl = this.gl;
         if ((gl == null) || (this.context == null)) {
+            return this;
+        }
+
+        if (this.width == 0 || this.height == 0) {
+            // the canvas is not ready?
             return this;
         }
 

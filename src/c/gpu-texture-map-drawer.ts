@@ -1,7 +1,7 @@
+import type { TextureGenerator } from "./texture-generator";
 import { Context } from "./context";
 import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { Matrix3x3 } from "./matrix-3x3";
-import type { TextureGenerator } from "./texture-generator";
 import { TextureMap } from "./texture-map";
 import { TextureMapItem } from "./texture-map-item";
 import { Vector2 } from "./vector-2";
@@ -11,7 +11,7 @@ export class TextureMapDrawer {
     private texcoordLocation = new GpuFloatBuffer(0, 2);
     private textureMap: TextureMap;
 
-    /** this is a unique id to identyfy the shader programms */
+    /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-texture-map-drawer';
 
     public constructor(textureMap: TextureMap) {

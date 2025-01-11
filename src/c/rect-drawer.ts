@@ -15,19 +15,21 @@ export enum DimensionTypes {
     /** use the given layout bounds to calculate this position or size */
     UseBounds = 1,
     /** the given value will be used without transformation in the shader */
-    UseAbsolute = 2
+    UseAbsolute = 2,
+    /** the given value is in pixels */
+    UsePixel = 3
 }
 
 export type DimensionsType = [DimensionTypes, DimensionTypes, DimensionTypes, DimensionTypes];
 
 /** Draw a batch of rectangle */
 export class RectDrawer {
-    /** center possition (x, y) of the rectangle */
+    /** center position (x, y) of the rectangle */
     private rectPos = new GpuFloatBuffer(0, 2);
     /** width and height of the rectangle */
     private rectSize = new GpuFloatBuffer(0, 2);
 
-    /** flag to show if coordinates or rectSize parameter are absulute or relative values */
+    /** flag to show if coordinates or rectSize parameter are absolute or relative values */
     private dimensionType = new GpuByteBuffer(0, 4);
 
     private colors = new GpuFloatBuffer(0, 4);
@@ -37,7 +39,7 @@ export class RectDrawer {
     private indexBuffer = new GpuShortBuffer(0, 1);
     private bbox = new Vector4(0, 0, 1, 1);
 
-    /** this is a unique id to identyfy the shader programms */
+    /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-rect-drawer';
 
     /** returns the rectangle position for a given index */
@@ -104,8 +106,8 @@ export class RectDrawer {
 
     public addRect(
         centerPos: Vector2, size: Vector2,
-        color1: Color, 
-        borderRadius: number, 
+        color1: Color,
+        borderRadius: number,
         stripeWidthX: number = 0, stripeWidthY: number = 0,
         dimensionType: DimensionsType = [0, 0, 0, 0]
     ): number {
@@ -182,7 +184,7 @@ export class RectDrawer {
 
         // position of the rectangle: left, top
         attribute vec2 rectPos;
-        // size of the rectangle: Width, height
+        // size of the rectangle: width, height
         attribute vec2 rectSize;
         // defines if the pos and size are absolute or relative: x, y, width, height
         attribute vec4 dimensionType;
@@ -202,37 +204,46 @@ export class RectDrawer {
 
         vec2 uniformLineThickness = vec2(0.002, 0.005);
 
-        float ratioX = 1.0;
-        float ratioY = uniformScreenSize.x / uniformScreenSize.y;
+        vec2 ratio = vec2(2.0, uniformScreenSize.x / uniformScreenSize.y * 2.0);
 
         void main(void) {
-
             //// step 1: calculate real width and height of the rect
             vec3 zeroPos = uniformTrafo * vec3(0.0, 0.0, 1.0);
             vec3 realRectSize = uniformTrafo * vec3(rectSize.xy, 1.0) - zeroPos;
 
-            if (dimensionType.z >= 1.0) {
-                if (dimensionType.z >= 2.0) {
-                    // use absolute width
-                    realRectSize.x = rectSize.x * ratioX;
-                }
-                else {
-                    // use width depending on the bounds
-                    realRectSize.x = rectSize.x * (uniformBounds.z - uniformBounds.x); // p2.x - p1.x
-                }
+            int dimensionTypeWidth = int(dimensionType.z + 0.5);
+            int dimensionTypeHeight = int(dimensionType.w + 0.5);
+
+            ///////
+            /// calculate width of rect
+            if (dimensionTypeWidth == 1) {
+                // use width depending on the bounds
+                realRectSize.x = rectSize.x * (uniformBounds.z - uniformBounds.x); // p2.x - p1.x
+            }
+            else if (dimensionTypeWidth == 2) {
+                // use absolute width
+                realRectSize.x = rectSize.x * ratio.x;
+            }
+            else if (dimensionTypeWidth == 3) {
+                // use pixels
+                realRectSize.x = rectSize.x / uniformScreenSize.x * 2.0;
             }
 
-            if (dimensionType.w >= 1.0) {
-                if (dimensionType.w >= 2.0) {
-                    // use absolute width
-                    realRectSize.y = rectSize.y * ratioY;
-                }
-                else {
-                    // use height depending on the bounds
-                    realRectSize.y = rectSize.y * (uniformBounds.w - uniformBounds.y); // p2.y - p1.y
-                }
+            ///////
+            // calculate height of rect
+            if (dimensionTypeHeight == 1) {
+                // use height depending on the bounds
+                realRectSize.y = rectSize.y * (uniformBounds.w - uniformBounds.y); // p2.y - p1.y
             }
-
+            else if (dimensionTypeHeight == 2) {
+                // use absolute height
+                realRectSize.y = rectSize.y * ratio.y;
+            }
+            else if (dimensionTypeHeight == 3) {
+                // use pixels
+                realRectSize.y = rectSize.y / uniformScreenSize.y * 2.0;
+            }
+    
             /// step 2: calculate the position of the rect
             vec3 realRectPos = uniformTrafo * vec3(rectPos.xy, 1.0);
 
@@ -258,9 +269,9 @@ export class RectDrawer {
             // path other attributes to fragment shader
             o_color = colors;
             o_uv = texcoord;
-            o_rectSize = vec2(ratioY, ratioX);
+            o_rectSize = abs(vec2(realRectSize.x * uniformScreenSize.x, realRectSize.y * uniformScreenSize.y));
             o_borderRadius = borderRadius;
-            o_stripeWidth = stripeWidth;
+            o_stripeWidth = stripeWidth * 2.0;
         }`;
 
     private static fragmentShader = `

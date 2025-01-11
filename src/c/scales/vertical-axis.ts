@@ -1,22 +1,22 @@
-import { Alignment } from "../alignment";
-import type { Context } from "../context";
-import { GpuText } from "../gpu-text";
 import type { IWidthProvider } from "../layout/horizontal-item";
 import type { LayoutNode } from "../layout/layout-node";
+import type { Context } from "../context";
+import { Alignment } from "../alignment";
+import { GpuText } from "../gpu-text";
 import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
 import { Matrix3x3 } from "../matrix-3x3";
 import { AxisBase } from "./axis-base";
 
-export enum VerticalAxisPossition {
+export enum VerticalAxisPosition {
     Left,
     Right
 }
 
 export class VerticalAxis extends AxisBase implements IWidthProvider {
-    public possition: VerticalAxisPossition = VerticalAxisPossition.Left;
+    public position: VerticalAxisPosition = VerticalAxisPosition.Left;
 
-    public setPossition(possition: VerticalAxisPossition): VerticalAxis {
-        this.possition = possition;
+    public setPosition(position: VerticalAxisPosition): VerticalAxis {
+        this.position = position;
         return this;
     }
 
@@ -33,7 +33,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         let tickLabelShift: number;
 
         // draw axis border
-        if (this.possition === VerticalAxisPossition.Right) {
+        if (this.position === VerticalAxisPosition.Right) {
             context.drawLine(area.p0, area.p3, this.borderColor);
             align = Alignment.rightCenter;
             tickLabelShift = 0.6;
@@ -53,7 +53,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
 
         for (const tick of ticks) {
             const m = new Matrix3x3().translate(0, (this.scale.max - tick) * positionScaleing);
-            if (this.possition === VerticalAxisPossition.Right) {
+            if (this.position === VerticalAxisPosition.Right) {
                 context.drawLine(area.p0.transform(m), area.p0p1(0.1).transform(m), this.tickColor);
             }
             else {

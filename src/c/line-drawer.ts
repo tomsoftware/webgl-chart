@@ -9,7 +9,7 @@ export class LineDrawer {
     private lines = new GpuFloatBuffer(0, 2);
     private colors = new GpuFloatBuffer(0, 4);
 
-    /** this is a unique id to identyfy the shader programms */
+    /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-line-drawer';
 
     public draw(context: Context, trafo: Matrix3x3) {

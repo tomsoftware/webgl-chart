@@ -13,11 +13,11 @@ export class EventValue {
     public panDelta: Vector2 | null = null;
     public position: Vector2;
 
-    public get panDeletaX(): number {
+    public get panDeltaX(): number {
         return this.panDelta?.x ?? 0;
     }
 
-    public get panDeletaY(): number {
+    public get panDeltaY(): number {
         return this.panDelta?.y ?? 0;
     }
 

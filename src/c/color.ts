@@ -60,8 +60,9 @@ export class Color {
         );
     }
 
-    public static grayFromBytes(v: number) {
-        return new Color(v / 255, v / 255, v / 255, 1);
+    // returns a gray color from a given byte 0=black to 1=white
+    public static grayFromBytes(v: number, a = 1) {
+        return new Color(v / 255, v / 255, v / 255, a);
     }
 
     public static red = new Color(1, 0, 0, 1);

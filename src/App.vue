@@ -6,8 +6,8 @@ import { Series } from './c/series';
 import { GpuFloatBuffer } from './c/buffers/gpu-buffer-float';
 import { GpuText } from './c/gpu-text';
 import { LayoutCell } from './c/layout/layout-cell';
-import { VerticalAxis, VerticalAxisPossition } from './c/scales/vertical-axis';
-import { HorizontalAxis, HorizontalAxisPossition } from './c/scales/horizontal-axis';
+import { VerticalAxis, VerticalAxisPosition as VerticalAxisPosition } from './c/scales/vertical-axis';
+import { HorizontalAxis, HorizontalAxisPosition } from './c/scales/horizontal-axis';
 import { VerticalLayout } from './c/layout/vertical-layout';
 import { HorizontalLayout } from './c/layout/horizontal-layout';
 import { ScreenPosition } from './c/layout/screen-position';
@@ -54,17 +54,18 @@ watch(() => scaleXStart.value, (newValue) => {
 });
 */
 const annotations = new Annotations();
-annotations.addBox(5.5, 3, 9, -3, Color.purple, 1);
-annotations.addVerticalLine(1.5,  Color.red, 0.05)
-  .addLabel(new GpuText('hallo'), Color.cyan);
-annotations.addVerticalLine(7.5, Color.red, 0.05);
-annotations.addHorizontalLine(9, Color.red, 0.05)
+annotations.addBox(5.5, 3, 9, -3, Color.purple, 200);
+annotations.addVerticalLine(1.5,  Color.red, 10)
+  .addLabel(new GpuText('Hallo World'), Color.grayFromBytes(20, 0.5));
+annotations.addVerticalLine(7.5, Color.red);
+annotations.addHorizontalLine(9, Color.red, 10)
+  .addLabel(new GpuText('Hallo World'), Color.grayFromBytes(20), 0);
 
 
 // define axis
 const xAxis = new HorizontalAxis(new GpuText('X Axis'), scaleX)
   .setBorderColor(Color.darkGray)
-  .setPossition(HorizontalAxisPossition.Bottom)
+  .setPosition(HorizontalAxisPosition.Bottom)
   .setGridColor(Color.lightGray);
 
 const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1', Alignment.centerCenter, new Font('Arial', 20, Color.purple)).setRotation(90));
@@ -72,7 +73,7 @@ const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90), scaleY)
   .setBorderColor(Color.darkGray)
   .setGridColor(Color.lightGray);
 const yAxis3 = new VerticalAxis(new GpuText('Y right').setRotation(90))
-  .setPossition(VerticalAxisPossition.Right);
+  .setPosition(VerticalAxisPosition.Right);
 
 
 const headline = new GpuText('My new Chart');
@@ -84,7 +85,7 @@ const baseContainer = new LayoutCell();
 const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.FromPixel(10)));
 
 const headlineLayout = baseRow.addFixedCell([headline]);
-const legnedLayout = baseRow.addFixedCell([legend]);
+const legendLayout = baseRow.addFixedCell([legend]);
 const innerContainer = baseRow.addCell(1);
 
 // horizontal layout for y axis and chart-data
@@ -117,7 +118,7 @@ eventDispatcher.on(EventTypes.Wheel, columnChartCell, (event) => {
 });
 
 eventDispatcher.on(EventTypes.Pan, columnChartCell, (event, _layoutNode, area) => {
-  scaleX.pan(event.panDeletaX / area.width);
+  scaleX.pan(event.panDeltaX / area.width);
 });
 
 
@@ -126,7 +127,7 @@ eventDispatcher.on(EventTypes.Wheel, yAxis2Cell, (event) => {
 });
 
 eventDispatcher.on(EventTypes.Pan, yAxis2Cell, (event, _layoutNode, area) => {
-  scaleY.pan(- event.panDeletaY / area.height);
+  scaleY.pan(- event.panDeltaY / area.height);
 });
 
 
@@ -149,7 +150,7 @@ const data1 = new ChartConfig()
       ///const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95 + (context.time % 1000) * 0.001, 0);
 
       headline.draw(context, headlineLayout, Alignment.centerCenter, new Matrix3x3());
-      legend.draw(context, legnedLayout, Alignment.centerCenter, new Matrix3x3());
+      legend.draw(context, legendLayout, Alignment.centerCenter, new Matrix3x3());
 
       //text1.draw(context, new Matrix3x3().translate(0.5, 0.2));
       //text2.draw(context, new Matrix3x3().rotateDeg(rotation.value).translate(translation.value, 0.2));
@@ -165,8 +166,6 @@ const data1 = new ChartConfig()
 
       // flush lines and textes
       context.flush();
-
-      annotations.draw(context, scaleX, scaleY, chartCell);
 
       // draw the series
       if (showDots.value) {
@@ -193,7 +192,8 @@ const data1 = new ChartConfig()
       rec.draw(context, chartCell, context.projectionMatrix);
       */
 
-
+      // draw annotations
+      annotations.draw(context, scaleX, scaleY, chartCell);
   });
 
 function onBind(element: HTMLElement | null): void {

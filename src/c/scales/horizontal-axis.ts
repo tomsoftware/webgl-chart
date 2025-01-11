@@ -7,17 +7,17 @@ import { Matrix3x3 } from "../matrix-3x3";
 import { GpuText } from "../gpu-text";
 import { Alignment } from "../alignment";
 
-export enum HorizontalAxisPossition {
+export enum HorizontalAxisPosition {
     Top,
     Bottom
 }
 
 
 export class HorizontalAxis extends AxisBase implements IHeightProvider{
-    public possition: HorizontalAxisPossition = HorizontalAxisPossition.Bottom;
+    public position: HorizontalAxisPosition = HorizontalAxisPosition.Bottom;
 
-    public setPossition(possition: HorizontalAxisPossition): HorizontalAxis {
-        this.possition = possition;
+    public setPosition(position: HorizontalAxisPosition): HorizontalAxis {
+        this.position = position;
         return this;
     }
 
@@ -33,7 +33,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider{
         let align: Alignment;
 
         // draw axis border
-        if (this.possition === HorizontalAxisPossition.Bottom) {
+        if (this.position === HorizontalAxisPosition.Bottom) {
             context.drawLine(area.p0, area.p1, this.borderColor);
             align = Alignment.centerBottom;
         }
@@ -47,10 +47,10 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider{
         }
 
         const ticks = this.scale.calculateTicks();
-        const positionScaleing = area.width / this.scale.range;
+        const positionScaling = area.width / this.scale.range;
 
         for (const tick of ticks) {
-            const m = new Matrix3x3().translate((tick - this.scale.min) * positionScaleing, 0);
+            const m = new Matrix3x3().translate((tick - this.scale.min) * positionScaling, 0);
             context.drawLine(area.p0.transform(m), area.p0p3(0.1).transform(m), this.tickColor);
             const text = new GpuText(tick.toLocaleString());
             text.draw(context, axisLayout, Alignment.leftTop, m.translate(0, area.height * 0.5));

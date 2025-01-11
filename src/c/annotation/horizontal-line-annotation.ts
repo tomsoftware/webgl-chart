@@ -1,57 +1,57 @@
 import type { Color } from "../color";
 import type { Context } from "../context";
-import type { GpuText } from "../gpu-text";
 import type { CallbackHandler } from "./callback-handler";
 import { DimensionTypes, type RectDrawer } from "../rect-drawer";
 import { Vector2 } from "../vector-2";
+import type { GpuText } from "../gpu-text";
 
-export class VerticalLineAnnotation {
+export class HorizontalLineAnnotation {
     private rectDrawer: RectDrawer;
     private index: number;
     private drawCallback: CallbackHandler<Context>;
 
-    public get x() {
-        return this.rectDrawer.getRectPos(this.index).x;
+    public get y() {
+        return this.rectDrawer.getRectPos(this.index).y;
     }
 
     public get lineThickness() {
-        return this.rectDrawer.getRectSize(this.index).x;
+        return this.rectDrawer.getRectSize(this.index).y;
     }
 
     public constructor(
         drawCallback: CallbackHandler<Context>,
         rectDrawer: RectDrawer,
-        x: number, color: Color, stripeWidth: number, lineThickness: number
+        y: number, color: Color, stripeWidth: number, lineThickness: number
     ) {
         this.drawCallback = drawCallback;
         this.rectDrawer = rectDrawer;
 
         this.index = rectDrawer.addRect(
-            new Vector2(x, 0),
-            new Vector2(lineThickness, 1),
+            new Vector2(0, y),
+            new Vector2(1, lineThickness),
             color, 0,
-            0, stripeWidth,
+            stripeWidth, 0,
             [
-                DimensionTypes.UseTransformation, DimensionTypes.UseBounds,
-                DimensionTypes.UsePixel, DimensionTypes.UseBounds
+                DimensionTypes.UseBounds, DimensionTypes.UseTransformation,
+                DimensionTypes.UseBounds, DimensionTypes.UsePixel
             ]
         );
 
     }
 
     /** add a label to the annotation */
-    public addLabel(text: GpuText, color: Color, position = 1, padding = 10) {
+    public addLabel(text: GpuText, color: Color, position = 0, padding = 10) {
         this.drawCallback.then((context: Context) => {
             const w = text.getWidth(context).toPixel(context) + padding;
             const h = text.getHeight(context).toPixel(context) + padding;
 
             this.rectDrawer.addRect(
-                new Vector2(this.x, position),
+                new Vector2(position, this.y),
                 new Vector2(w, h),
                 color, 100,
                 0, 0,
                 [
-                    DimensionTypes.UseTransformation, DimensionTypes.UseBounds,
+                    DimensionTypes.UseBounds, DimensionTypes.UseTransformation,
                     DimensionTypes.UsePixel, DimensionTypes.UsePixel
                 ]
             );

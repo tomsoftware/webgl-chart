@@ -1,12 +1,12 @@
 import type { LayoutNode } from "./layout/layout-node";
 import type { Scale } from "./scales/scale";
+import type { Color } from "./color";
 import { Context } from "./context";
 import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { Matrix3x3 } from "./matrix-3x3";
 import { Vector4 } from "./vector-4";
 import { GpuNumber } from "./gpu-number";
 import { Vector2 } from "./vector-2";
-import type { Color } from "./color";
 
 export class Series {
     public color = new Vector4(1, 0, 0, 0.5);
@@ -17,7 +17,7 @@ export class Series {
     private pointSize: GpuNumber = new GpuNumber(2);
     private minMaxPointSizeCache: number[] = [];
   
-    /** this is a unique id to identyfy the shader programms */
+    /** this is a unique id to identifies this shader programs */
     private static IdPoint = 'gpu-series-point';
     private static IdLine = 'gpu-series-line';
 
@@ -136,7 +136,7 @@ export class Series {
 
         const s = Matrix3x3.translate(-scaleX.min, -scaleY.max).scale(chartArea.width / scaleX.range, -chartArea.height / scaleY.range);
         const p = context.projectionMatrix;
-        const l = chartArea.toMaxtrix();
+        const l = chartArea.toMatrix();
 
         const m = p.multiply(l.values).multiply(s.values);
 
@@ -175,7 +175,7 @@ export class Series {
   
         const s = Matrix3x3.translate(-scaleX.min, -scaleY.max).scale(chartArea.width / scaleX.range, -chartArea.height / scaleY.range);
         const p = context.projectionMatrix;
-        const l = chartArea.toMaxtrix();
+        const l = chartArea.toMatrix();
   
         // create and use shader program
         const program = context.useProgram(Series.IdLine, Series.vertexShaderLine, Series.fragmentShaderLine);

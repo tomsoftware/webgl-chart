@@ -23,14 +23,14 @@ export class LayoutArea {
         let y: number;
 
         if (alignment == null) {
-           return this.toMaxtrix();
+           return this.toMatrix();
         }
         else {
             x = alignment.alignX * this.width;
             y = alignment.alignY * this.height;
         }
         
-        return this.toMaxtrix().translate(x, y);
+        return this.toMatrix().translate(x, y);
     }
 
     /** return ture if the given point is in the area */
@@ -94,7 +94,7 @@ export class LayoutArea {
         );
     }
 
-    public toMaxtrix(): Matrix3x3 {
+    public toMatrix(): Matrix3x3 {
         return Matrix3x3.translate(this.left, this.top);
     }
 
