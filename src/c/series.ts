@@ -80,7 +80,7 @@ export class Series {
           gl_PointSize = uniformPointSize;
         }`;
 
-        private static fragmentShaderPoint = `
+      private static fragmentShaderPoint = `
           precision mediump float;
           uniform vec4 uniformColor;
 
@@ -89,7 +89,7 @@ export class Series {
           }
         `;
 
-        private static vertexShaderLine = `
+    private static vertexShaderLine = `
         attribute float x;
         attribute float y;
         uniform mat3 uniformTrafo;

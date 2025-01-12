@@ -40,7 +40,7 @@ export class VerticalLineAnnotation {
     }
 
     /** add a label to the annotation */
-    public addLabel(text: GpuText, color: Color, position = 1, padding = 10) {
+    public addLabel(text: GpuText, color: Color, position = 1, padding = 10, boxRadius = 70) {
         this.drawCallback.then((context: Context) => {
             const w = text.getWidth(context).toPixel(context) + padding;
             const h = text.getHeight(context).toPixel(context) + padding;
@@ -48,7 +48,7 @@ export class VerticalLineAnnotation {
             this.rectDrawer.addRect(
                 new Vector2(this.x, position),
                 new Vector2(w, h),
-                color, 100,
+                color, boxRadius,
                 0, 0,
                 [
                     DimensionTypes.UseTransformation, DimensionTypes.UseBounds,

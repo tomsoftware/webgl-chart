@@ -1,9 +1,10 @@
 import type { Color } from "../color";
 import type { Context } from "../context";
 import type { CallbackHandler } from "./callback-handler";
+import type { GpuText } from "../gpu-text";
 import { DimensionTypes, type RectDrawer } from "../rect-drawer";
 import { Vector2 } from "../vector-2";
-import type { GpuText } from "../gpu-text";
+
 
 export class HorizontalLineAnnotation {
     private rectDrawer: RectDrawer;
@@ -40,7 +41,7 @@ export class HorizontalLineAnnotation {
     }
 
     /** add a label to the annotation */
-    public addLabel(text: GpuText, color: Color, position = 0, padding = 10) {
+    public addLabel(text: GpuText, color: Color, position = 0, padding = 10, boxRadius = 70) {
         this.drawCallback.then((context: Context) => {
             const w = text.getWidth(context).toPixel(context) + padding;
             const h = text.getHeight(context).toPixel(context) + padding;
@@ -48,7 +49,7 @@ export class HorizontalLineAnnotation {
             this.rectDrawer.addRect(
                 new Vector2(position, this.y),
                 new Vector2(w, h),
-                color, 100,
+                color, boxRadius,
                 0, 0,
                 [
                     DimensionTypes.UseBounds, DimensionTypes.UseTransformation,

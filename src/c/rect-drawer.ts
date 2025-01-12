@@ -177,6 +177,8 @@ export class RectDrawer {
     // https://stackoverflow.com/questions/68233304/how-to-create-a-proper-rounded-rectangle-in-webgl
 
     private static vertexShader = `
+        precision mediump float;
+
         uniform mat3 uniformTrafo;
          // left-top-right-bottom bounds of the layout element we are drawing to
         uniform vec4 uniformBounds;
@@ -201,6 +203,8 @@ export class RectDrawer {
         varying vec2 o_rectSize;
         varying vec2 o_stripeWidth;
         varying float o_borderRadius;
+        /* position of the vertex in screen */
+        varying vec2 o_position;
 
         vec2 uniformLineThickness = vec2(0.002, 0.005);
 
@@ -272,10 +276,13 @@ export class RectDrawer {
             o_rectSize = abs(vec2(realRectSize.x * uniformScreenSize.x, realRectSize.y * uniformScreenSize.y));
             o_borderRadius = borderRadius;
             o_stripeWidth = stripeWidth * 2.0;
+            o_position = transformed.xy;
         }`;
 
     private static fragmentShader = `
         precision mediump float;
+
+        uniform vec4 uniformBounds; // left-top-right-bottom bounds of the chart
 
         // Passed in from the vertex shader.
         varying vec4 o_color;
@@ -283,18 +290,23 @@ export class RectDrawer {
         varying vec2 o_rectSize;
         varying vec2 o_stripeWidth;
         varying float o_borderRadius;
+        varying vec2 o_position;
 
         void main() {
-            vec2 stripe = mod(o_uv * o_rectSize / o_stripeWidth, 2.0);
-            if ((stripe.x < 1.0) || (stripe.y < 1.0)) {
-                discard;
-            }
+          if (o_position.x < uniformBounds.x || o_position.x > uniformBounds.z || o_position.y > uniformBounds.y || o_position.y < uniformBounds.w) {
+            discard;
+          }
 
-            if (length(max(abs(o_uv * o_rectSize) - o_rectSize + o_borderRadius, 0.0)) > o_borderRadius) {
-                discard;
-            }
+          vec2 stripe = mod(o_uv * o_rectSize / o_stripeWidth, 2.0);
+          if ((stripe.x < 1.0) || (stripe.y < 1.0)) {
+              discard;
+          }
 
-            gl_FragColor = o_color;
+          if (length(max(abs(o_uv * o_rectSize) - o_rectSize + o_borderRadius, 0.0)) > o_borderRadius) {
+              discard;
+          }
+
+          gl_FragColor = o_color;
         }
     `;
 }
