@@ -23,12 +23,14 @@ export class Annotations {
         this.rectDrawer.addRect2(
             new Vector2(x1, y1),
             new Vector2(w, h),
-            color, radius,
-            0, 0,
             [
                 DimensionTypes.UseTransformation, DimensionTypes.UseTransformation,
                 DimensionTypes.UseTransformation, DimensionTypes.UseTransformation
-            ]
+            ],
+            color,
+            Vector2.zero,
+            0, 0,
+            radius
         );
     }
 

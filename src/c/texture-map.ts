@@ -9,7 +9,7 @@ class TextureSlot {
     private currentX: number = 0;
     // y pos of the slot
     private y: number;
-    // max lenght of the slot
+    // max length of the slot
     private width: number;
     // height of the slot
     private height: number;

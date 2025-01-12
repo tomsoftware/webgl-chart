@@ -8,6 +8,7 @@ import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { GpuShortBuffer } from "./buffers/gpu-buffer-short";
 import { GpuByteBuffer } from "./buffers/gpu-buffer-byte";
 import { TextureMap } from "./texture-map";
+import type { TextureMapItem } from "./texture-map-item";
 
 /** defines how to calculate the vertex position in the shader */
 export enum DimensionTypes {
@@ -23,24 +24,27 @@ export enum DimensionTypes {
 
 export type DimensionsType = [DimensionTypes, DimensionTypes, DimensionTypes, DimensionTypes];
 
-/** Draw a batch of rectangle */
+/** Draw a batch of rectangles */
 export class RectDrawer {
     /** center position (x, y) of the rectangle */
     private rectPos = new GpuFloatBuffer(0, 2);
     /** width and height of the rectangle */
     private rectSize = new GpuFloatBuffer(0, 2);
-
+    /** padding / offset in pixel that is added to vertex position */
+    private margin = new GpuFloatBuffer(0, 2);
     /** flag to show if coordinates or rectSize parameter are absolute or relative values */
     private dimensionType = new GpuByteBuffer(0, 4);
 
     private colors = new GpuFloatBuffer(0, 4);
-    private texcoordLocation = new GpuFloatBuffer(0, 2);
+    private vertexOffset = new GpuFloatBuffer(0, 2);
     private stripeWidth = new GpuFloatBuffer(0, 2);
     private borderRadius = new GpuFloatBuffer(0, 1);
     private indexBuffer = new GpuShortBuffer(0, 1);
     private bbox = new Vector4(0, 0, 1, 1);
+    private texcoordLocation = new GpuFloatBuffer(0, 2);
 
-    private textureMap = new TextureMap();
+    /** texture-map to store textures to map to the rectangles */
+    public textureMap = new TextureMap();
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-rect-drawer';
@@ -64,15 +68,27 @@ export class RectDrawer {
         // create and use shader program
         const program = context.useProgram(RectDrawer.Id, RectDrawer.vertexShader, RectDrawer.fragmentShader);
 
+        const textureId = this.textureMap.bind(context);
+        if (textureId == null) {
+            console.error('TextureMapDrawer.draw: Unable to bind texture!');
+            return;
+        }
+
         // bind data buffer to attribute
         context.setArrayBuffer(program, 'rectPos', this.rectPos);
         context.setArrayBuffer(program, 'rectSize', this.rectSize);
         context.setArrayBuffer(program, 'dimensionType', this.dimensionType);
         context.setArrayBuffer(program, 'colors', this.colors);
-        context.setArrayBuffer(program, 'texcoord', this.texcoordLocation);
+        context.setArrayBuffer(program, 'vertexOffset', this.vertexOffset);
         context.setArrayBuffer(program, 'borderRadius', this.borderRadius);
+        context.setArrayBuffer(program, 'margin', this.margin);
         context.setArrayBuffer(program, 'stripeWidth', this.stripeWidth);
+        context.setArrayBuffer(program, 'texcoordLocation', this.texcoordLocation);
 
+        // set texture
+        context.setUniform(program, 'uniformTexture', this.textureMap);
+
+        // set element buffer
         context.setElementBuffer(this.indexBuffer);
 
         // set uniforms
@@ -91,68 +107,104 @@ export class RectDrawer {
     }
 
     public addRect2(
-        pos: Vector2, size: Vector2,
+        pos: Vector2,
+        size: Vector2,
+        dimensionType: DimensionsType = [0, 0, 0, 0],
         color1: Color, 
-        borderRadius: number, 
+        margin: Vector2 = Vector2.zero,
         stripeWidthX: number = 0, stripeWidthY: number = 0,
-        dimensionType: DimensionsType = [0, 0, 0, 0]
+        borderRadius: number,
     ): number {
         return this.addRect(
             pos.add(size.scale(0.5)),
             size,
+            dimensionType,
             color1,
-            borderRadius,
+            margin,
             stripeWidthX, stripeWidthY,
-            dimensionType
+            borderRadius,
         );
     }
 
     public addRect(
-        centerPos: Vector2, size: Vector2,
+        centerPos: Vector2,
+        size: Vector2,
+        dimensionType: DimensionsType = [0, 0, 0, 0],
         color1: Color,
-        borderRadius: number,
+        margin: Vector2 = Vector2.zero,
         stripeWidthX: number = 0, stripeWidthY: number = 0,
-        dimensionType: DimensionsType = [0, 0, 0, 0]
+        borderRadius: number = 0,
+        textureInfo: TextureMapItem | null = null
     ): number {
+
         borderRadius = borderRadius * 0.5;
+
+        let t1, t2, t3, t4: Vector2;
+
+        if (textureInfo != null) {
+            const relW = textureInfo.relativeWidth;
+            const relH = textureInfo.relativeHeight;
+    
+            // switch y axis to not get text upside down
+            t4 = new Vector2(textureInfo.relativeX, textureInfo.relativeY);
+            t3 = new Vector2(textureInfo.relativeX + relW, textureInfo.relativeY);
+            t2 = new Vector2(textureInfo.relativeX + relW, textureInfo.relativeY + relH);
+            t1 = new Vector2(textureInfo.relativeX, textureInfo.relativeY + relH);
+        }
+        else {
+            // not defined
+            t1 = new Vector2(-1, -1);
+            t2 = new Vector2(-1, -1);
+            t3 = new Vector2(-1, -1);
+            t4 = new Vector2(-1, -1);
+        }
 
         const indexOffset = this.rectPos.count;
 
         // vertex 1
         this.rectPos.push(centerPos.x, centerPos.y);
         this.colors.pushRange(color1.toArray());
-        this.texcoordLocation.push(-1, -1);
+        this.vertexOffset.push(-1, -1);
         this.rectSize.pushRange(size.values);
+        this.margin.pushRange(margin.values);
         this.borderRadius.push(borderRadius);
         this.stripeWidth.push(stripeWidthX, stripeWidthY);
         this.dimensionType.pushRange(dimensionType);
-    
+        this.texcoordLocation.pushRange(t1.values);
+
         // vertex 2
         this.rectPos.push(centerPos.x, centerPos.y);
         this.colors.pushRange(color1.toArray());
-        this.texcoordLocation.push(1, -1);
+        this.vertexOffset.push(1, -1);
         this.rectSize.pushRange(size.values);
+        this.margin.pushRange(margin.values);
         this.borderRadius.push(borderRadius);
         this.stripeWidth.push(stripeWidthX, stripeWidthY);
         this.dimensionType.pushRange(dimensionType);
+        this.texcoordLocation.pushRange(t2.values);
 
         // vertex 3
         this.rectPos.push(centerPos.x, centerPos.y);
         this.colors.pushRange(color1.toArray());
-        this.texcoordLocation.push(1, 1);
+        this.vertexOffset.push(1, 1);
         this.rectSize.pushRange(size.values);
+        this.margin.pushRange(margin.values);
         this.borderRadius.push(borderRadius);
         this.stripeWidth.push(stripeWidthX, stripeWidthY);
         this.dimensionType.pushRange(dimensionType);
+        this.texcoordLocation.pushRange(t3.values);
 
         // vertex 4
         this.rectPos.push(centerPos.x, centerPos.y);
         this.colors.pushRange(color1.toArray());
-        this.texcoordLocation.push(-1, 1);
+        this.vertexOffset.push(-1, 1);
         this.rectSize.pushRange(size.values);
+        this.margin.pushRange(margin.values);
         this.borderRadius.push(borderRadius);
         this.stripeWidth.push(stripeWidthX, stripeWidthY);
         this.dimensionType.pushRange(dimensionType);
+        this.texcoordLocation.pushRange(t4.values);
+
 
         // triangle 1
         this.indexBuffer.push(indexOffset + 0, indexOffset + 1, indexOffset + 2);
@@ -169,12 +221,14 @@ export class RectDrawer {
     public clear() {
         this.rectPos.clear();
         this.colors.clear();
-        this.texcoordLocation.clear();
+        this.vertexOffset.clear();
         this.rectSize.clear();
         this.borderRadius.clear();
         this.stripeWidth.clear();
         this.indexBuffer.clear();
         this.dimensionType.clear();
+        this.texcoordLocation.clear();
+        this.margin.clear();
     }
 
     // https://stackoverflow.com/questions/68233304/how-to-create-a-proper-rounded-rectangle-in-webgl
@@ -194,20 +248,25 @@ export class RectDrawer {
         // defines if the pos and size are absolute or relative: x, y, width, height
         attribute vec4 dimensionType;
         // indicates the position of this vertex in the rect
-        attribute vec2 texcoord;
+        attribute vec2 vertexOffset;
 
         attribute vec4 colors;
-
+        /* additional padding in pixel */
+        attribute vec2 margin;
         attribute vec2 stripeWidth;
         attribute float borderRadius;
+        /* position of the texture */
+        attribute vec2 texcoordLocation;
 
         varying vec4 o_color;
-        varying vec2 o_uv;
+        varying vec2 o_vertexOffset;
         varying vec2 o_rectSize;
         varying vec2 o_stripeWidth;
         varying float o_borderRadius;
         /* position of the vertex in screen */
         varying vec2 o_position;
+        /* position of the texture */
+        varying vec2 o_texcoordLocation;
 
         vec2 uniformLineThickness = vec2(0.002, 0.005);
 
@@ -266,20 +325,22 @@ export class RectDrawer {
 
             /// step 3: calculate the position of the vertex depending on texture coordinates
 
+            vec2 realMargin = margin / uniformScreenSize;
             vec2 transformed = vec2(
-                realRectPos.x + (realRectSize.x * texcoord.x * 0.5),
-                realRectPos.y + (realRectSize.y * texcoord.y * 0.5)
+                realRectPos.x + (realRectSize.x * vertexOffset.x * 0.5) + realMargin.x,
+                realRectPos.y + (realRectSize.y * vertexOffset.y * 0.5) + realMargin.y
             );
 
             gl_Position = vec4(transformed.xy, 0.0, 1.0);
 
             // path other attributes to fragment shader
             o_color = colors;
-            o_uv = texcoord;
+            o_vertexOffset = vertexOffset;
             o_rectSize = abs(vec2(realRectSize.x * uniformScreenSize.x, realRectSize.y * uniformScreenSize.y));
             o_borderRadius = borderRadius;
             o_stripeWidth = stripeWidth * 2.0;
             o_position = transformed.xy;
+            o_texcoordLocation = texcoordLocation;
         }`;
 
     private static fragmentShader = `
@@ -290,27 +351,34 @@ export class RectDrawer {
 
         // Passed in from the vertex shader.
         varying vec4 o_color;
-        varying vec2 o_uv;
+        varying vec2 o_vertexOffset;
         varying vec2 o_rectSize;
         varying vec2 o_stripeWidth;
         varying float o_borderRadius;
         varying vec2 o_position;
+        varying vec2 o_texcoordLocation;
+
+        // texture
+        uniform sampler2D uniformTexture;
 
         void main() {
+          /* cropping to layout element */
           if (o_position.x < uniformBounds.x || o_position.x > uniformBounds.z || o_position.y > uniformBounds.y || o_position.y < uniformBounds.w) {
             discard;
           }
 
-          vec2 stripe = mod(o_uv * o_rectSize / o_stripeWidth, 2.0);
+          /* dashed line */
+          vec2 stripe = mod(o_vertexOffset * o_rectSize / o_stripeWidth, 2.0);
           if ((stripe.x < 1.0) || (stripe.y < 1.0)) {
               discard;
           }
 
-          if (length(max(abs(o_uv * o_rectSize) - o_rectSize + o_borderRadius, 0.0)) > o_borderRadius) {
+          /* rounded edges */
+          if (length(max(abs(o_vertexOffset * o_rectSize) - o_rectSize + o_borderRadius, 0.0)) > o_borderRadius) {
               discard;
           }
 
-          gl_FragColor = o_color;
+          gl_FragColor = (o_texcoordLocation.y < 0.0) ? o_color : texture2D(uniformTexture, o_texcoordLocation);
         }
     `;
 }

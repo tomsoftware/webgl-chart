@@ -10,7 +10,7 @@ export class Vector2 implements IUniformValue{
         this.y = y ?? 0;
     }
 
-    /** transformes a given 2d-vector with this matrix */
+    /** transforms a given 2d-vector with this matrix */
     public transform(tansformation: Matrix3x3): Vector2 {
 
         const m = tansformation.values;
@@ -50,4 +50,7 @@ export class Vector2 implements IUniformValue{
     public bindUniform(gl: WebGLRenderingContext, variableLoc: WebGLUniformLocation): void {
         gl.uniform2fv(variableLoc, this.values);
     }
+
+    /** Zero Vector */
+    public static readonly zero = new Vector2(0, 0);
 }

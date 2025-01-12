@@ -94,7 +94,7 @@ export class TextureMapDrawer {
         // Passed in from the vertex shader.
         varying vec2 v_texcoord;
 
-        // The texture.
+        // texture
         uniform sampler2D uniformTexture;
 
         void main() {
