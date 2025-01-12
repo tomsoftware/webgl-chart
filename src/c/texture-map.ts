@@ -2,7 +2,7 @@ import type { Context } from "./context";
 import type { GpuTexture } from "./gpu-texture";
 import type { TextureGenerator } from "./texture-generator";
 import { TextureMapItem } from "./texture-map-item";
-import type { IUniformValue } from "./unniform";
+import type { IUniformValue } from "./uniform";
 
 class TextureSlot {
     // current fill state of the slot
@@ -51,7 +51,7 @@ class TextureSlot {
     }
 }
 
-/** Handels a Texure map in that many small textures can be saved */
+/** Handles a Texture map in that many small textures can be saved */
 export class TextureMap implements IUniformValue {
     private textures = new Map<string, TextureMapItem>();
     private buffer: Uint32Array;

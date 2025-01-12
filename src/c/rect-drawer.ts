@@ -7,6 +7,7 @@ import { Vector2 } from "./vector-2";
 import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { GpuShortBuffer } from "./buffers/gpu-buffer-short";
 import { GpuByteBuffer } from "./buffers/gpu-buffer-byte";
+import { TextureMap } from "./texture-map";
 
 /** defines how to calculate the vertex position in the shader */
 export enum DimensionTypes {
@@ -38,6 +39,8 @@ export class RectDrawer {
     private borderRadius = new GpuFloatBuffer(0, 1);
     private indexBuffer = new GpuShortBuffer(0, 1);
     private bbox = new Vector4(0, 0, 1, 1);
+
+    private textureMap = new TextureMap();
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-rect-drawer';
@@ -282,7 +285,8 @@ export class RectDrawer {
     private static fragmentShader = `
         precision mediump float;
 
-        uniform vec4 uniformBounds; // left-top-right-bottom bounds of the chart
+        // left-top-right-bottom bounds of the layout element we are drawing to
+        uniform vec4 uniformBounds;
 
         // Passed in from the vertex shader.
         varying vec4 o_color;

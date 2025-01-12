@@ -1,4 +1,4 @@
-import type { IUniformValue } from "./unniform";
+import type { IUniformValue } from "./uniform";
 
 export class GpuNumber implements IUniformValue {
     private value: number;

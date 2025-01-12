@@ -1,5 +1,5 @@
 import type { Matrix3x3 } from "./matrix-3x3";
-import type { IUniformValue } from "./unniform";
+import type { IUniformValue } from "./uniform";
 
 export class Vector2 implements IUniformValue{
     public x: number;

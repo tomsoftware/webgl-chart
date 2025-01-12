@@ -1,4 +1,4 @@
-import type { IUniformValue } from "./unniform";
+import type { IUniformValue } from "./uniform";
 
 export class Vector4 implements IUniformValue {
     public values: Float32Array;

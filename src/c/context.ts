@@ -1,10 +1,10 @@
 import type { Color } from "./color";
 import type { TextureGenerator } from "./texture-generator";
-import type { IUniformValue } from "./unniform";
-import { Vector2 } from "./vector-2";
+import type { IUniformValue } from "./uniform";
 import type { LayoutNode } from "./layout/layout-node";
+import type { GpuBuffer } from "./buffers/gpu-buffer";
+import { Vector2 } from "./vector-2";
 import { Canvas2d } from "./canvas-2d";
-import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { GlBufferTypes, GpuBufferState } from "./buffers/gpu-buffer-state";
 import { GpuProgram } from "./gpu-program";
 import { TextureMapDrawer } from "./gpu-texture-map-drawer";
@@ -14,12 +14,11 @@ import { LineDrawer } from "./line-drawer";
 import { Matrix3x3 } from "./matrix-3x3";
 import { TextureMap } from "./texture-map";
 import { TextureMapItem } from "./texture-map-item";
-import type { GpuBuffer } from "./buffers/gpu-buffer";
 
-/** The context provides functions and data used for one draw interation */
+/** The context provides functions and data used for one draw iteration */
 export class Context {
     public gl!: WebGLRenderingContext;
-    public programes = new Map<string, GpuProgram>();
+    public programs = new Map<string, GpuProgram>();
     public buffers = new Map<GpuBuffer, GpuBufferState>();
     private textureDrawer = new TextureMapDrawer(new TextureMap());
     private lineDrawer = new LineDrawer();
@@ -40,13 +39,13 @@ export class Context {
 
     /** 
      * provides a offscreen canvas context in 2d that can be used
-     * for temporaly generating of textures
+     *  for temporal generating of textures
      **/
     public get canvas2d() {
         return this.offscreenCanvas2d;
     }
 
-    /** reset the context for a new rendering interation */
+    /** reset the context for a new rendering iteration */
     public init(time: number, width: number, height: number, devicePixelRatio: number, gl: WebGLRenderingContext): Context {
         this.gl = gl;
         this.time = time;
@@ -64,7 +63,7 @@ export class Context {
     }
 
     public dispose() {
-        for (const program of this.programes.values()) {
+        for (const program of this.programs.values()) {
             program.dispose();
         }
 
@@ -72,7 +71,7 @@ export class Context {
             buffer.dispose(this.gl);
         }
 
-        this.programes.clear();
+        this.programs.clear();
         this.buffers.clear();
 
         this.textureDrawer.dispose(this.gl);
@@ -211,14 +210,14 @@ export class Context {
             throw new Error('Context.useProgram: gl is null');
         }
 
-        let program = this.programes.get(id);
+        let program = this.programs.get(id);
         if (program == null) {
             program = new GpuProgram(gl);
             program.addVertexShader(vertexShader);
             program.addFragmentShader(fragmentShader);
             program.link();
 
-            this.programes.set(id, program);
+            this.programs.set(id, program);
         }
 
         program.use();
