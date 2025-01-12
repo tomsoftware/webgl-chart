@@ -22,6 +22,8 @@ import { EventTypes } from './c/event-handler/event-value';
 import { RectDrawer } from './c/rect-drawer';
 import { ref } from 'vue';
 import { Annotations } from './c/annotation/annotations';
+import { VerticalPosition } from './c/annotation/vertical-line-annotation';
+import { HorizontalPosition } from './c/annotation/horizontal-line-annotation';
 
 const eventDispatcher = new EventDispatcher();
 const showLines = ref<boolean>(true);
@@ -56,10 +58,10 @@ watch(() => scaleXStart.value, (newValue) => {
 const annotations = new Annotations();
 annotations.addBox(5.5, 3, 9, -3, Color.purple, 200);
 annotations.addVerticalLine(1.5,  Color.red, 10)
-  .addLabel(new GpuText('Hallo World'), Color.grayFromBytes(20, 0.5));
+  .addLabel(new GpuText('Hallo World'), Color.grayFromBytes(20, 0.5), VerticalPosition.Bottom);
 annotations.addVerticalLine(7.5, Color.red);
 annotations.addHorizontalLine(9, Color.red, 10)
-  .addLabel(new GpuText('Hallo World'), Color.grayFromBytes(20), 0);
+  .addLabel(new GpuText('Hallo World'), Color.grayFromBytes(20), HorizontalPosition.Right);
 
 
 // define axis
