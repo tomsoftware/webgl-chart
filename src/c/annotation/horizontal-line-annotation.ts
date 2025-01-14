@@ -1,7 +1,7 @@
 import type { Color } from "../color";
 import type { Context } from "../context";
 import type { CallbackHandler } from "./callback-handler";
-import type { GpuText } from "../gpu-text";
+import type { GpuText } from "../texture/gpu-text";
 import { DimensionTypes, type RectDrawer } from "../rect-drawer";
 import { Vector2 } from "../vector-2";
 
@@ -99,7 +99,7 @@ export class HorizontalLineAnnotation {
                     DimensionTypes.UseBounds, DimensionTypes.UseTransformation,
                     DimensionTypes.UsePixel, DimensionTypes.UsePixel
                 ],
-                color,
+                text.getFont().color,
                 new Vector2(margin + padding, 0),
                 0, 0,
                 0,

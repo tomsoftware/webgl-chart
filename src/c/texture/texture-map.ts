@@ -1,8 +1,8 @@
-import type { Context } from "./context";
+import type { Context } from "../context";
 import type { GpuTexture } from "./gpu-texture";
 import type { TextureGenerator } from "./texture-generator";
 import { TextureMapItem } from "./texture-map-item";
-import type { IUniformValue } from "./uniform";
+import type { IUniformValue } from "../uniform";
 
 class TextureSlot {
     // current fill state of the slot
@@ -92,12 +92,16 @@ export class TextureMap implements IUniformValue {
         }
 
         gl.bindTexture(gl.TEXTURE_2D, this.textureId);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
 
         if (this.gpuTextureIsDirty) {
             this.updateTexture(gl);
             this.gpuTextureIsDirty = false;
         }
 
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        
        return this.textureId;
     }
 

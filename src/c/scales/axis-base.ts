@@ -1,5 +1,5 @@
 import { Scale } from "./scale";
-import type { GpuText } from "../gpu-text";
+import type { GpuText } from "../texture/gpu-text";
 import { Color } from "../color";
 
 export class AxisBase {

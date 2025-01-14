@@ -4,7 +4,7 @@ import type { LayoutNode } from "../layout/layout-node";
 import { ScreenPosition, ScreenUnit } from "../layout/screen-position";
 import { AxisBase } from "./axis-base";
 import { Matrix3x3 } from "../matrix-3x3";
-import { GpuText } from "../gpu-text";
+import { GpuText } from "../texture/gpu-text";
 import { Alignment } from "../alignment";
 
 export enum HorizontalAxisPosition {

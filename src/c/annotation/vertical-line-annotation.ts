@@ -1,6 +1,6 @@
 import type { Color } from "../color";
 import type { Context } from "../context";
-import type { GpuText } from "../gpu-text";
+import type { GpuText } from "../texture/gpu-text";
 import type { CallbackHandler } from "./callback-handler";
 import { DimensionTypes, type RectDrawer } from "../rect-drawer";
 import { Vector2 } from "../vector-2";
@@ -101,7 +101,7 @@ export class VerticalLineAnnotation {
                     DimensionTypes.UseTransformation, DimensionTypes.UseBounds,
                     DimensionTypes.UsePixel, DimensionTypes.UsePixel
                 ],
-                color,
+                text.getFont().color,
                 new Vector2(0, margin + padding),
                 0, 0,
                 0,

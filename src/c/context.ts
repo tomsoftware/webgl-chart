@@ -1,5 +1,5 @@
 import type { Color } from "./color";
-import type { TextureGenerator } from "./texture-generator";
+import type { TextureGenerator } from "./texture/texture-generator";
 import type { IUniformValue } from "./uniform";
 import type { LayoutNode } from "./layout/layout-node";
 import type { GpuBuffer } from "./buffers/gpu-buffer";
@@ -7,13 +7,13 @@ import { Vector2 } from "./vector-2";
 import { Canvas2d } from "./canvas-2d";
 import { GlBufferTypes, GpuBufferState } from "./buffers/gpu-buffer-state";
 import { GpuProgram } from "./gpu-program";
-import { TextureMapDrawer } from "./gpu-texture-map-drawer";
+import { TextureMapDrawer } from "./texture/gpu-texture-map-drawer";
 import { LayoutArea } from "./layout/layout-area";
 import { LayoutStore } from "./layout/layout-cache";
 import { LineDrawer } from "./line-drawer";
 import { Matrix3x3 } from "./matrix-3x3";
-import { TextureMap } from "./texture-map";
-import { TextureMapItem } from "./texture-map-item";
+import { TextureMap } from "./texture/texture-map";
+import { TextureMapItem } from "./texture/texture-map-item";
 
 /** The context provides functions and data used for one draw iteration */
 export class Context {

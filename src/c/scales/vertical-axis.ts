@@ -2,7 +2,7 @@ import type { IWidthProvider } from "../layout/horizontal-item";
 import type { LayoutNode } from "../layout/layout-node";
 import type { Context } from "../context";
 import { Alignment } from "../alignment";
-import { GpuText } from "../gpu-text";
+import { GpuText } from "../texture/gpu-text";
 import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
 import { Matrix3x3 } from "../matrix-3x3";
 import { AxisBase } from "./axis-base";

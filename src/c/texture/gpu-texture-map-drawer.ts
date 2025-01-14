@@ -1,10 +1,10 @@
 import type { TextureGenerator } from "./texture-generator";
-import { Context } from "./context";
-import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
-import { Matrix3x3 } from "./matrix-3x3";
+import { Context } from "../context";
+import { GpuFloatBuffer } from "../buffers/gpu-buffer-float";
+import { Matrix3x3 } from "../matrix-3x3";
 import { TextureMap } from "./texture-map";
 import { TextureMapItem } from "./texture-map-item";
-import { Vector2 } from "./vector-2";
+import { Vector2 } from "../vector-2";
 
 export class TextureMapDrawer {
     private positionLocation = new GpuFloatBuffer(0, 2);
@@ -98,7 +98,7 @@ export class TextureMapDrawer {
         uniform sampler2D uniformTexture;
 
         void main() {
-            gl_FragColor = texture2D(uniformTexture, v_texcoord);
+            gl_FragColor = texture2D(uniformTexture, v_texcoord)* vec4(1.0, 0.0, 0.0, 1.0);
             // gl_FragColor = vec4(1,0,0,1);
         }
         `;

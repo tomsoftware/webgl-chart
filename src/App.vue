@@ -4,7 +4,7 @@ import { ChartConfig } from './components/chart-config'
 import { Matrix3x3 } from './c/matrix-3x3';
 import { Series } from './c/series';
 import { GpuFloatBuffer } from './c/buffers/gpu-buffer-float';
-import { GpuText } from './c/gpu-text';
+import { GpuText } from './c/texture/gpu-text';
 import { LayoutCell } from './c/layout/layout-cell';
 import { VerticalAxis, VerticalAxisPosition as VerticalAxisPosition } from './c/scales/vertical-axis';
 import { HorizontalAxis, HorizontalAxisPosition } from './c/scales/horizontal-axis';
@@ -14,7 +14,7 @@ import { ScreenPosition } from './c/layout/screen-position';
 import { IntersectedLayout } from './c/layout/intersected-layout';
 import { LayoutBorder } from './c/layout-border';
 import { Color } from './c/color';
-import { Font } from './c/font';
+import { Font } from './c/texture/font';
 import { Alignment } from './c/alignment';
 import { Scale } from './c/scales/scale';
 import { EventDispatcher } from './c/event-handler/event-handler';
@@ -58,10 +58,14 @@ watch(() => scaleXStart.value, (newValue) => {
 const annotations = new Annotations();
 annotations.addBox(5.5, 3, 9, -3, Color.purple, 200);
 annotations.addVerticalLine(1.5,  Color.red, 10)
-  .addLabel(new GpuText('Hallo World'), Color.grayFromBytes(20, 0.5), VerticalPosition.Bottom);
+  .addLabel(
+    new GpuText('Hallo World').setFont(new Font().setColor(Color.white)),
+    Color.grayFromBytes(20, 0.7), VerticalPosition.Bottom);
 annotations.addVerticalLine(7.5, Color.red);
 annotations.addHorizontalLine(9, Color.red, 10)
-  .addLabel(new GpuText('Hallo World'), Color.grayFromBytes(20), HorizontalPosition.Right);
+  .addLabel(
+    new GpuText('Hallo World').setFont(new Font().setColor(Color.white)),
+    Color.grayFromBytes(20, 0.7), HorizontalPosition.Right);
 
 
 // define axis

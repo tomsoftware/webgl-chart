@@ -1,14 +1,14 @@
-import type { Context } from "./context";
-import type { IHeightProvider } from "./layout/vertical-item";
+import type { Context } from "../context";
+import type { IHeightProvider } from "../layout/vertical-item";
 import type { TextureGenerator } from "./texture-generator";
-import type { IWidthProvider } from "./layout/horizontal-item";
-import type { LayoutNode } from "./layout/layout-node";
+import type { IWidthProvider } from "../layout/horizontal-item";
+import type { LayoutNode } from "../layout/layout-node";
 import { Font } from "./font";
 import { GpuTexture } from "./gpu-texture";
-import { Matrix3x3 } from "./matrix-3x3";
-import { ScreenUnit, ScreenPosition } from "./layout/screen-position";
-import { Alignment } from "./alignment";
-import { Vector2 } from "./vector-2";
+import { Matrix3x3 } from "../matrix-3x3";
+import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
+import { Alignment } from "../alignment";
+import { Vector2 } from "../vector-2";
 
 class TextBoundingBox {
     public left: number;
@@ -67,6 +67,10 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
         return this;
     }
 
+    public getFont(): Font {
+        return this.font;
+    }
+
     public setRotation(deg: number): GpuText {
         this.rotationDeg = deg;
         return this;
@@ -119,7 +123,7 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
             throw new Error('unable to get 2d context');
         }
 
-        ctx.font = this.font.getFont(canvas.devicePixelRatio);
+        ctx.font = this.font.getCssFont(canvas.devicePixelRatio);
         ctx.fillStyle = this.font.fillStyle;
 
         return this.textMetrics = new TextBoundingBox(ctx.measureText(this.text));
@@ -139,8 +143,8 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
             return null;
         }
 
-        ctx.font = this.font.getFont(canvas.devicePixelRatio);
-        ctx.fillStyle = this.font.fillStyle;
+        ctx.font = this.font.getCssFont(canvas.devicePixelRatio);
+        ctx.fillStyle = 'white'; // this.font.fillStyle;
 
         let textMetrics = this.textMetrics;
         if (textMetrics == null) {

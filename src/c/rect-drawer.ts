@@ -7,8 +7,8 @@ import { Vector2 } from "./vector-2";
 import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { GpuShortBuffer } from "./buffers/gpu-buffer-short";
 import { GpuByteBuffer } from "./buffers/gpu-buffer-byte";
-import { TextureMap } from "./texture-map";
-import type { TextureMapItem } from "./texture-map-item";
+import { TextureMap } from "./texture/texture-map";
+import type { TextureMapItem } from "./texture/texture-map-item";
 
 /** defines how to calculate the vertex position in the shader */
 export enum DimensionTypes {
@@ -378,7 +378,7 @@ export class RectDrawer {
               discard;
           }
 
-          gl_FragColor = (o_texcoordLocation.y < 0.0) ? o_color : texture2D(uniformTexture, o_texcoordLocation);
+          gl_FragColor = (o_texcoordLocation.y < 0.0) ? o_color : texture2D(uniformTexture, o_texcoordLocation) * o_color;
         }
     `;
 }
