@@ -99,7 +99,7 @@ export class HorizontalLineAnnotation {
                     DimensionTypes.UseBounds, DimensionTypes.UseTransformation,
                     DimensionTypes.UsePixel, DimensionTypes.UsePixel
                 ],
-                text.getFont().color,
+                text.color,
                 new Vector2(margin + padding, 0),
                 0, 0,
                 0,

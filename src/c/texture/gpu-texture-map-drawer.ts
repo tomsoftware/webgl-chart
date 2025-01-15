@@ -5,10 +5,12 @@ import { Matrix3x3 } from "../matrix-3x3";
 import { TextureMap } from "./texture-map";
 import { TextureMapItem } from "./texture-map-item";
 import { Vector2 } from "../vector-2";
+import { Color } from "../color";
 
 export class TextureMapDrawer {
     private positionLocation = new GpuFloatBuffer(0, 2);
     private texcoordLocation = new GpuFloatBuffer(0, 2);
+    private color = new GpuFloatBuffer(0, 4);
     private textureMap: TextureMap;
 
     /** this is a unique id to identifies this shader programs */
@@ -21,12 +23,12 @@ export class TextureMapDrawer {
     public clear() {
         this.positionLocation.clear();
         this.texcoordLocation.clear();
+        this.color.clear();
     }
 
-    public add(trafo: Matrix3x3, screenWidth: number, _screenHeight: number, textureInfo: TextureMapItem) {
+    public add(trafo: Matrix3x3, screenWidth: number, _screenHeight: number, textureInfo: TextureMapItem, color: Color) {
         const relW = textureInfo.relativeWidth;
         const relH = textureInfo.relativeHeight;
-
 
         const w1 = textureInfo.width / 2 / screenWidth;
         const w0 = -w1;
@@ -44,6 +46,8 @@ export class TextureMapDrawer {
         const t3 = new Vector2(textureInfo.relativeX + relW, textureInfo.relativeY);
         const t4 = new Vector2(textureInfo.relativeX, textureInfo.relativeY + relH);
 
+        const colorValue = color.toArray();
+
         // first triangle
         this.positionLocation.pushRange(p1.values);
         this.positionLocation.pushRange(p2.values);
@@ -53,6 +57,10 @@ export class TextureMapDrawer {
         this.texcoordLocation.pushRange(t2.values);
         this.texcoordLocation.pushRange(t3.values);
 
+        this.color.pushRange(colorValue);
+        this.color.pushRange(colorValue);
+        this.color.pushRange(colorValue);
+
         // second triangle
         this.positionLocation.pushRange(p1.values);
         this.positionLocation.pushRange(p2.values);
@@ -61,6 +69,10 @@ export class TextureMapDrawer {
         this.texcoordLocation.pushRange(t1.values);
         this.texcoordLocation.pushRange(t2.values);
         this.texcoordLocation.pushRange(t4.values);
+
+        this.color.pushRange(colorValue);
+        this.color.pushRange(colorValue);
+        this.color.pushRange(colorValue);
     }
 
     public addTexture(context: Context, src: TextureGenerator) {
@@ -74,10 +86,12 @@ export class TextureMapDrawer {
     private static vertexShader = `
         attribute vec2 position;
         attribute vec2 texcoord;
+        attribute vec4 color;
 
         uniform mat3 uniformTrafo;
 
         varying vec2 v_texcoord;
+        varying vec4 o_color;
 
         void main() {
             // Multiply the position by the matrix.
@@ -85,6 +99,7 @@ export class TextureMapDrawer {
 
             // Pass the texcoord to the fragment shader.
             v_texcoord = texcoord;
+            o_color = color;
         }
         `;
 
@@ -93,12 +108,13 @@ export class TextureMapDrawer {
 
         // Passed in from the vertex shader.
         varying vec2 v_texcoord;
+        varying vec4 o_color;
 
         // texture
         uniform sampler2D uniformTexture;
 
         void main() {
-            gl_FragColor = texture2D(uniformTexture, v_texcoord)* vec4(1.0, 0.0, 0.0, 1.0);
+            gl_FragColor = texture2D(uniformTexture, v_texcoord) * o_color;
             // gl_FragColor = vec4(1,0,0,1);
         }
         `;
@@ -117,6 +133,7 @@ export class TextureMapDrawer {
         // bind data buffer to attribute
         context.setArrayBuffer(program, 'position', this.positionLocation);
         context.setArrayBuffer(program, 'texcoord', this.texcoordLocation);
+        context.setArrayBuffer(program, 'color', this.color);
 
         // set uniforms
         context.setUniform(program, 'uniformTrafo', trafo);
@@ -125,5 +142,13 @@ export class TextureMapDrawer {
         // draw buffer / series data
         const offset = 0;
         context.gl.drawArrays(WebGLRenderingContext.TRIANGLES, offset, this.positionLocation.count);
+    }
+
+    /** 
+     * Return a html of the texture buffer used by the texture map 
+     * - mainly for debugging purposes 
+     **/
+    public exportToHtmlImage() {
+        return this.textureMap.exportToHtmlImage();
     }
 }

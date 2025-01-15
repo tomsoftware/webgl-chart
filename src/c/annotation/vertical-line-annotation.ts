@@ -101,7 +101,7 @@ export class VerticalLineAnnotation {
                     DimensionTypes.UseTransformation, DimensionTypes.UseBounds,
                     DimensionTypes.UsePixel, DimensionTypes.UsePixel
                 ],
-                text.getFont().color,
+                text.color,
                 new Vector2(0, margin + padding),
                 0, 0,
                 0,

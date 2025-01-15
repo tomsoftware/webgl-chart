@@ -9,6 +9,8 @@ import { Matrix3x3 } from "../matrix-3x3";
 import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
 import { Alignment } from "../alignment";
 import { Vector2 } from "../vector-2";
+import { Color } from "../color";
+import type { Canvas2d } from "../canvas-2d";
 
 class TextBoundingBox {
     public left: number;
@@ -56,10 +58,17 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
     private text: string;
     private textMetrics: TextBoundingBox | null = null;
     private rotationDeg: number = 0;
+    public color: Color;
 
-    constructor(text: string, alignment?: Alignment, font?: Font) {
+    constructor(text: string, alignment?: Alignment, font?: Font, color?: Color) {
         this.text = text;
         this.font = font ?? Font.default;
+        this.color = color ?? Color.black;
+    }
+    
+    public setColor(color: Color): GpuText {
+        this.color = color;
+        return this;
     }
 
     public setFont(font: Font): GpuText {
@@ -109,14 +118,8 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
         );
     }
 
-    public computerTextMetrics(context: Context): TextBoundingBox {
+    private setupCanvas(context: Context): OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D {
         const canvas = context.canvas2d;
-
-        console.log('computerSize:', this.text);
-
-        if (this.text == '') {
-            return this.textMetrics = new TextBoundingBox();
-        }
 
         const ctx = canvas.getContext2d();
         if (ctx == null) {
@@ -124,27 +127,31 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
         }
 
         ctx.font = this.font.getCssFont(canvas.devicePixelRatio);
-        ctx.fillStyle = this.font.fillStyle;
+        // we always use white so we can multiply the real font color in the fragment shader
+        ctx.fillStyle = 'white';
 
+        return ctx;
+    }
+
+    public computerTextMetrics(context: Context): TextBoundingBox {
+        console.log('computerSize:', this.text);
+
+        if (this.text == '') {
+            return this.textMetrics = new TextBoundingBox();
+        }
+
+        const ctx = this.setupCanvas(context);
         return this.textMetrics = new TextBoundingBox(ctx.measureText(this.text));
     }
 
     public computerTexture(context: Context): GpuTexture | null {
-        const canvas = context.canvas2d;
-
         console.log('computerTexture:', this.text);
 
         if (this.text == '') {
             return new GpuTexture(0, 0, new Uint32Array(0));
         }
 
-        const ctx = canvas.getContext2d();
-        if (ctx == null) {
-            return null;
-        }
-
-        ctx.font = this.font.getCssFont(canvas.devicePixelRatio);
-        ctx.fillStyle = 'white'; // this.font.fillStyle;
+        const ctx = this.setupCanvas(context);
 
         let textMetrics = this.textMetrics;
         if (textMetrics == null) {
@@ -152,11 +159,11 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
             this.textMetrics = textMetrics;
         }
 
-        ctx.clearRect(0, 0, textMetrics.right, textMetrics.height);
+        ctx.clearRect(0, 0, textMetrics.right + 2, textMetrics.height + 2);
         // text is drawn from bottom to up at baseline
         ctx.fillText(this.text, 0, textMetrics.bottom);
 
-        const data = ctx.getImageData(textMetrics.left, 0, textMetrics.width, textMetrics.height);
+        const data = ctx.getImageData(textMetrics.left, 0, textMetrics.width + 1, textMetrics.height + 1);
         return GpuTexture.fromImageData(data);
     }
 
@@ -177,6 +184,6 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
         if (trafo != null) {
             m = m.multiply(trafo.values);
         }
-        context.drawTexture(state, m);
+        context.drawTexture(state, m, this.color);
     }
 }

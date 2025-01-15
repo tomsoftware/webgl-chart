@@ -35,7 +35,7 @@ export class RectDrawer {
     /** flag to show if coordinates or rectSize parameter are absolute or relative values */
     private dimensionType = new GpuByteBuffer(0, 4);
 
-    private colors = new GpuFloatBuffer(0, 4);
+    private color = new GpuFloatBuffer(0, 4);
     private vertexOffset = new GpuFloatBuffer(0, 2);
     private stripeWidth = new GpuFloatBuffer(0, 2);
     private borderRadius = new GpuFloatBuffer(0, 1);
@@ -78,7 +78,7 @@ export class RectDrawer {
         context.setArrayBuffer(program, 'rectPos', this.rectPos);
         context.setArrayBuffer(program, 'rectSize', this.rectSize);
         context.setArrayBuffer(program, 'dimensionType', this.dimensionType);
-        context.setArrayBuffer(program, 'colors', this.colors);
+        context.setArrayBuffer(program, 'color', this.color);
         context.setArrayBuffer(program, 'vertexOffset', this.vertexOffset);
         context.setArrayBuffer(program, 'borderRadius', this.borderRadius);
         context.setArrayBuffer(program, 'margin', this.margin);
@@ -163,7 +163,7 @@ export class RectDrawer {
 
         // vertex 1
         this.rectPos.push(centerPos.x, centerPos.y);
-        this.colors.pushRange(color1.toArray());
+        this.color.pushRange(color1.toArray());
         this.vertexOffset.push(-1, -1);
         this.rectSize.pushRange(size.values);
         this.margin.pushRange(margin.values);
@@ -174,7 +174,7 @@ export class RectDrawer {
 
         // vertex 2
         this.rectPos.push(centerPos.x, centerPos.y);
-        this.colors.pushRange(color1.toArray());
+        this.color.pushRange(color1.toArray());
         this.vertexOffset.push(1, -1);
         this.rectSize.pushRange(size.values);
         this.margin.pushRange(margin.values);
@@ -185,7 +185,7 @@ export class RectDrawer {
 
         // vertex 3
         this.rectPos.push(centerPos.x, centerPos.y);
-        this.colors.pushRange(color1.toArray());
+        this.color.pushRange(color1.toArray());
         this.vertexOffset.push(1, 1);
         this.rectSize.pushRange(size.values);
         this.margin.pushRange(margin.values);
@@ -196,7 +196,7 @@ export class RectDrawer {
 
         // vertex 4
         this.rectPos.push(centerPos.x, centerPos.y);
-        this.colors.pushRange(color1.toArray());
+        this.color.pushRange(color1.toArray());
         this.vertexOffset.push(-1, 1);
         this.rectSize.pushRange(size.values);
         this.margin.pushRange(margin.values);
@@ -220,7 +220,7 @@ export class RectDrawer {
 
     public clear() {
         this.rectPos.clear();
-        this.colors.clear();
+        this.color.clear();
         this.vertexOffset.clear();
         this.rectSize.clear();
         this.borderRadius.clear();
@@ -250,7 +250,7 @@ export class RectDrawer {
         // indicates the position of this vertex in the rect
         attribute vec2 vertexOffset;
 
-        attribute vec4 colors;
+        attribute vec4 color;
         /* additional padding in pixel */
         attribute vec2 margin;
         attribute vec2 stripeWidth;
@@ -334,7 +334,7 @@ export class RectDrawer {
             gl_Position = vec4(transformed.xy, 0.0, 1.0);
 
             // path other attributes to fragment shader
-            o_color = colors;
+            o_color = color;
             o_vertexOffset = vertexOffset;
             o_rectSize = abs(vec2(realRectSize.x * uniformScreenSize.x, realRectSize.y * uniformScreenSize.y));
             o_borderRadius = borderRadius;

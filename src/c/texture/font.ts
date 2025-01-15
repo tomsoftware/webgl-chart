@@ -3,7 +3,6 @@ import { Color } from "../color";
 export class Font {
     private readonly fontName: string;
     private readonly fontSize: number;
-    public color: Color;
     private readonly fontSizeType: string;
 
     public static default = new Font();
@@ -13,29 +12,19 @@ export class Font {
         return (this.fontSize * devicePixelRatio) + this.fontSizeType + ' ' + this.fontName;
     }
 
-    public setColor(color: Color): Font {
-        this.color = color;
-        return this;
-    }
-
     public get key() {
-        return this.fontName + '|' + this.fontSize + '|' + this.color.toHexString();
+        return this.fontName + '|' + this.fontSize;
     }
 
-    public get fillStyle(): string {
-        return this.color.toCss();
-    }
-
-    constructor(fontName: string = 'sans-serif', fontSize: number = 10, color: Color = Color.black, fontSizeType: string = 'pt') {
+    constructor(fontName: string = 'sans-serif', fontSize: number = 10, fontSizeType: string = 'pt') {
         this.fontName = fontName;
         this.fontSize = fontSize;
         this.fontSizeType = fontSizeType;
-        this.color = color;
     }
 
     /** compare another font with this */
     public compare(other: Font): boolean {
-        return this.fontName === other.fontName && this.fontSize === other.fontSize && this.color === other.color;
+        return this.fontName === other.fontName && this.fontSize === other.fontSize;
     }
 
 }

@@ -59,6 +59,7 @@ export class Context {
 
         this.projectionMatrix = Matrix3x3.projection(1, height / width);
         this.pixelScale = new Vector2(1 / width, 1 / width);
+
         return this;
     }
 
@@ -167,8 +168,8 @@ export class Context {
         return this.lineDrawer.addLine(p1, p2, color);
     }
 
-    public drawTexture(textureInfo: TextureMapItem, trafo: Matrix3x3) {
-        this.textureDrawer.add(trafo, this.width, this.height, textureInfo);
+    public drawTexture(textureInfo: TextureMapItem, trafo: Matrix3x3, color: Color) {
+        this.textureDrawer.add(trafo, this.width, this.height, textureInfo, color);
     }
 
     /**
@@ -223,5 +224,13 @@ export class Context {
         program.use();
 
         return program;
+    }
+
+    /** 
+     * Return a html of the texture buffer used by the texture map
+     * - mainly for debugging purposes 
+     **/
+    public exportTextureHtmlImage() {
+        return this.textureDrawer.exportToHtmlImage();
     }
 }

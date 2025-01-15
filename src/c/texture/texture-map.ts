@@ -64,7 +64,7 @@ export class TextureMap implements IUniformValue {
 
     constructor() {
         this.buffer = new Uint32Array(this.width * this.height);
-        this.fillBuffer(0xffCBC0ff);
+        this.fillBuffer(0x00);
     }
 
     /** find a free space in the texture map */
@@ -101,7 +101,7 @@ export class TextureMap implements IUniformValue {
 
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-        
+
        return this.textureId;
     }
 
@@ -145,14 +145,16 @@ export class TextureMap implements IUniformValue {
         }
 
         // find free space in the texture map
-        const slot = this.findFreeSlot(textData.width, textData.height);
+        const textureWidth = textData.width + 1;
+        const textureHeight = textData.height + 2;
+        const slot = this.findFreeSlot(textureWidth, textureHeight);
 
         // copy the texture to the texture map
-        this.copyTexture(textData, slot.x, slot.y);
+        this.copyTexture(textData, slot.x + 1, slot.y + 1);
         this.gpuTextureIsDirty = true;
 
         // create a new texture map item
-        const newItem = new TextureMapItem(slot.x, slot.y, textData.width, textData.height, this.width, this.height);
+        const newItem = new TextureMapItem(slot.x + 1, slot.y + 1, textData.width, textData.height, this.width, this.height);
         this.textures.set(textureKey, newItem);
 
         return newItem;
@@ -163,10 +165,11 @@ export class TextureMap implements IUniformValue {
         const width = texture.width;
         const height = texture.height;
         const buffer = this.buffer;
+        const bufferWidth = this.width;
 
         for (let i = 0; i < height; i++) {
             for (let j = 0; j < width; j++) {
-                buffer[(y + i) * this.width + x + j] = /* 0xff0000ff; */ data[i * width + j];
+                buffer[(y + i) * bufferWidth + x + j] = /* 0xff0000ff; */ data[i * width + j];
             }
         }
     }
@@ -178,4 +181,24 @@ export class TextureMap implements IUniformValue {
     public bindUniform(gl: WebGLRenderingContext, variableLoc: WebGLUniformLocation): void {
         gl.uniform1i(variableLoc, 0);
     }
+
+    /** Return a html <image> of the texture buffer - mainly for debugging purposes */
+    public exportToHtmlImage(): HTMLImageElement {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        const ctx = canvas.getContext('2d');
+    
+        if (ctx) {
+            const imageData = ctx.createImageData(this.width, this.height);
+            const uint8Buffer = new Uint8ClampedArray(this.buffer.buffer);
+            imageData.data.set(uint8Buffer);
+            ctx.putImageData(imageData, 0, 0);
+        }
+    
+        const img = new Image();
+        img.src = canvas.toDataURL();
+        return img;
+    }
+
 }

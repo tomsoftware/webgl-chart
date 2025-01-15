@@ -24,7 +24,9 @@ import { ref } from 'vue';
 import { Annotations } from './c/annotation/annotations';
 import { VerticalPosition } from './c/annotation/vertical-line-annotation';
 import { HorizontalPosition } from './c/annotation/horizontal-line-annotation';
+import { Utilities } from './utilities';
 
+let debugTexture = false;
 const eventDispatcher = new EventDispatcher();
 const showLines = ref<boolean>(true);
 const showDots = ref<boolean>(true);
@@ -59,12 +61,12 @@ const annotations = new Annotations();
 annotations.addBox(5.5, 3, 9, -3, Color.purple, 200);
 annotations.addVerticalLine(1.5,  Color.red, 10)
   .addLabel(
-    new GpuText('Hallo World').setFont(new Font().setColor(Color.white)),
+    new GpuText('Hallo World').setColor(Color.white),
     Color.grayFromBytes(20, 0.7), VerticalPosition.Bottom);
 annotations.addVerticalLine(7.5, Color.red);
 annotations.addHorizontalLine(9, Color.red, 10)
   .addLabel(
-    new GpuText('Hallo World').setFont(new Font().setColor(Color.white)),
+    new GpuText('Hallo World').setColor(Color.white),
     Color.grayFromBytes(20, 0.7), HorizontalPosition.Right);
 
 
@@ -74,7 +76,7 @@ const xAxis = new HorizontalAxis(new GpuText('X Axis'), scaleX)
   .setPosition(HorizontalAxisPosition.Bottom)
   .setGridColor(Color.lightGray);
 
-const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1', Alignment.centerCenter, new Font('Arial', 20, Color.purple)).setRotation(90));
+const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1', Alignment.centerCenter, new Font('Arial', 20)).setColor(Color.purple).setRotation(90));
 const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90), scaleY)
   .setBorderColor(Color.darkGray)
   .setGridColor(Color.lightGray);
@@ -143,7 +145,13 @@ const rec = new RectDrawer();
 // set render callback
 const data1 = new ChartConfig()
     .setRenderCallback((context) => {
-  
+
+      if (debugTexture == true) {
+        debugTexture = false;
+        const img = context.exportTextureHtmlImage();
+        Utilities.DownloadImage(img, 'texture');
+      }
+
       context.calculateLayout(baseContainer);
 
       eventDispatcher.dispatch(context);
@@ -218,6 +226,9 @@ const data2 = new ChartConfig()
   });
 
 
+function onDownloadTexture() {
+  debugTexture = true;
+}
 </script>
 
 <template>
@@ -243,6 +254,7 @@ const data2 = new ChartConfig()
   <input type="range" min="0" max="1" step="0.01" v-model="radius" />
   </label>
 
+  <button v-on:click="onDownloadTexture()">download texture</button>
   
   <!--
   scaleX start: <div style="width:30pt; display: inline-block;">{{scaleXStart }}</div>
