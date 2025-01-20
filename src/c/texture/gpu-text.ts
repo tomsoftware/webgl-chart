@@ -184,6 +184,7 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
         if (trafo != null) {
             m = m.multiply(trafo.values);
         }
+    
         context.drawTexture(state, m, this.color);
     }
 }

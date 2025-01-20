@@ -60,6 +60,10 @@ export class Context {
         this.projectionMatrix = Matrix3x3.projection(1, height / width);
         this.pixelScale = new Vector2(1 / width, 1 / width);
 
+        // gl.clearColor(0.0, 0.0, 0.0, 0.0);
+        // gl.clearStencil(0.0);
+        // gl.clearDepth(0.0);
+
         return this;
     }
 
@@ -79,9 +83,13 @@ export class Context {
         this.lineDrawer.dispose(this.gl);
     }
 
-    public setArrayBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null) {
+    public setInstanceBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null) {
+        this.setArrayBuffer(program, name, buffer, 1);
+    }
+
+    public setArrayBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null, vertexAttribDivisor = 0) {
         if (buffer == null) {
-            return;
+            return null;
         }
 
         if (!this.buffers.has(buffer)) {
@@ -104,6 +112,10 @@ export class Context {
 
         state.bindBuffer(this.gl, GlBufferTypes.ARRAY_BUFFER);
         state.setVertexAttribPointer(this.gl, variableLoc);
+
+        this.angleExtension?.vertexAttribDivisorANGLE(variableLoc, vertexAttribDivisor);
+
+        return variableLoc;
     }
 
     public setElementBuffer(buffer: GpuBuffer | null) {
@@ -154,6 +166,19 @@ export class Context {
         }
 
         value.bindUniform(gl, variableLoc);
+    }
+
+    private angleExtensionCache: ANGLE_instanced_arrays | null | undefined = undefined;
+
+    /** try to get extension: ANGLE_instanced_arrays */
+    public get angleExtension(): ANGLE_instanced_arrays | null {
+        if (this.angleExtensionCache === undefined) {
+            this.angleExtensionCache = this.gl.getExtension('ANGLE_instanced_arrays');
+            if (this.angleExtensionCache == null) {
+                console.log('WebGL Extension "ANGLE_instanced_arrays" not available!')
+            }
+        }
+        return this.angleExtensionCache;
     }
 
     /** calculates the layout */

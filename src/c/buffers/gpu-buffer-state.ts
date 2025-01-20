@@ -24,12 +24,13 @@ export class GpuBufferState {
 
     /** copy the value to the gpu */
     public setData(gl: WebGLRenderingContext, destination: GlBufferTypes): void {
-        if (this.buffer == null) {
-            this.buffer = gl.createBuffer();
-        }
         // check if the version of the data differs from the data in the buffer
         if (this.data.dataVersion == this.lastDataVersion) {
             return;
+        }
+
+        if (this.buffer == null) {
+            this.buffer = gl.createBuffer();
         }
 
         gl.bindBuffer(destination, this.buffer);

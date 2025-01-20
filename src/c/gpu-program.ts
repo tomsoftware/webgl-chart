@@ -73,6 +73,7 @@ export class GpuProgram {
             return;
         }
 
+        // activate new program
         this.gl.useProgram(this.program);
     }
 

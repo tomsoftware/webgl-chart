@@ -99,6 +99,7 @@ export class TextureMap implements IUniformValue {
             this.gpuTextureIsDirty = false;
         }
 
+        /// enable alpha blending
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
