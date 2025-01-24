@@ -12,8 +12,8 @@ export class Series {
     public color = new Vector4(1, 0, 0, 0.5);
     public bbox = new Vector4(0, 0, 1, 1);
     public thickness: number = 1;
-    private time: GpuFloatBuffer | null = null;
-    private data: GpuFloatBuffer | null = null;
+    protected time: GpuFloatBuffer | null = null;
+    protected data: GpuFloatBuffer | null = null;
     private pointSize: GpuNumber = new GpuNumber(2);
     private minMaxPointSizeCache: number[] = [];
   
@@ -57,19 +57,18 @@ export class Series {
 
     // Question: using emulated double: https://blog.cyclemap.link/2011-06-09-glsl-part2-emu/
     // Question: using double: https://blog.cyclemap.link/2011-07-12-glsl-part3-hwdouble/
-    //           dvec2
 
     // see: https://webglfundamentals.org/webgl/lessons/webgl-drawing-without-data.html
     private static vertexShaderPoint = `
         attribute float x;
         attribute float y;
-        uniform mat3 uniformTrafo;
+        uniform mat3 uniformCamTransformation;
         uniform float uniformPointSize;
         uniform vec4 uniformBounds; // left-top-right-bottom bounds of the chart
 
         void main() {
           vec3 position = vec3(x, y, 1.0);
-          vec3 transformed = uniformTrafo * position;
+          vec3 transformed = uniformCamTransformation * position;
 
           if (transformed.x < uniformBounds.x || transformed.x > uniformBounds.z || transformed.y > uniformBounds.y || transformed.y < uniformBounds.w) {
             gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
@@ -92,13 +91,13 @@ export class Series {
     private static vertexShaderLine = `
         attribute float x;
         attribute float y;
-        uniform mat3 uniformTrafo;
+        uniform mat3 uniformCamTransformation;
         uniform float uniformPointSize;
         varying vec2 vPosition;
 
         void main() {
           vec3 position = vec3(x, y, 1.0);
-          vec3 transformed = uniformTrafo * position;
+          vec3 transformed = uniformCamTransformation * position;
 
           gl_Position = vec4(transformed.xy, 0.0, 1.0);
           gl_PointSize = uniformPointSize;
@@ -128,7 +127,7 @@ export class Series {
         return this.minMaxPointSizeCache;
     }
 
-    public drawPoints(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode, trafo: Matrix3x3) {
+    public drawPoints(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode) {
         if (this.data == null) {
             return;
         }
@@ -148,7 +147,7 @@ export class Series {
         context.setArrayBuffer(program, 'y', this.data);
 
         // set uniforms
-        context.setUniform(program, 'uniformTrafo', m);
+        context.setUniform(program, 'uniformCamTransformation', m);
         context.setUniform(program, 'uniformColor', this.color);
         context.setUniform(program, 'uniformPointSize', this.pointSize.boundFromArray(this.getMinMaxPointSize(context.gl)));
 
@@ -209,7 +208,7 @@ export class Series {
           const lineThicknessShift = Matrix3x3.translate(0, baseOffsetY + pixleScale.y * f);
 
           const m = p.multiply(l.values).multiply(lineThicknessShift.values).multiply(s.values);
-          context.setUniform(program, 'uniformTrafo', m);
+          context.setUniform(program, 'uniformCamTransformation', m);
           context.gl.drawArrays(WebGLRenderingContext.LINE_STRIP, offset, count);
           
         }

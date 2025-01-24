@@ -8,8 +8,8 @@ export class GpuFloatBuffer extends GpuBaseBuffer<Float32Array> implements GpuBu
         return this.buffer.subarray(this.bufferOffset, this.bufferEnd);
     }
 
-    constructor(size: number, componentsPerIteration = 1) {
-        super(Float32Array, size, componentsPerIteration);
+    constructor(size: number, componentsPerInstance = 1) {
+        super(Float32Array, size, componentsPerInstance);
     }
 
     public static generateFrom(src: GpuFloatBuffer, calc: (srcValue: number) => number): GpuFloatBuffer {
@@ -35,20 +35,21 @@ export class GpuFloatBuffer extends GpuBaseBuffer<Float32Array> implements GpuBu
         return this;
     }
 
-    public setVertexAttribPointer(gl: WebGLRenderingContext, variableLoc: GLint) {
+    public setVertexAttribPointer(
+        gl: WebGLRenderingContext,
+        variableLoc: GLint,
+        angleExtension: ANGLE_instanced_arrays | null,
+        vertexAttribDivisor: number
+    ): void {
 
-        // Tell the attribute how to get data out of idBuffer (ARRAY_BUFFER)
-        const normalize = false; // don't normalize the data
-        const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-        const offset = 0;        // start at the beginning of the buffer
-        gl.vertexAttribPointer(
+        super.setBasicVertexAttribPointer(
+            gl,
             variableLoc,
-            this.componentsPerIteration,
-            gl.FLOAT,
-            normalize,
-            stride,
-            offset
+            angleExtension,
+            vertexAttribDivisor,
+            gl.FLOAT
         );
     }
+
 
 }

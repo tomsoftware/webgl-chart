@@ -69,6 +69,9 @@ export class Matrix3x3 implements IUniformValue {
         return Matrix3x3.multiply(this, other);
     } 
 
+    public transpose(): Matrix3x3 {
+        return Matrix3x3.transpose(this);
+    }
 
     public static rotateDeg(alpha: number): Matrix3x3 {
         return Matrix3x3.rotateRad(alpha * Math.PI / 180)
@@ -103,6 +106,15 @@ export class Matrix3x3 implements IUniformValue {
             1, 0, 0,
             0, 1, 0,
             x, y, 1
+        ]));
+    }
+
+    public static transpose(m: Matrix3x3) {
+        const v = m.values;
+        return new Matrix3x3(new Float32Array([
+            v[0], v[3], v[6],
+            v[1], v[4], v[7],
+            v[2], v[5], v[8]
         ]));
     }
 

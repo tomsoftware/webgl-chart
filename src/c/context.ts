@@ -111,9 +111,7 @@ export class Context {
         }
 
         state.bindBuffer(this.gl, GlBufferTypes.ARRAY_BUFFER);
-        state.setVertexAttribPointer(this.gl, variableLoc);
-
-        this.angleExtension?.vertexAttribDivisorANGLE(variableLoc, vertexAttribDivisor);
+        state.setVertexAttribPointer(this.gl, variableLoc, this.angleExtension, vertexAttribDivisor);
 
         return variableLoc;
     }
@@ -193,17 +191,17 @@ export class Context {
         return this.lineDrawer.addLine(p1, p2, color);
     }
 
-    public drawTexture(textureInfo: TextureMapItem, trafo: Matrix3x3, color: Color) {
-        this.textureDrawer.add(trafo, this.width, this.height, textureInfo, color);
+    public drawTexture(textureInfo: TextureMapItem, transformation: Matrix3x3, color: Color) {
+        this.textureDrawer.add(transformation, textureInfo, color);
     }
 
     /**
      * texture drawing are cached and batched
      * this will write out all textures */
-    public flushTextures(trafo?: Matrix3x3) {
+    public flushTextures(transformation?: Matrix3x3) {
         let m = this.projectionMatrix;
-        if (trafo != null) {
-            m = m.multiply(trafo.values);
+        if (transformation != null) {
+            m = m.multiply(transformation.values);
         }
 
         this.textureDrawer.draw(this, m);
@@ -213,10 +211,10 @@ export class Context {
     /**
      * line drawing are cached and batched
      * this will write out all lines */
-    public flushLines(trafo?: Matrix3x3) {
+    public flushLines(transformation?: Matrix3x3) {
         let m = this.projectionMatrix;
-        if (trafo != null) {
-            m = m.multiply(trafo.values);
+        if (transformation != null) {
+            m = m.multiply(transformation.values);
         }
 
         this.lineDrawer.draw(this, m);
@@ -224,9 +222,9 @@ export class Context {
     }
 
     /** flush all pending batches */
-    public flush(trafo?: Matrix3x3) {
-        this.flushTextures(trafo);
-        this.flushLines(trafo);
+    public flush(transformation?: Matrix3x3) {
+        this.flushTextures(transformation);
+        this.flushLines(transformation);
 }
 
     /** create and use a gl-shader-program */

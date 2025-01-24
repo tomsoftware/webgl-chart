@@ -5,9 +5,15 @@ import type { Context } from "../context";
 export class LayoutCell extends BaseLayoutNode implements LayoutNode {
     private children: LayoutNode[] = [];
 
+    /** add new child to this cell */
     public addLayout<T extends LayoutNode>(node: T): T {
       this.children.push(node);
       return node;
+    }
+
+    /* remove all children from this cell */
+    public clear() {
+      this.children.length = 0;
     }
 
     public calculate(context: Context, cache: LayoutCache, area: LayoutArea) {
@@ -16,4 +22,5 @@ export class LayoutCell extends BaseLayoutNode implements LayoutNode {
         child.calculate(context, cache, area);
       }
     }
+
 }

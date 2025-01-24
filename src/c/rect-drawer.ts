@@ -36,19 +36,36 @@ export class RectDrawer {
     private dimensionType = new GpuByteBuffer(0, 4);
 
     private color = new GpuFloatBuffer(0, 4);
-    private vertexOffset = new GpuFloatBuffer(0, 2);
     private stripeWidth = new GpuFloatBuffer(0, 2);
     private borderRadius = new GpuFloatBuffer(0, 1);
-    private indexBuffer = new GpuShortBuffer(0, 1);
     private bbox = new Vector4(0, 0, 1, 1);
+    /** position of the texture in the texture-buffer */
     private textureLocation = new GpuFloatBuffer(0, 2);
+    /** size (width/height) of the texture in the texture-buffer  */
     private textureSize = new GpuFloatBuffer(0, 2);
-    
+
+    // base instance data
+    private indexBuffer = new GpuShortBuffer(0, 1);
+    private vertexOffset = new GpuFloatBuffer(0, 2);
+
     /** texture-map to store textures to map to the rectangles */
     public textureMap = new TextureMap();
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-rect-drawer';
+
+    constructor() {
+        // add 4 vertex-points
+        this.vertexOffset.push(-1, -1);
+        this.vertexOffset.push(1, -1);
+        this.vertexOffset.push(1, 1);
+        this.vertexOffset.push(-1, 1);
+
+        // build triangle 1 from the vertex-points
+        this.indexBuffer.push(0, 1, 2);
+        // build triangle 2 from the vertex-points
+        this.indexBuffer.push(0, 2, 3);
+    }
 
     /** returns the rectangle position for a given index */
     public getRectPos(index: number) {
@@ -62,7 +79,7 @@ export class RectDrawer {
         return new Vector2(v[0], v[1]);
     }
 
-    public draw(context: Context, layoutNode: LayoutNode, trafo: Matrix3x3) {
+    public draw(context: Context, layoutNode: LayoutNode, transformation: Matrix3x3) {
         const layoutArea = layoutNode?.getArea(context.layoutCache);
         const p = context.projectionMatrix;
 
@@ -91,11 +108,11 @@ export class RectDrawer {
         // set texture
         context.setUniform(program, 'uniformTexture', this.textureMap);
 
-        // set element buffer
+        // set element-index buffer
         context.setElementBuffer(this.indexBuffer);
 
         // set uniforms
-        context.setUniform(program, 'uniformTrafo', trafo);
+        context.setUniform(program, 'cameraTransformation', transformation);
         context.setUniform(program, 'uniformScreenSize', new Vector2(context.width, context.height));
 
         // set clipping bounds
@@ -161,26 +178,12 @@ export class RectDrawer {
             tSize = new Vector2(0, 0);
         }
 
-        // add primitive rect data only once
-        if (this.vertexOffset.length <= 0) {
-            // add 4 vertex-points
-            this.vertexOffset.push(-1, -1);
-            this.vertexOffset.push(1, -1);
-            this.vertexOffset.push(1, 1);
-            this.vertexOffset.push(-1, 1);
-
-            // build triangle 1 from the vertex-points
-            this.indexBuffer.push(0, 1, 2);
-            // build triangle 2 from the vertex-points
-            this.indexBuffer.push(0, 2, 3);
-        }
-
         // add instance data
         const instance = this.rectPos.count;
 
         this.rectPos.push(centerPos.x, centerPos.y);
-        this.color.pushRange(color1.toArray());
         this.rectSize.pushRange(size.values);
+        this.color.pushRange(color1.toArray());
         this.margin.pushRange(margin.values);
         this.borderRadius.push(borderRadius);
         this.stripeWidth.push(stripeWidthX, stripeWidthY);
@@ -198,11 +201,9 @@ export class RectDrawer {
     public clear() {
         this.rectPos.clear();
         this.color.clear();
-        this.vertexOffset.clear();
         this.rectSize.clear();
         this.borderRadius.clear();
         this.stripeWidth.clear();
-        this.indexBuffer.clear();
         this.dimensionType.clear();
         this.textureLocation.clear();
         this.textureSize.clear();
@@ -214,7 +215,7 @@ export class RectDrawer {
     private static vertexShader = `
         precision mediump float;
 
-        uniform mat3 uniformTrafo;
+        uniform mat3 cameraTransformation;
          // left-top-right-bottom bounds of the layout element we are drawing to
         uniform vec4 uniformBounds;
         uniform vec2 uniformScreenSize;
@@ -247,14 +248,12 @@ export class RectDrawer {
         /* position of the texture */
         varying vec2 o_textureLocation;
 
-        vec2 uniformLineThickness = vec2(0.002, 0.005);
-
         vec2 ratio = vec2(2.0, uniformScreenSize.x / uniformScreenSize.y * 2.0);
 
         void main(void) {
             //// step 1: calculate real width and height of the rect
-            vec3 zeroPos = uniformTrafo * vec3(0.0, 0.0, 1.0);
-            vec3 realRectSize = uniformTrafo * vec3(rectSize.xy, 1.0) - zeroPos;
+            vec3 zeroPos = cameraTransformation * vec3(0.0, 0.0, 1.0);
+            vec3 realRectSize = cameraTransformation * vec3(rectSize.xy, 1.0) - zeroPos;
 
             int dimensionTypeWidth = int(dimensionType.z + 0.5);
             int dimensionTypeHeight = int(dimensionType.w + 0.5);
@@ -290,7 +289,7 @@ export class RectDrawer {
             }
     
             /// step 2: calculate the position of the rect
-            vec3 realRectPos = uniformTrafo * vec3(rectPos.xy, 1.0);
+            vec3 realRectPos = cameraTransformation * vec3(rectPos.xy, 1.0);
 
             if (dimensionType.x >= 1.0) {
                 // use left depending on the bounds

@@ -46,10 +46,16 @@ export class GpuBufferState {
     }
 
     /** activate buffer and use it for given variableLoc */
-    public setVertexAttribPointer(gl: WebGLRenderingContext, variableLoc: GLint) {
-        // Turn on the attribute
-        gl.enableVertexAttribArray(variableLoc);
+    public setVertexAttribPointer(
+        gl: WebGLRenderingContext,
+        variableLoc: GLint,
+        angleExtension: ANGLE_instanced_arrays | null,
+        vertexAttribDivisor: number) {
 
-        this.data.setVertexAttribPointer(gl, variableLoc);
+        this.data.setVertexAttribPointer(
+            gl,
+            variableLoc,
+            angleExtension,
+            vertexAttribDivisor);
     }
 }

@@ -1,5 +1,7 @@
 export class GpuTexture {
+    /** width in pixels of the texture */
     public readonly width: number;
+    /** height in pixels of the texture */
     public readonly height: number;
     public readonly data: Uint32Array;
 

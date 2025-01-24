@@ -21,9 +21,13 @@ export class VerticalLayout extends BaseLayoutNode implements LayoutNode {
         return newCell;
     }
 
-    public addCell(relativeHeight: number): LayoutCell {
+    public addCell(relativeHeight: number, addToStart: boolean = false): LayoutCell {
         const newCell = new VariableVerticalItem(relativeHeight);
-        this.children.push(newCell);
+        if (addToStart) {
+            this.children.unshift(newCell);
+        } else {
+            this.children.push(newCell);
+        }
         return newCell;
     }
 

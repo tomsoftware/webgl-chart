@@ -10,7 +10,6 @@ import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
 import { Alignment } from "../alignment";
 import { Vector2 } from "../vector-2";
 import { Color } from "../color";
-import type { Canvas2d } from "../canvas-2d";
 
 class TextBoundingBox {
     public left: number;
@@ -39,9 +38,9 @@ class TextBoundingBox {
         }
     }
 
-    public transform(trafo: Matrix3x3): TextBoundingBox {
-        const p0 = new Vector2(this.left, this.top).transform(trafo);
-        const p1 = new Vector2(this.right, this.bottom).transform(trafo);
+    public transform(transformation: Matrix3x3): TextBoundingBox {
+        const p0 = new Vector2(this.left, this.top).transform(transformation);
+        const p1 = new Vector2(this.right, this.bottom).transform(transformation);
 
         const newBox = new TextBoundingBox();
         newBox.left = Math.min(p0.x, p1.x);
@@ -167,7 +166,7 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
         return GpuTexture.fromImageData(data);
     }
 
-    public draw(context: Context, layout: LayoutNode, alignment: Alignment | null = null, trafo: Matrix3x3 | null = null) {
+    public draw(context: Context, layout: LayoutNode, alignment: Alignment | null = null, transformation: Matrix3x3 | null = null) {
         const state = context.addTexture(this);
         if (state == null) {
             // unable to generate texture
@@ -181,8 +180,8 @@ export class GpuText implements TextureGenerator, IHeightProvider, IWidthProvide
             m = m.multiply(new Matrix3x3().rotateDeg(this.rotationDeg).values);
         }
 
-        if (trafo != null) {
-            m = m.multiply(trafo.values);
+        if (transformation != null) {
+            m = m.multiply(transformation.values);
         }
     
         context.drawTexture(state, m, this.color);

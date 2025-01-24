@@ -4,7 +4,7 @@ import type { LayoutNode } from "../layout/layout-node";
 import { Vector2 } from "../vector-2";
 import { EventTypes, EventValue } from "./event-value";
 
-/** callback for resiving Events. Return true to consume event */
+/** callback for received Events. Return true to consume event */
 export type EventHandler = (value: EventValue, layoutNode: LayoutNode, layoutArea: LayoutArea) => boolean | void;
 
 class EventListenerInfo {
@@ -29,7 +29,7 @@ export class EventDispatcher {
             return;
         }
 
-        // remove panding events
+        // remove pending events
         this.unbindEvents(this.el);
         this.el = el;
 
@@ -42,7 +42,7 @@ export class EventDispatcher {
         this.listeners.set(callback, new EventListenerInfo(type, layoutNode, callback));
     }
 
-    /** dispatch incomming events to the listeners */
+    /** dispatch incoming events to the listeners */
     public dispatch(context: Context) {
         if (this.eventQueue.length === 0) {
             return;

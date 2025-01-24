@@ -178,19 +178,19 @@ const data1 = new ChartConfig()
       yAxis2.draw(context, yAxis2Cell, chartCell);
       yAxis3.draw(context, yAxis3Cell);
 
-      // flush lines and textes
+      // flush lines and textures
       context.flush();
 
       // draw the series
       if (showDots.value) {
-        series1.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+        series1.drawPoints(context, scaleX, scaleY, chartCell);
       }
       if (showLines.value) {
         series1.setThickness(lineThickness.value).drawLines(context, scaleX, scaleY, chartCell);
       }
       
       if (showDots.value) {
-        series2.drawPoints(context, scaleX, scaleY, chartCell, Matrix3x3.Identity);
+        series2.drawPoints(context, scaleX, scaleY, chartCell);
       }
       if (showLines.value) {
         series2.drawLines(context, scaleX, scaleY, chartCell);
@@ -219,10 +219,7 @@ const data2 = new ChartConfig()
       context.calculateLayout(baseContainer);
       context.layoutCache.draw(context);
 
-      const trafo = new Matrix3x3();
-
-      const trafoSeries = new Matrix3x3().scale(0.1, 0.01).translate(-0.95, 0);
-      series1.drawPoints(context, scaleX, scaleY, xAxisCell, trafoSeries);
+      series1.drawPoints(context, scaleX, scaleY, xAxisCell);
   });
 
 

@@ -15,7 +15,7 @@ export class GpuBaseBuffer<T extends TypedArray> {
     protected bufferEnd = 0;
     private activator: { new(size: number): T };
 
-    protected componentsPerIteration: number;
+    protected componentsPerInstance: number;
     protected currentDataVersion = -1;
 
     /** return a view of the buffer with the current data */
@@ -25,15 +25,15 @@ export class GpuBaseBuffer<T extends TypedArray> {
 
     /** return a value of a given item */
     public get(index: number) {
-        const offset = this.bufferOffset + index * this.componentsPerIteration;
-        return this.buffer.subarray(offset, offset + this.componentsPerIteration);
+        const offset = this.bufferOffset + index * this.componentsPerInstance;
+        return this.buffer.subarray(offset, offset + this.componentsPerInstance);
     }
 
-    constructor(activator: { new(size: number): T }, size: number, componentsPerIteration: number) {
-        this.buffer = new activator(size * componentsPerIteration);
+    constructor(activator: { new(size: number): T }, size: number, componentsPerInstance : number) {
+        this.buffer = new activator(size * componentsPerInstance);
         this.bufferEnd = this.buffer.length;
         this.activator = activator;
-        this.componentsPerIteration = componentsPerIteration;
+        this.componentsPerInstance = componentsPerInstance;
         this.updateDataVersion();
     }
 
@@ -46,8 +46,8 @@ export class GpuBaseBuffer<T extends TypedArray> {
         this.currentDataVersion++;
     }
 
-    /** makes sure the given number of new itmes fits into the internal buffer */
-    public increeseCapacity(newItems: number = 1) {
+    /** makes sure the given number of new items fits into the internal buffer */
+    public increaseCapacity(newItems: number = 1) {
         newItems = Math.max(0, newItems);
 
         if (this.buffer.length >= this.bufferEnd + newItems) {
@@ -59,7 +59,7 @@ export class GpuBaseBuffer<T extends TypedArray> {
         newItems = Math.max(Math.max(newItems, 32), this.buffer.length / 2);
 
 
-        console.log('GpuBufferShort: increese Capacity', newItems);
+        console.log('GpuBufferShort: increase capacity', newItems);
 
         // make the buffer larger
         const newBuffer = new this.activator(this.buffer.length + Math.max(32, newItems));
@@ -69,16 +69,16 @@ export class GpuBaseBuffer<T extends TypedArray> {
 
     private pushValue(value: number) {
         if (this.bufferEnd >= this.buffer.length) {
-            this.increeseCapacity();
+            this.increaseCapacity();
         }
 
         this.buffer[this.bufferEnd] = value;
         this.bufferEnd++;
     }
 
-    /** add a list of vaues to the buffer */
+    /** add a list of values to the buffer */
     public pushRange(values: number[] | TypedArray) {
-        this.increeseCapacity(values.length);
+        this.increaseCapacity(values.length);
 
         for (let i = 0; i < values.length; i++) {
             this.pushValue(values[i]);
@@ -97,6 +97,31 @@ export class GpuBaseBuffer<T extends TypedArray> {
         this.updateDataVersion();
     }
 
+    protected setBasicVertexAttribPointer(
+        gl: WebGLRenderingContext,
+        variableLoc: number,
+        angleExtension: ANGLE_instanced_arrays | null,
+        vertexAttribDivisor: number,
+        type: GLenum) {
+        // Turn on the attribute
+        gl.enableVertexAttribArray(variableLoc);
+
+        // Tell the attribute how to get data out of idBuffer (ARRAY_BUFFER)
+        const normalize = false; // don't normalize the data
+        const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+        const offset = 0;        // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+            variableLoc,
+            this.componentsPerInstance,
+            type,
+            normalize,
+            stride,
+            offset
+        );
+
+        angleExtension?.vertexAttribDivisorANGLE(variableLoc, vertexAttribDivisor);
+   }
+
     /** return the size = (count * componentsPerIteration) of the buffer */
     public get length(): number {
         return this.bufferEnd - this.bufferOffset;
@@ -104,7 +129,7 @@ export class GpuBaseBuffer<T extends TypedArray> {
 
     /** return the number of items in the buffer */
     public get count(): number {
-        return this.data.length / this.componentsPerIteration;
+        return this.data.length / this.componentsPerInstance;
     }
 
 }
