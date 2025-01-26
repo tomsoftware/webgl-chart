@@ -6,6 +6,7 @@ import { GpuText } from "../texture/gpu-text";
 import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
 import { Matrix3x3 } from "../matrix-3x3";
 import { AxisBase } from "./axis-base";
+import { GpuLetterText } from "../texture/gpu-letter-text";
 
 export enum VerticalAxisPosition {
     Left,
@@ -49,17 +50,17 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         }
 
         const ticks = this.scale.calculateTicks();
-        const positionScaleing = area.height / this.scale.range;
+        const positionScaling = area.height / this.scale.range;
 
         for (const tick of ticks) {
-            const m = new Matrix3x3().translate(0, (this.scale.max - tick) * positionScaleing);
+            const m = new Matrix3x3().translate(0, (this.scale.max - tick) * positionScaling);
             if (this.position === VerticalAxisPosition.Right) {
                 context.drawLine(area.p0.transform(m), area.p0p1(0.1).transform(m), this.tickColor);
             }
             else {
                 context.drawLine(area.p0p1(0.9).transform(m), area.p1.transform(m), this.tickColor);
             }
-            const text = new GpuText(tick.toLocaleString());
+            const text = new GpuLetterText(tick.toLocaleString());
             text.draw(context, axisLayout, Alignment.leftTop, m.translate(area.width * tickLabelShift, 0));
         
             // draw grid lines

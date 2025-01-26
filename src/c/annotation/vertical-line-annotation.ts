@@ -50,7 +50,7 @@ export class VerticalLineAnnotation {
     /** add a label to the annotation */
     public addLabel(
         text: GpuText,
-        color: Color,
+        backColor: Color,
         verticalPosition: VerticalPosition = VerticalPosition.Bottom,
         padding = 10,
         boxRadius = 70,
@@ -86,14 +86,14 @@ export class VerticalLineAnnotation {
                     DimensionTypes.UseTransformation, DimensionTypes.UseBounds,
                     DimensionTypes.UsePixel, DimensionTypes.UsePixel
                 ],
-                color,
+                backColor,
                 new Vector2(0, margin),
                 0, 0,
                 boxRadius,
             );
 
             // add label-text
-            const textureInfo = this.rectDrawer.textureMap.addTexture(context, text);
+            const textureInfo = this.rectDrawer.textureMap.addTexture(context, text.getGenerator());
             this.rectDrawer.addRect(
                 new Vector2(this.x, position),
                 new Vector2(w, h),

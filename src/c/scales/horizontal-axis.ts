@@ -6,6 +6,7 @@ import { AxisBase } from "./axis-base";
 import { Matrix3x3 } from "../matrix-3x3";
 import { GpuText } from "../texture/gpu-text";
 import { Alignment } from "../alignment";
+import { GpuLetterText } from "../texture/gpu-letter-text";
 
 export enum HorizontalAxisPosition {
     Top,
@@ -52,7 +53,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider{
         for (const tick of ticks) {
             const m = new Matrix3x3().translate((tick - this.scale.min) * positionScaling, 0);
             context.drawLine(area.p0.transform(m), area.p0p3(0.1).transform(m), this.tickColor);
-            const text = new GpuText(tick.toLocaleString());
+            const text = new GpuLetterText(tick.toLocaleString());
             text.draw(context, axisLayout, Alignment.leftTop, m.translate(0, area.height * 0.5));
         
             if ((this.gridColor != null) && (chartArea != null)){

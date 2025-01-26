@@ -91,7 +91,7 @@ export class HorizontalLineAnnotation {
             );
 
             // add label-text
-            const textureInfo = this.rectDrawer.textureMap.addTexture(context, text);
+            const textureInfo = this.rectDrawer.textureMap.addTexture(context, text.getGenerator());
             this.rectDrawer.addRect(
                 new Vector2(position, this.y),
                 new Vector2(w, h),

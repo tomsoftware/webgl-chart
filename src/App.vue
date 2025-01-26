@@ -76,7 +76,7 @@ const xAxis = new HorizontalAxis(new GpuText('X Axis'), scaleX)
   .setPosition(HorizontalAxisPosition.Bottom)
   .setGridColor(Color.lightGray);
 
-const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1', Alignment.centerCenter, new Font('Arial', 20)).setColor(Color.purple).setRotation(90));
+const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1',new Font('Arial', 20)).setColor(Color.purple).setRotation(90));
 const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90), scaleY)
   .setBorderColor(Color.darkGray)
   .setGridColor(Color.lightGray);

@@ -1,5 +1,3 @@
-import { Color } from "../color";
-
 export class Font {
     private readonly fontName: string;
     private readonly fontSize: number;
