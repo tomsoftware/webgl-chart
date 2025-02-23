@@ -1,33 +1,38 @@
 {
-  "name": "webgl-chart-vue",
+  "name": "@tomsoftware/webgl-chart-vue",
   "version": "0.0.1",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "test:unit": "vitest",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build --force"
+  "publishConfig": {
+    "access": "public"
   },
-  "dependencies": {
-    "vue": "^3.5.12",
-    "@tomsoftware/webgl-chart": "^0.0.1"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomsoftware/webgl-chart"
+  },
+  "author": "Thomas Zeugner",
+  "license": "MIT",
+  "homepage": "https://chart.hmilch.net/",
+  "keywords": [
+    "chart",
+    "webgl",
+    "vue",
+    "component"
+  ],
+  "main": "dist/chart.common.js",
+  "module": "dist/chart.umd.js",
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "build": "vue-cli-service build --target lib --name chart src/index.ts"
+  },
+  "peerDependencies": {
+    "@tomsoftware/webgl-chart": "^0.0.2",
+    "vue": "^3.5.12"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.0",
-    "@types/jsdom": "^21.1.7",
-    "@types/node": "^22.9.0",
-    "@vitejs/plugin-vue": "^5.1.4",
-    "@vue/test-utils": "^2.4.6",
-    "@vue/tsconfig": "^0.5.1",
-    "jsdom": "^25.0.1",
-    "npm-run-all2": "^7.0.1",
-    "typescript": "~5.6.3",
-    "vite": "^5.4.10",
-    "vite-plugin-vue-devtools": "^7.5.4",
-    "vitest": "^2.1.4",
-    "vue-tsc": "^2.1.10"
+    "@types/node": "^22.13.5",
+    "@vue/cli-plugin-typescript": "^5.0.8",
+    "@vue/cli-service": "^5.0.8",
+    "typescript": "^5.7.3"
   }
 }

@@ -60,10 +60,6 @@ onBeforeUpdate(() => {
 
 .chart-container {
   width:100%;
-  height:100%;
-
-  border: 1px solid red;
-
   position: relative;
 }
 
@@ -71,10 +67,7 @@ onBeforeUpdate(() => {
   width:100%;
   height:100%;
 
-  border: 1px solid green;
-
   position: absolute;
-
 }
 
 </style>

@@ -13,6 +13,12 @@
   "author": "Thomas Zeugner",
   "license": "MIT",
   "homepage": "https://chart.hmilch.net/",
+
+  "keywords": [
+    "chart",
+    "webgl"
+  ],
+
   "scripts": {
     "build": "tsc"
   },
