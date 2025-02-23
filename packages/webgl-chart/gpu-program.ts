@@ -78,11 +78,11 @@ export class GpuProgram {
     }
 
     public addVertexShader(sourceCode: string) {
-        return this.createShader(sourceCode, WebGLRenderingContext.VERTEX_SHADER);
+        return this.createShader(sourceCode, this.gl?.VERTEX_SHADER ?? 0);
     }
 
     public addFragmentShader(sourceCode: string) {
-        return this.createShader(sourceCode, WebGLRenderingContext.FRAGMENT_SHADER);
+        return this.createShader(sourceCode, this.gl?.FRAGMENT_SHADER ?? 0);
     }
 
     public getAttribLocation(name: string): GLint | null {

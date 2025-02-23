@@ -10,15 +10,20 @@ export class GpuChart {
     private errorHandler = new ErrorHandler();
     private width: number = 0;
     private height: number = 0;
-    private devicePixelRatio: number = window.devicePixelRatio;
+    private devicePixelRatio: number = GpuChart.getDevicePixelRatio();
     private gl: WebGLRenderingContext | null = null;
-    private context: Context | null = new Context(window.devicePixelRatio);
+    private context: Context | null = new Context(GpuChart.getDevicePixelRatio());
     private renderCallback: RenderCallback | null = null;
     // reduce framerate
     private frameDelay: number = 10;
     // time of last frame
     private lastFrame: number = 0;
     private previousRenderTimestamp = 0;
+
+    public static getDevicePixelRatio(): number {
+        // eslint-disable-next-line no-undef
+        return window?.devicePixelRatio ?? 1;
+    }
 
     /** set max framerate */
     public setMaxFrameRate(fps: number): GpuChart {
@@ -135,7 +140,7 @@ export class GpuChart {
 
             let width;
             let height;
-            let dpr = window.devicePixelRatio;
+            let dpr = GpuChart.getDevicePixelRatio();
             let dprSupport = false;
             if (entry.devicePixelContentBoxSize) {
               // NOTE: Only this path gives the correct answer
@@ -170,7 +175,7 @@ export class GpuChart {
 
             this.width = displayWidth;
             this.height = displayHeight;
-            this.devicePixelRatio = window.devicePixelRatio;
+            this.devicePixelRatio = GpuChart.getDevicePixelRatio();
 
             this.element.width = displayWidth;
             this.element.height = displayHeight;

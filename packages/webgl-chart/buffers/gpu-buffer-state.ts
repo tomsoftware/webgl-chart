@@ -1,8 +1,8 @@
 import type { GpuBuffer } from "./gpu-buffer";
 
 export enum GlBufferTypes {
-    ARRAY_BUFFER = WebGLRenderingContext.ARRAY_BUFFER,
-    ELEMENT_ARRAY_BUFFER = WebGLRenderingContext.ELEMENT_ARRAY_BUFFER
+    ARRAY_BUFFER = 34962, // WebGLRenderingContext.ARRAY_BUFFER,
+    ELEMENT_ARRAY_BUFFER = 34963 // WebGLRenderingContext.ELEMENT_ARRAY_BUFFER
 }
 
 export class GpuBufferState {

@@ -1,0 +1,34 @@
+{
+  "include": [
+    "docs/.vuepress/**/*"
+  ],
+  "exclude": [
+    "./dist/**"
+  ],
+  "compilerOptions": {
+    "noEmitOnError": false,
+    "diagnostics": true,
+    "listEmittedFiles": false,
+    "allowJs": true,
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["ESNext", "DOM"],
+  
+    "types": ["vuepress/client-types", "@types/webgl2"],
+
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "composite": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@hmilch/*": ["../packages/*"]
+    },
+
+  }
+}

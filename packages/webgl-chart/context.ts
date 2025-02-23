@@ -237,7 +237,7 @@ export class Context {
         let program = this.programs.get(id);
         if (program == null) {
             program = new GpuProgram(gl);
-            program.addVertexShader(vertexShader);
+            program.addVertexShader(vertexShader, gl);
             program.addFragmentShader(fragmentShader);
             program.link();
 

@@ -122,9 +122,9 @@ export class RectDrawer {
 
         // draw rectangles
         context.angleExtension?.drawElementsInstancedANGLE(
-            WebGLRenderingContext.TRIANGLES,
+            context.gl.TRIANGLES,
             this.indexBuffer.count,
-            WebGLRenderingContext.UNSIGNED_SHORT,
+            context.gl.UNSIGNED_SHORT,
             0,
             this.rectPos.count
         );
