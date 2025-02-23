@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUpdate, watch } from 'vue'
-import { GpuChart } from '@hmilch/webgl-chart/gpu-chart';
+import { GpuChart } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from './chart-config';
 
 const chartCanvas = ref<HTMLCanvasElement>();

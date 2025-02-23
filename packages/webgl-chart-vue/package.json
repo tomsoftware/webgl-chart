@@ -1,5 +1,5 @@
 {
-  "name": "webgl-chart",
+  "name": "webgl-chart-vue",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "vue": "^3.5.12",
-    "webgl-chart": "^0.0.1"
+    "@tomsoftware/webgl-chart": "^0.0.1"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",

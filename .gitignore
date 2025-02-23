@@ -5,3 +5,5 @@ docu/docs/.vuepress/.temp/
 docu/node_modules/
 packages/webgl-chart-vue/node_modules/
 docu/docs/.vuepress/dist/
+packages/webgl-chart/node_modules/
+packages/webgl-chart/dist/

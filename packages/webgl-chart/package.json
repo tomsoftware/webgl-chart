@@ -1,0 +1,22 @@
+{
+  "name": "@tomsoftware/webgl-chart",
+  "version": "0.0.2",
+  "description": "High performance web Chart Library to plot line-charts using WebGL",
+  "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomsoftware/webgl-chart"
+  },
+  "author": "Thomas Zeugner",
+  "license": "MIT",
+  "homepage": "https://chart.hmilch.net/",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.3"
+  }
+}
