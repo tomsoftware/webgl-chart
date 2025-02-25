@@ -32,6 +32,8 @@ export * from './buffers/gpu-buffer-state';
 // event-handler
 export * from './event-handler/event-handler';
 export * from './event-handler/event-value';
+// import { EventTypes as a } from './event-handler/event-value';
+// export {EventTypes} from a;
 
 // layout
 export * from './layout/horizontal-item';

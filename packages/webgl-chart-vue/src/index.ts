@@ -1,6 +1,7 @@
-// classes
+// export classes
 export * from './chart-config';
 export * from './utilities';
 
-// vue component
-export { default as Chart } from './chart.vue'
+// export vue component
+import Chart from './chart.vue';
+export { Chart };

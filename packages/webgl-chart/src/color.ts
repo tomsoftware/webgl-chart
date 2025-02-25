@@ -68,6 +68,7 @@ export class Color {
     public static red = new Color(1, 0, 0, 1);
     public static blue = new Color(0, 0, 1, 1);
     public static green = new Color(0, 1, 0, 1);
+    public static darkGreen = new Color(0, 0.39, 0, 1);
     public static yellow = Color.fromBytes(255, 255, 0);
     public static black = new Color(0, 0, 0, 1);
     public static white = new Color(1, 1, 1, 1);

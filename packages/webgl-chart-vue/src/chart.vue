@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUpdate, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { GpuChart } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from './chart-config';
 
@@ -44,7 +44,7 @@ onMounted(() => {
   gpuChart.render();
 });
 
-onBeforeUpdate(() => {
+onBeforeUnmount(() => {
   console.log('unmounted');
 });
 
@@ -66,7 +66,6 @@ onBeforeUpdate(() => {
 .chart-canvas {
   width:100%;
   height:100%;
-
   position: absolute;
 }
 

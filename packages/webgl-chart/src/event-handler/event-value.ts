@@ -1,6 +1,6 @@
 import type { Vector2 } from "../vector-2";
 
-export enum EventTypes {
+export const enum EventTypes {
     Unknown,
     Wheel,
     Pan

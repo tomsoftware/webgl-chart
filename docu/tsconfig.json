@@ -1,6 +1,9 @@
 {
   "include": [
-    "docs/.vuepress/**/*"
+    "docs/.vuepress/**/*",
+    "docs/examples/**/*",
+    "../packages/webgl-chart-vue/src/**/*.ts",
+    "../packages/webgl-chart/src/**/*.ts", "docs/examples/example-full.vue",
   ],
   "exclude": [
     "./dist/**"
@@ -27,7 +30,8 @@
 
     "baseUrl": ".",
     "paths": {
-      "@hmilch/*": ["../packages/*"]
+      "@tomsoftware/webgl-chart-vue": ["../packages/webgl-chart-vue/src/index"],
+      "@tomsoftware/webgl-chart": ["../packages/webgl-chart/src/index"]
     },
 
   }
