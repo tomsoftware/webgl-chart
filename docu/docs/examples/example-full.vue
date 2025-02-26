@@ -1,30 +1,16 @@
 <script setup lang="ts">
-import chart from '@hmilch/webgl-chart-vue/chart.vue'
-import { Utilities } from '@hmilch/webgl-chart-vue/utilities';
-import { ChartConfig } from '@hmilch/webgl-chart-vue/chart-config'
-import { Matrix3x3 } from '@hmilch/webgl-chart/matrix-3x3';
-import { Series } from '@hmilch/webgl-chart/series';
-import { GpuFloatBuffer } from '@hmilch/webgl-chart/buffers/gpu-buffer-float';
-import { GpuText } from '@hmilch/webgl-chart/texture/gpu-text';
-import { LayoutCell } from '@hmilch/webgl-chart/layout/layout-cell';
-import { VerticalAxis, VerticalAxisPosition as VerticalAxisPosition } from '@hmilch/webgl-chart/scales/vertical-axis';
-import { HorizontalAxis, HorizontalAxisPosition } from '@hmilch/webgl-chart/scales/horizontal-axis';
-import { VerticalLayout } from '@hmilch/webgl-chart/layout/vertical-layout';
-import { HorizontalLayout } from '@hmilch/webgl-chart/layout/horizontal-layout';
-import { ScreenPosition } from '@hmilch/webgl-chart/layout/screen-position';
-import { IntersectedLayout } from '@hmilch/webgl-chart/layout/intersected-layout';
-import { LayoutBorder } from '@hmilch/webgl-chart/layout-border';
-import { Color } from '@hmilch/webgl-chart/color';
-import { Font } from '@hmilch/webgl-chart/texture/font';
-import { Alignment } from '@hmilch/webgl-chart/alignment';
-import { Scale } from '@hmilch/webgl-chart/scales/scale';
-import { EventDispatcher } from '@hmilch/webgl-chart/event-handler/event-handler';
-import { EventTypes } from '@hmilch/webgl-chart/event-handler/event-value';
-import { RectDrawer } from '@hmilch/webgl-chart/rect-drawer';
+
 import { ref } from 'vue';
-import { Annotations } from '@hmilch/webgl-chart/annotation/annotations';
-import { VerticalPosition } from '@hmilch/webgl-chart/annotation/vertical-line-annotation';
-import { HorizontalPosition } from '@hmilch/webgl-chart/annotation/horizontal-line-annotation';
+
+import { Chart, Utilities, ChartConfig} from '@tomsoftware/webgl-chart-vue';
+import { Series, Matrix3x3, GpuFloatBuffer,
+GpuText, LayoutCell, VerticalAxis, VerticalAxisPosition,
+HorizontalAxis, HorizontalAxisPosition , VerticalLayout,
+HorizontalLayout, ScreenPosition, IntersectedLayout,
+LayoutBorder, Color, Font, Alignment, Scale,
+EventDispatcher, EventTypes, RectDrawer, Annotations,
+VerticalPosition, HorizontalPosition} from '@tomsoftware/webgl-chart';
+
 
 
 let debugTexture = false;
@@ -264,11 +250,13 @@ function onDownloadTexture() {
     <chart
       :data="data1"
       @on-bind="onBind"
+      class="chart"
     />
   </div>
   <div class="grid-item">
     <chart
       :data="data2"
+      class="chart"
     />
   </div>
 </div>
@@ -276,10 +264,14 @@ function onDownloadTexture() {
 </template>
 
 <style scoped>
+.chart {
+  height: 300px;
+}
+
 .grid-container {
   display: grid;
   width: 100%;
-  height: 300px;
+  height: 600px;
   column-count: 2;
   overflow: hidden;
   padding: 0;

@@ -1,14 +1,13 @@
 ---
 home: true
 title: Home
-heroImage: https://vuejs.press/images/hero.png
 actions:
   - text: Get Started
     link: get-started.md
     type: primary
 
-  - text: Introduction
-    link: https://vuejs.press/guide/introduction.html
+  - text: API
+    link: api.md
     type: secondary
 
 features:
@@ -22,6 +21,5 @@ features:
 footer: MIT Licensed | Copyright © 2025
 ---
 
-This is the content of home page. Check [Home Page Docs][default-theme-home] for more details.
-
-[default-theme-home]: https://vuejs.press/reference/default-theme/frontmatter.html#home-page
+Basic example plotting 2,7 million points - reducing framerate to 12 Hz
+<example-title />

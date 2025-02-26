@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import type { RenderCallback } from "../c/gpu-chart";
+import type { RenderCallback } from "@tomsoftware/webgl-chart";
 
 export class ChartConfig {
     public onRender: RenderCallback | null = null;

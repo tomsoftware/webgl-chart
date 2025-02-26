@@ -1,4 +1,3 @@
-import { ErrorHandler } from "./error-handler";
 import { Context } from "./context";
 import { Matrix3x3 } from "./matrix-3x3";
 
@@ -7,7 +6,6 @@ export type RenderCallback = (context: Context) => void;
 export class GpuChart {
     private element: HTMLCanvasElement | null = null;
     private resizeObserver: ResizeObserver | null = null;
-    private errorHandler = new ErrorHandler();
     private width: number = 0;
     private height: number = 0;
     private devicePixelRatio: number = GpuChart.getDevicePixelRatio();

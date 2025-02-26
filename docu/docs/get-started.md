@@ -6,24 +6,31 @@
 
 @tab pnpm
 ```bash
-pnpm install @hmilch/webgl-chart
+pnpm install @tomsoftware/webgl-chart --save
 ```
 
 @tab npm
 ```bash
-npm install @hmilch/webgl-chart
+npm install @tomsoftware/webgl-chart --save
 ```
 :::
 
-## Integrate
-https://plugin-md-enhance.vuejs.press/guide/code/demo/normal.html
+Additional to use in a vue project:
 
+::: code-tabs#shell
 
-## Example
+@tab pnpm
+```bash
+pnpm install @tomsoftware/webgl-chart-vue --save
+```
 
-<!-- ::: thomas
-hallo
+@tab npm
+```bash
+npm install @tomsoftware/webgl-chart-vue --save
+```
 :::
--->
 
-<example-full />
+
+## vue Example
+@[code](examples/example-title.vue)
+
