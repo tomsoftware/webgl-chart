@@ -6,8 +6,8 @@ actions:
     link: get-started.md
     type: primary
 
-  - text: Introduction
-    link: https://vuejs.press/guide/introduction.html
+  - text: API
+    link: api.md
     type: secondary
 
 features:
@@ -21,4 +21,5 @@ features:
 footer: MIT Licensed | Copyright © 2025
 ---
 
+Basic example plotting 2,7 million points - reducing framerate to 12 Hz
 <example-title />
