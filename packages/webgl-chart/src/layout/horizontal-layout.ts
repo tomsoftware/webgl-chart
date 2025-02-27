@@ -1,10 +1,12 @@
 import type { Context } from "../context";
 import type { ScreenPosition } from "./screen-position";
-import { HorizontalItem, type IWidthProvider } from "./horizontal-item";
+import type { IWidthProvider } from "./size-provider";
+import { HorizontalItem } from "./horizontal-item";
 import { LayoutArea } from "./layout-area";
 import { LayoutCell } from "./layout-cell";
 import { BaseLayoutNode, type LayoutCache, type LayoutNode } from "./layout-node";
 import { VariableHorizontalItem } from "./variable-horizontal-item";
+
 
 export class HorizontalLayout extends BaseLayoutNode implements LayoutNode {
     private children: (HorizontalItem | VariableHorizontalItem)[] = [];
@@ -15,15 +17,20 @@ export class HorizontalLayout extends BaseLayoutNode implements LayoutNode {
         this.padding = padding;
     }
 
+    /** add a layout cell that is defined by it's children width */
     public addFixedCell(providers: IWidthProvider | IWidthProvider[]): LayoutCell {
         const newCell = new HorizontalItem(Array.isArray(providers) ? providers : [providers]);
         this.children.push(newCell);
         return newCell;
     }
 
-    public addCell(relativeWidth: number): LayoutCell {
+    public addRelativeCell(relativeWidth: number, addToStart: boolean = false): LayoutCell {
         const newCell = new VariableHorizontalItem(relativeWidth);
-        this.children.push(newCell);
+        if (addToStart) {
+            this.children.unshift(newCell);
+        } else {
+            this.children.push(newCell);
+        }
         return newCell;
     }
 
@@ -54,7 +61,7 @@ export class HorizontalLayout extends BaseLayoutNode implements LayoutNode {
         const remainingWidth = area.width - totalFixedWidth;
         let posLeft = area.left;
 
-        // us the calculated width to calculate the area for each child
+        // use the calculated width to calculate the area for each child
         for (const child of this.children) {
             let w = 0;
             if (child instanceof HorizontalItem) {

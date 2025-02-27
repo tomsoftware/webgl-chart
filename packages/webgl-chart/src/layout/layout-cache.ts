@@ -18,6 +18,11 @@ export class LayoutStore implements LayoutCache {
         this.cache.set(key, area);
     }
 
+    public hasArea(key: string): boolean {
+        return this.cache.get(key) != null;
+    }
+
+
     public clear() {
         this.cache.clear();
     }

@@ -32,8 +32,6 @@ export * from './buffers/gpu-buffer-state';
 // event-handler
 export * from './event-handler/event-handler';
 export * from './event-handler/event-value';
-// import { EventTypes as a } from './event-handler/event-value';
-// export {EventTypes} from a;
 
 // layout
 export * from './layout/horizontal-item';
@@ -47,7 +45,8 @@ export * from './layout/screen-position';
 export * from './layout/variable-horizontal-item';
 export * from './layout/variable-vertical-item';
 export * from './layout/vertical-item';
-export * from './layout/vertical-layout'
+export * from './layout/vertical-layout';
+export * from './layout/basic-chart-layout';
 
 // scales
 export * from './scales/axis-base';

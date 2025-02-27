@@ -1,6 +1,10 @@
 export class Utilities {
     /** start downloading an image in the browser */
     public static DownloadImage(img: HTMLImageElement, fileName = 'image') {
+        if (typeof document === 'undefined') {
+            return;
+        }
+
         const link = document.createElement('a');
         link.href = img.src;
         link.download = fileName;

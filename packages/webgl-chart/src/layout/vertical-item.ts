@@ -1,11 +1,7 @@
 import type { Context } from "../context";
+import type { IHeightProvider } from "./size-provider";
 import { LayoutCell } from "./layout-cell";
 import { ScreenUnit, ScreenPosition } from "./screen-position";
-
-
-export interface IHeightProvider {
-    getHeight(context: Context): ScreenPosition;
-}
 
 export class VerticalItem extends LayoutCell implements IHeightProvider {
     public providers: IHeightProvider[];

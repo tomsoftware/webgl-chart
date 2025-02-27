@@ -12,7 +12,18 @@ export default defineUserConfig({
 
   theme: defaultTheme({
     logo: 'https://vuejs.press/images/hero.png',
-    navbar: ['/', '/get-started', '/api'],
+    navbar: ['/', '/get-started', '/api', '/examples/basic'],
+    sidebar: [
+      {
+          text: 'Examples',
+          collapsible: false,
+          prefix: '/examples/',
+          children: [
+            'basic',
+            'stacked',
+          ]
+      }
+    ]
   }),
 
   bundler: viteBundler({

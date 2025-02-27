@@ -1,4 +1,3 @@
-import type { IWidthProvider } from "../layout/horizontal-item";
 import type { LayoutNode } from "../layout/layout-node";
 import type { Context } from "../context";
 import { Alignment } from "../alignment";
@@ -6,6 +5,7 @@ import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
 import { Matrix3x3 } from "../matrix-3x3";
 import { AxisBase } from "./axis-base";
 import { GpuLetterText } from "../texture/gpu-letter-text";
+import { IWidthProvider } from "../layout/size-provider";
 
 export enum VerticalAxisPosition {
     Left,

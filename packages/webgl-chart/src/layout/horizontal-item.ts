@@ -1,10 +1,7 @@
 import type { Context } from "../context";
+import type { IWidthProvider } from "./size-provider";
 import { LayoutCell } from "./layout-cell";
 import { ScreenUnit, ScreenPosition } from "./screen-position";
-
-export interface IWidthProvider {
-    getWidth(context: Context): ScreenPosition;
-}
 
 export class HorizontalItem extends LayoutCell implements IWidthProvider {
     public providers: IWidthProvider[];

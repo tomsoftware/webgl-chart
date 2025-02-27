@@ -4,7 +4,8 @@ import { LayoutArea } from "./layout-area";
 import { LayoutCell } from "./layout-cell";
 import { BaseLayoutNode, type LayoutCache, type LayoutNode } from "./layout-node";
 import { VariableVerticalItem } from "./variable-vertical-item";
-import { VerticalItem, type IHeightProvider } from "./vertical-item";
+import { VerticalItem } from "./vertical-item";
+import type { IHeightProvider } from "./size-provider";
 
 export class VerticalLayout extends BaseLayoutNode implements LayoutNode {
     private children: (VerticalItem | VariableVerticalItem)[] = [];
@@ -15,13 +16,15 @@ export class VerticalLayout extends BaseLayoutNode implements LayoutNode {
         this.padding = padding;
     }
 
+    /** add a layout cell that is defined by it's children height */
     public addFixedCell(providers: IHeightProvider | IHeightProvider[]): LayoutCell {
         const newCell = new VerticalItem(Array.isArray(providers) ? providers : [providers]);
         this.children.push(newCell);
         return newCell;
     }
 
-    public addCell(relativeHeight: number, addToStart: boolean = false): LayoutCell {
+    /** add cell with relative height */
+    public addRelativeCell(relativeHeight: number, addToStart: boolean = false): LayoutCell {
         const newCell = new VariableVerticalItem(relativeHeight);
         if (addToStart) {
             this.children.unshift(newCell);

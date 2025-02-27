@@ -1,12 +1,13 @@
 {
   "include": [
     "docs/.vuepress/**/*",
-    "docs/examples/**/*",
+    "examples/**/*",
     "../packages/webgl-chart-vue/src/**/*.ts",
-    "../packages/webgl-chart/src/**/*.ts", "docs/examples/example-full.vue",
+    "../packages/webgl-chart/src/**/*.ts"
   ],
   "exclude": [
-    "./dist/**"
+    "./dist/**",
+    "./docs/.vuepress/dist/**"
   ],
   "compilerOptions": {
     "noEmitOnError": false,

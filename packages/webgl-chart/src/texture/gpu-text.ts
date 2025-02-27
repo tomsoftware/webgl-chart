@@ -1,6 +1,4 @@
 import type { Context } from "../context";
-import type { IHeightProvider } from "../layout/vertical-item";
-import type { IWidthProvider } from "../layout/horizontal-item";
 import type { LayoutNode } from "../layout/layout-node";
 import type { TextBoundingBox } from "./text-bounding-box";
 import { Font } from "./font";
@@ -9,6 +7,7 @@ import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
 import { Alignment } from "../alignment";
 import { Color } from "../color";
 import { TextTextureGenerator } from "./text-texture-generator";
+import { IHeightProvider, IWidthProvider } from "../layout/size-provider";
 
 
 export class GpuText implements IHeightProvider, IWidthProvider {

@@ -3,7 +3,7 @@ import type { LayoutArea } from "./layout-area";
 import type { Context } from "../context";
 
 export class LayoutCell extends BaseLayoutNode implements LayoutNode {
-    private children: LayoutNode[] = [];
+    protected children: LayoutNode[] = [];
 
     /** add new child to this cell */
     public addLayout<T extends LayoutNode>(node: T): T {

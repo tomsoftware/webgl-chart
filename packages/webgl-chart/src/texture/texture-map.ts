@@ -116,14 +116,14 @@ export class TextureMap implements IUniformValue {
     private updateTexture(gl: WebGLRenderingContext) {
         console.log('TextureMap: update texture');
         gl.texImage2D(
-            gl.TEXTURE_2D,
+            WebGLRenderingContext.TEXTURE_2D,
             0,
-            gl.RGBA,
+            WebGLRenderingContext.RGBA,
             this.width,
             this.height,
             0,
-            gl.RGBA,
-            gl.UNSIGNED_BYTE,
+            WebGLRenderingContext.RGBA,
+            WebGLRenderingContext.UNSIGNED_BYTE,
             new Uint8Array(this.buffer.buffer));
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -184,7 +184,11 @@ export class TextureMap implements IUniformValue {
     }
 
     /** Return a html <image> of the texture buffer - mainly for debugging purposes */
-    public exportToHtmlImage(): HTMLImageElement {
+    public exportToHtmlImage(): HTMLImageElement | null {
+        if (typeof document === 'undefined') {
+            return null;
+        }
+
         const canvas = document.createElement('canvas');
         canvas.width = this.width;
         canvas.height = this.height;

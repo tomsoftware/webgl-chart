@@ -1,8 +1,10 @@
 import type { GpuBuffer } from "./gpu-buffer";
 
+const isBrowser = typeof WebGLRenderingContext !== 'undefined';
+
 export enum GlBufferTypes {
-    ARRAY_BUFFER = 34962, // WebGLRenderingContext.ARRAY_BUFFER,
-    ELEMENT_ARRAY_BUFFER = 34963 // WebGLRenderingContext.ELEMENT_ARRAY_BUFFER
+    ARRAY_BUFFER = isBrowser ? WebGLRenderingContext.ARRAY_BUFFER : 34962,
+    ELEMENT_ARRAY_BUFFER = isBrowser ? WebGLRenderingContext.ELEMENT_ARRAY_BUFFER : 34963
 }
 
 export class GpuBufferState {

@@ -1,12 +1,11 @@
 import type { Context } from "../context";
-import type { IHeightProvider } from "../layout/vertical-item";
 import type { LayoutNode } from "../layout/layout-node";
 import { ScreenPosition, ScreenUnit } from "../layout/screen-position";
 import { AxisBase } from "./axis-base";
 import { Matrix3x3 } from "../matrix-3x3";
-import { GpuText } from "../texture/gpu-text";
 import { Alignment } from "../alignment";
 import { GpuLetterText } from "../texture/gpu-letter-text";
+import { IHeightProvider } from "../layout/size-provider";
 
 export enum HorizontalAxisPosition {
     Top,
@@ -14,7 +13,7 @@ export enum HorizontalAxisPosition {
 }
 
 
-export class HorizontalAxis extends AxisBase implements IHeightProvider{
+export class HorizontalAxis extends AxisBase implements IHeightProvider {
     public position: HorizontalAxisPosition = HorizontalAxisPosition.Bottom;
 
     public setPosition(position: HorizontalAxisPosition): HorizontalAxis {

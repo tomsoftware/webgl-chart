@@ -19,8 +19,11 @@ export class GpuChart {
     private previousRenderTimestamp = 0;
 
     public static getDevicePixelRatio(): number {
-        // eslint-disable-next-line no-undef
-        return window?.devicePixelRatio ?? 1;
+        if (typeof window === 'undefined') {
+            return 1;
+        }
+
+        return window.devicePixelRatio;
     }
 
     /** set max framerate */

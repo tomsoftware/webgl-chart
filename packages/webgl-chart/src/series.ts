@@ -123,7 +123,7 @@ export class Series {
         if (this.minMaxPointSizeCache.length !== 0) {
             return this.minMaxPointSizeCache;
         }
-        this.minMaxPointSizeCache = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE);
+        this.minMaxPointSizeCache = gl.getParameter(WebGLRenderingContext.ALIASED_POINT_SIZE_RANGE);
         return this.minMaxPointSizeCache;
     }
 
@@ -158,7 +158,7 @@ export class Series {
 
         // draw buffer / series data
         const offset = 0;
-        context.gl.drawArrays(context.gl.POINTS, offset, this.data.count);
+        context.gl.drawArrays(WebGLRenderingContext.POINTS, offset, this.data.count);
     }
 
     public drawLines(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode) {
@@ -209,7 +209,7 @@ export class Series {
 
           const m = p.multiply(l.values).multiply(lineThicknessShift.values).multiply(s.values);
           context.setUniform(program, 'uniformCamTransformation', m);
-          context.gl.drawArrays(context.gl.LINE_STRIP, offset, count);
+          context.gl.drawArrays(WebGLRenderingContext.LINE_STRIP, offset, count);
           
         }
 

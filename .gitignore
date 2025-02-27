@@ -2,9 +2,10 @@ node_modules/*
 pnpm-lock.yaml
 docu/docs/.vuepress/.cache/
 docu/docs/.vuepress/.temp/
-docu/node_modules/
-packages/webgl-chart-vue/node_modules/
 docu/docs/.vuepress/dist/
+docu/node_modules/
+
+packages/webgl-chart-vue/node_modules/
 packages/webgl-chart/node_modules/
 packages/webgl-chart/dist/
 packages/webgl-chart-vue/dist/

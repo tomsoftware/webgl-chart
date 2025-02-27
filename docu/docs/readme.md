@@ -10,6 +10,10 @@ actions:
     link: api.md
     type: secondary
 
+  - text: Examples
+    link: examples/basic
+    type: secondary
+
 features:
   - title: Great Performant
     details: Draw millions of points in ms by using gpu acceleration.

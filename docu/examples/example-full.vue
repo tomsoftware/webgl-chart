@@ -81,18 +81,18 @@ const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.FromPi
 
 const headlineLayout = baseRow.addFixedCell([headline]);
 const legendLayout = baseRow.addFixedCell([legend]);
-const innerContainer = baseRow.addCell(1);
+const innerContainer = baseRow.addRelativeCell(1);
 
 // horizontal layout for y axis and chart-data
 const column = innerContainer.addLayout(new HorizontalLayout());
 const columnAxis1CellLeft = column.addFixedCell(yAxis1);
 const columnAxis2CellLeft = column.addFixedCell(yAxis2);
-const columnChartCell = column.addCell(1); // 100% of empty space
+const columnChartCell = column.addRelativeCell(1); // 100% of empty space
 const columnAxisCellRight = column.addFixedCell([yAxis3]);
 
 // vertical layout for x axis and chart-data
 const row = innerContainer.addLayout(new VerticalLayout());
-const rowChartCell = row.addCell(1); // 100% of empty space
+const rowChartCell = row.addRelativeCell(1); // 100% of empty space
 const rowAxisCell = row.addFixedCell([xAxis]);
 
 // const chartCell = innerContainer.addLayout(new IntersectedLayout(rowChartCell, columnChartCell));
@@ -136,6 +136,9 @@ const data1 = new ChartConfig()
       if (debugTexture == true) {
         debugTexture = false;
         const img = context.exportTextureHtmlImage();
+        if (img == null) {
+          return;
+        }
         Utilities.DownloadImage(img, 'texture');
       }
 

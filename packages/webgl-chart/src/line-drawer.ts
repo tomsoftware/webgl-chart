@@ -25,7 +25,7 @@ export class LineDrawer {
 
         // draw buffer / series data
         const offset = 0;
-        context.gl.drawArrays(context.gl.LINES, offset, this.lines.count);
+        context.gl.drawArrays(WebGLRenderingContext.LINES, offset, this.lines.count);
     }
 
     public addLine(p1: Vector2, p2: Vector2, color1: Color, color2: Color | null = null): void {
