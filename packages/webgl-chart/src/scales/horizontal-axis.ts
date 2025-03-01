@@ -6,12 +6,13 @@ import { Matrix3x3 } from "../matrix-3x3";
 import { Alignment } from "../alignment";
 import { GpuLetterText } from "../texture/gpu-letter-text";
 import { IHeightProvider } from "../layout/size-provider";
+import { Font } from "../texture/font";
+import { TextTextureGenerator } from "../texture/text-texture-generator";
 
 export enum HorizontalAxisPosition {
     Top,
     Bottom
 }
-
 
 export class HorizontalAxis extends AxisBase implements IHeightProvider {
     public position: HorizontalAxisPosition = HorizontalAxisPosition.Bottom;
@@ -46,13 +47,17 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
             this.label.draw(context, axisLayout, align);
         }
 
-        const ticks = this.scale.calculateTicks();
+        // get font width
+        const g = TextTextureGenerator.getCached('0', this.tickFont);
+        const m = g.computerTextMetrics(context);
+
+        const ticks = this.scale.calculateTicks(m.width, area.width * context.width, false);
         const positionScaling = area.width / this.scale.range;
 
         for (const tick of ticks) {
             const m = new Matrix3x3().translate((tick - this.scale.min) * positionScaling, 0);
             context.drawLine(area.p0.transform(m), area.p0p3(0.1).transform(m), this.tickColor);
-            const text = new GpuLetterText(tick.toLocaleString());
+            const text = new GpuLetterText(tick.toLocaleString(), this.tickFont);
             text.draw(context, axisLayout, Alignment.leftTop, m.translate(0, area.height * 0.5));
         
             if ((this.gridColor != null) && (chartArea != null)){

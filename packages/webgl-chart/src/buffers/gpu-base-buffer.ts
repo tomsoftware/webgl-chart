@@ -132,4 +132,21 @@ export class GpuBaseBuffer<T extends TypedArray> {
         return this.data.length / this.componentsPerInstance;
     }
 
+    /** return the fist element */
+    public get first() {
+        if (this.length <= 0) {
+            return null;
+        }
+
+        return this.buffer[this.bufferOffset];
+    }
+
+    /** return the last element */
+    public get last() {
+        if (this.length <= 0) {
+            return null;
+        }
+
+        return this.buffer[this.bufferEnd - 1];
+    }
 }

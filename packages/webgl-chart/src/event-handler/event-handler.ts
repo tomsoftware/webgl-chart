@@ -113,15 +113,18 @@ export class EventDispatcher {
         return new Vector2(relativeX, relativeY);
     }
 
-    private onMouseWheel = (event: WheelEvent) : void => {
+    private onMouseWheel = (event: WheelEvent) : boolean => {
         if (this.listeners.size === 0) {
-            return;
+            return true;
         }
 
         this.eventQueue.push(
             new EventValue(EventTypes.Wheel, this.calcScreenPosition(event))
                 .setWheel(event.deltaY)
         );
+
+        event.preventDefault();
+        return false;
     }
 
     private lastMousePosition: Vector2 | null = null;

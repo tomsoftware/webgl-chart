@@ -1,12 +1,14 @@
 <script setup lang="ts">
 
-import { onBeforeUnmount, onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
 import { Series, Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell,
   VerticalLayout, ScreenPosition, Color, Alignment,  Scale,
   EventDispatcher, Font, BasicChartLayout} from '@tomsoftware/webgl-chart';
+
+const pause = ref(false);
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
@@ -88,6 +90,10 @@ myChart.setMaxFrameRate(12);
 let animationTimer: number = 0;
 onMounted(() => {
   animationTimer = window.setInterval(() => {
+    if (pause.value) {
+      return;
+    }
+
     scaleX.pan(-0.01);
   }, 100);
 });
@@ -96,9 +102,16 @@ onBeforeUnmount(() => {
   window.clearInterval(animationTimer);
 });
 
+function onClickZoomOut() {
+  scaleX.min = time.first ?? 0;
+  scaleX.max = time.last ?? 0;
+}
+
 </script>
 
 <template>
+  <button v-on:click="pause = !pause">{{pause ? 'run': 'pause'}}</button>
+  <button v-on:click="onClickZoomOut()">zoom out</button>
   <div class="grid-item">
     <chart
       :data="myChart"

@@ -6,6 +6,7 @@ import { Matrix3x3 } from "../matrix-3x3";
 import { AxisBase } from "./axis-base";
 import { GpuLetterText } from "../texture/gpu-letter-text";
 import { IWidthProvider } from "../layout/size-provider";
+import { TextTextureGenerator } from "../texture/text-texture-generator";
 
 export enum VerticalAxisPosition {
     Left,
@@ -48,7 +49,13 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
             this.label.draw(context, axisLayout, align);
         }
 
-        const ticks = this.scale.calculateTicks();
+        // get font hight
+        const g = TextTextureGenerator.getCached('0', this.tickFont);
+        const m = g.computerTextMetrics(context);
+
+        // calculate ticks
+        const ticks = this.scale.calculateTicks(m.height, area.height * context.width, true);
+
         const positionScaling = area.height / this.scale.range;
 
         for (const tick of ticks) {

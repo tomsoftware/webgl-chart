@@ -38,8 +38,23 @@ export class Scale {
         return result;
     }
 
+    private calculateSize(step: number, letterSize: number, ignoreNumberOfLetters: boolean) {
+        const num = Math.ceil(this.range / step);
 
-    public calculateTicks() {
+        let maxTickPixelSize: number;
+        if (ignoreNumberOfLetters) {
+            maxTickPixelSize = letterSize * 2;
+        }
+        else {
+            const test1 = Math.round(this.min / step) * step;
+            const test2 = test1 + step;
+            maxTickPixelSize = (Math.max(test1.toLocaleString().length, test2.toLocaleString().length) + 2) * letterSize;
+        }
+        
+        return maxTickPixelSize * num;
+    }
+
+    public calculateTicks(letterSize: number, scaleMaxSize: number, ignoreNumberOfLetters: boolean) {
         const range = this.range;
         if (Math.abs(range) < 0.0000000001) {
             return [this.min];
@@ -53,11 +68,19 @@ export class Scale {
             step = -Math.pow(10, Math.floor(Math.log10(-range)));
         }
 
-        if (range / step < 5) {
+        while(this.calculateSize(step * 5, letterSize, ignoreNumberOfLetters) > scaleMaxSize) {
+            step = step * 5;
+        }
+
+        while(this.calculateSize(step * 2, letterSize, ignoreNumberOfLetters) > scaleMaxSize) {
+            step = step * 2;
+        }
+
+        while(this.calculateSize(step / 5, letterSize, ignoreNumberOfLetters) < scaleMaxSize) {
             step = step / 5;
         }
 
-        if (range / step < 10) {
+        while(this.calculateSize(step / 2, letterSize, ignoreNumberOfLetters) < scaleMaxSize) {
             step = step / 2;
         }
 
