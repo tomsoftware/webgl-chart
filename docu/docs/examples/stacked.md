@@ -1,4 +1,4 @@
-# Stacked Example
+# Stacked charts
 This example uses the `BasicChartLayout` to display multiple series a stacked chart.
 
 <example-stacked />

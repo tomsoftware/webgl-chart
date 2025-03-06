@@ -108,10 +108,10 @@ export class BasicChartLayout {
         this.eventDispatcher = eventDispatcher;
         this.tableRowLayout = tableRowLayout ?? new TableRowLayout(null);
         this.baseCell = baseCell;
-        this.xAxis  = new HorizontalAxis(new GpuText('X Axis'), xScale)
-            .setBorderColor(Color.darkGray)
-            .setPosition(HorizontalAxisPosition.Bottom)
-            .setGridColor(Color.lightGray);
+        this.xAxis = new HorizontalAxis(new GpuText('X Axis'), xScale)
+            .setBorderColor(Color.platinum)
+            .setGridColor(Color.platinum)
+            .setPosition(HorizontalAxisPosition.Bottom);
 
         this.updateLayout();
     }
@@ -125,14 +125,20 @@ export class BasicChartLayout {
         return newYAxis;
     }
 
+    /** draw out x and y-axis of the layout */
     public draw(context: Context) {
+        // draw x axis
         if (this.xAxisCell != null) {
             this.xAxis.draw(context, this.xAxisCell, this.chartCell);
         }
         
+        // draw all y axes
         for (const yAxis of this.yAxis) {
             yAxis.draw(context);
         }
+
+        // write out all pending lines
+        context.flush();
     }
 
     private onWheel = (event: EventValue) => {

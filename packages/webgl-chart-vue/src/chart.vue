@@ -3,16 +3,20 @@ import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { GpuChart } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from './chart-config';
 
+interface Props {
+  data: ChartConfig
+  ariaLabel?: string;
+  ariaDescribedby?: string;
+}
+
+const props = defineProps<Props>();
+
 const chartCanvas = ref<HTMLCanvasElement>();
 const emit = defineEmits<{
   onBind: [element: HTMLElement]
 }>();
 
 const gpuChart = new GpuChart();
-
-const props = defineProps<{
-  data: ChartConfig
-}>()
 
 watch(
     () => props.data.maxFrameRate.value,
@@ -21,14 +25,13 @@ watch(
     }
 );
 
-
 onMounted(() => {
   const cav = chartCanvas.value;
   if (cav == null) {
     return;
   }
 
-  console.log('mounted', cav);
+  console.debug('chart.vue mounted to:', cav);
 
   gpuChart.bind(cav);
   gpuChart.setMaxFrameRate(props.data.maxFrameRate.value);
@@ -45,28 +48,18 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  console.log('unmounted');
+  console.debug('chart.vue unmounted!');
+  gpuChart.dispose();
 });
 
 </script>
 
 <template>
-  <div class="chart-container">
-    <canvas ref="chartCanvas" class="chart-canvas"></canvas>
-  </div>
+  <canvas
+    ref="chartCanvas"
+    role="img"
+    :ariaLabel="props.ariaLabel"
+    :ariaDescribedby="props.ariaDescribedby"
+  ></canvas>
 </template>
 
-<style scoped>
-
-.chart-container {
-  width:100%;
-  position: relative;
-}
-
-.chart-canvas {
-  width:100%;
-  height:100%;
-  position: absolute;
-}
-
-</style>

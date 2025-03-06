@@ -12,7 +12,14 @@ export default defineUserConfig({
 
   theme: defaultTheme({
     logo: 'https://vuejs.press/images/hero.png',
-    navbar: ['/', '/get-started', '/api', '/examples/basic'],
+    navbar: [
+      '/',
+      '/get-started',
+      '/api',{
+          text: 'Examples',
+          link: '/examples/basic',
+          activeMatch: "^/examples/"
+        }],
     sidebar: [
       {
           text: 'Examples',
@@ -21,6 +28,7 @@ export default defineUserConfig({
           children: [
             'basic',
             'stacked',
+            'annotations',
           ]
       }
     ]

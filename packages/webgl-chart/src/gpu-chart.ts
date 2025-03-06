@@ -17,6 +17,8 @@ export class GpuChart {
     // time of last frame
     private lastFrame: number = 0;
     private previousRenderTimestamp = 0;
+    // indicate that the chart is disposed
+    private disposed = false;
 
     public static getDevicePixelRatio(): number {
         if (typeof window === 'undefined') {
@@ -60,6 +62,7 @@ export class GpuChart {
 
     /** dispose gpu chart */
     public dispose(): void {
+        this.disposed = true;
         this.resizeObserver?.disconnect();
         this.context?.dispose();
         this.context = null;
@@ -71,6 +74,10 @@ export class GpuChart {
 
 
     private renderInternal = (time: number) => {
+        if (this.disposed) {
+            return;
+        }
+
         if (this.previousRenderTimestamp == time) {
             return;
         }
@@ -93,7 +100,7 @@ export class GpuChart {
 
     /**
      * trigger a new rendering. The rendering calls are reduced to a
-     * max framerate and syncronized
+     * max framerate and synchronized
      **/
     public render(): void {
         requestAnimationFrame(this.renderInternal);

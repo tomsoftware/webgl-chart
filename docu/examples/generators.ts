@@ -1,3 +1,5 @@
+import { Color } from "@tomsoftware/webgl-chart";
+
 export class Generators {
 
     public static generateEKG(t: number): number {
@@ -14,7 +16,7 @@ export class Generators {
         return pWave + qWave + rWave + sWave + tWave + noise;
     };
 
-    public static iOSimulation(t: number): number {
+    public static generateIO(t: number): number {
         const rate1 = 0.2;
         const upSample = Math.PI / 100;
         const amp = 10;
@@ -23,4 +25,16 @@ export class Generators {
         return y2 > 0.1 ? 1 : 0;
     }
 
+    public static generateAnnotations(maxTime: number, step: number): { x: number, color: Color, text: string }[] {
+        const list = [];
+        for (let i = 0; i < maxTime; i+= step) {
+            const x = Math.random() * maxTime;
+            const type = Math.floor(Math.random() * 3);
+            const color = [Color.red, Color.green, Color.blue][type];
+            const text = ['bad', 'good', 'test'][type];
+            list.push({ x , color, text });
+        }
+
+        return list;
+    }
 }

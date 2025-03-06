@@ -15,6 +15,10 @@ export class Color {
         return [this.r, this.g, this.b, this.a];
     }
 
+    public withAlpha(a: number): Color {
+        return new Color(this.r, this.g, this.b, a)
+    }
+
     private static toByte(value: number): number {
         return Math.min(255, Math.max(0, Math.round(value * 255)));
     }
@@ -81,13 +85,14 @@ export class Color {
     public static lightGray = Color.grayFromBytes(211);
     public static darkGray = Color.grayFromBytes(169);
     public static whiteSmoke = Color.grayFromBytes(245);
-
+    public static platinum = Color.fromBytes(229, 228, 226)
+    
 
     public static colorList = [
         Color.fromBytes(54, 162, 235), // blue
         Color.fromBytes(255, 99, 132), // red
-        Color.fromBytes(255, 159, 64), // orange
         Color.fromBytes(255, 205, 86), // yellow
+        Color.fromBytes(255, 159, 64), // orange
         Color.fromBytes(75, 192, 192), // green
         Color.fromBytes(153, 102, 255), // purple
         Color.fromBytes(201, 203, 207)  // grey

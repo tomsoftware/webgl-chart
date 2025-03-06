@@ -1,6 +1,6 @@
 {
   "name": "@tomsoftware/webgl-chart",
-  "version": "0.0.4",
+  "version": "0.0.10",
   "description": "High performance web Chart Library to plot line-charts using WebGL",
   "main": "dist/index.js",
   "publishConfig": {

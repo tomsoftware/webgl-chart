@@ -32,5 +32,5 @@ npm install @tomsoftware/webgl-chart-vue --save
 
 
 ## vue Example
-@[code](../examples/example-title.vue)
+@[code](../examples/example-showcase.vue)
 

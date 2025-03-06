@@ -26,4 +26,4 @@ footer: MIT Licensed | Copyright © 2025
 ---
 
 Basic example plotting 2,7 million points - reducing framerate to 12 Hz
-<example-title />
+<example-showcase />

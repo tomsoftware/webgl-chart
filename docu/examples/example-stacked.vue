@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import { onBeforeUnmount, onMounted } from 'vue';
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
@@ -51,7 +50,7 @@ const series2 = new Series(time)
     .setPointSize(4)
 
 const series3 = new Series(time)
-    .generate((t) => Generators.iOSimulation(t * 10) * 20)
+    .generate((t) => Generators.generateIO(t * 10) * 20)
     .setColor(Color.darkGreen)
     .setPointSize(4)
 
@@ -102,13 +101,11 @@ myChart.setMaxFrameRate(12);
 </script>
 
 <template>
-  <div class="grid-item">
-    <chart
-      :data="myChart"
-      @on-bind="onBind"
-      class="chart"
-    />
-  </div>
+  <chart
+    :data="myChart"
+    @on-bind="onBind"
+    class="chart"
+  />
 </template>
 
 <style scoped>

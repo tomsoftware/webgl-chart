@@ -2,7 +2,7 @@
 High performance web Chart Library to plot line-charts using WebGL.
 
 ## Install
-```
+```bash
 npm i @tomsoftware/webgl-chart -save
 ```
 
