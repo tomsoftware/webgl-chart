@@ -6,12 +6,12 @@
 
 @tab pnpm
 ```bash
-pnpm install @tomsoftware/webgl-chart --save
+pnpm i @tomsoftware/webgl-chart --save
 ```
 
 @tab npm
 ```bash
-npm install @tomsoftware/webgl-chart --save
+npm i @tomsoftware/webgl-chart --save
 ```
 :::
 
@@ -21,14 +21,30 @@ Additional to use in a vue project:
 
 @tab pnpm
 ```bash
-pnpm install @tomsoftware/webgl-chart-vue --save
+pnpm i @tomsoftware/webgl-chart-vue --save
 ```
 
 @tab npm
 ```bash
-npm install @tomsoftware/webgl-chart-vue --save
+npm i @tomsoftware/webgl-chart-vue --save
 ```
 :::
+
+Additional to use in a React project:
+
+::: code-tabs#shell
+
+@tab pnpm
+```bash
+pnpm i @tomsoftware/webgl-chart-react --save
+```
+
+@tab npm
+```bash
+npm i @tomsoftware/webgl-chart-react --save
+```
+:::
+
 
 
 ## vue Example

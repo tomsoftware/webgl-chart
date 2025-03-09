@@ -2,7 +2,7 @@
   "include": [
     "docs/.vuepress/**/*",
     "examples/**/*",
-    "../packages/webgl-chart-vue/src/**/*.ts",
+    "../packages/webgl-chart-vue/lib/**/*.ts",
     "../packages/webgl-chart/src/**/*.ts"
   ],
   "exclude": [

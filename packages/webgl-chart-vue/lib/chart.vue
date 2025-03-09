@@ -6,7 +6,7 @@ import { ChartConfig } from './chart-config';
 interface Props {
   data: ChartConfig
   ariaLabel?: string;
-  ariaDescribedby?: string;
+  ariaDescribedBy?: string;
 }
 
 const props = defineProps<Props>();
@@ -31,7 +31,7 @@ onMounted(() => {
     return;
   }
 
-  console.debug('chart.vue mounted to:', cav);
+  console.debug('webgl-chart mounted');
 
   gpuChart.bind(cav);
   gpuChart.setMaxFrameRate(props.data.maxFrameRate.value);
@@ -48,7 +48,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  console.debug('chart.vue unmounted!');
+  console.debug('webgl-chart unmounted!');
   gpuChart.dispose();
 });
 
@@ -58,8 +58,8 @@ onBeforeUnmount(() => {
   <canvas
     ref="chartCanvas"
     role="img"
-    :ariaLabel="props.ariaLabel"
-    :ariaDescribedby="props.ariaDescribedby"
+    :aria-label="props.ariaLabel"
+    :aria-describedby="props.ariaDescribedBy"
   ></canvas>
 </template>
 

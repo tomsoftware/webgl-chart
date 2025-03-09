@@ -5,11 +5,11 @@ import { ChartConfig } from './chart-config';
 interface Props {
   data: ChartConfig;
   ariaLabel?: string;
-  ariaDescribedby?: string;
+  ariaDescribedBy?: string;
   onBind?: (element: HTMLElement | null) => void;
 }
 
-const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedby, onBind}) => {
+const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedBy, onBind}) => {
   const chartCanvasRef = useRef<HTMLCanvasElement>(null);
   const gpuChart = useRef<GpuChart | null>(null);
 
@@ -19,7 +19,7 @@ const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedby, onBind}) => 
       return;
     }
 
-    console.debug('Chart component mounted to:', cav);
+    console.debug('webgl-chart mounted');
     gpuChart.current = new GpuChart();
     gpuChart.current.bind(cav);
     gpuChart.current.setMaxFrameRate(data.maxFrameRate);
@@ -40,7 +40,7 @@ const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedby, onBind}) => 
       if (gpuChart.current == null) {
         return;
       }
-      console.debug('Chart component unmounted!');
+      console.debug('webgl-chart unmounted!');
       gpuChart.current.dispose();
     };
   }, [data]);
@@ -58,7 +58,7 @@ const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedby, onBind}) => 
       ref={chartCanvasRef}
       role="img"
       aria-label={ariaLabel}
-      aria-describedby={ariaDescribedby}
+      aria-describedby={ariaDescribedBy}
     ></canvas>
   );
 };

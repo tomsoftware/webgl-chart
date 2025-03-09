@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@tomsoftware/webgl-chart": "^0.0.11",
-    "@tomsoftware/webgl-chart-react": "^0.0.3",
+    "@tomsoftware/webgl-chart-react": "^0.0.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

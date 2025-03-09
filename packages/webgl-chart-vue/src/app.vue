@@ -1,14 +1,10 @@
-import { useState } from 'react'
+<script setup lang="ts">
+import Chart from '../lib/chart.vue'
 import { BasicChartLayout, Color, EventDispatcher, GpuFloatBuffer, LayoutCell, Scale, Series } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from '../lib/chart-config';
-import React from 'react';
-import Chart from '../lib/chart';
 
-const App: React.FC = () => {
-  const [] = useState(0)
-
-  // generate time data
-  const itemCount = 1000 * 60 * 60 / 4;
+ // generate time data
+ const itemCount = 1000 * 60 * 60 / 4;
   const time = new GpuFloatBuffer(itemCount)
       .generate((i) => i * 0.001); // in seconds
 
@@ -59,18 +55,18 @@ const App: React.FC = () => {
     eventDispatcher.bind(element)
   }
 
+</script>
 
-  return (
-    <>
-      <h1>webgl-chart-react</h1>
-      <Chart
-        data={myChart}
-        onBind={onBind}
-        ariaLabel="My Chart"
-        ariaDescribedBy="chart-description"
-      />
-    </>
-  )
-}
+<template>
+  <h1>webgl-chart-vue</h1>
+  <Chart
+    :data="myChart"
+    :onBind="onBind"
+    ariaLabel="My Chart"
+    ariaDescribedBy="chart-description"
+   />
+</template>
 
-export default App
+<style scoped>
+
+</style>

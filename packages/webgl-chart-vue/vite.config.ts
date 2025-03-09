@@ -6,12 +6,15 @@ import dts from 'vite-plugin-dts';
 export default defineConfig({
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
+      entry: path.resolve(__dirname, 'lib/index.ts'),
       formats: ['es'],
       name: 'webgl-chart-vue',
     },
     rollupOptions: {
-      external: ['vue', '@tomsoftware/webgl-chart'],
+      external: [
+        'vue',
+        '@tomsoftware/webgl-chart'
+      ],
       output: {
         globals: {
           'Vue': 'vue'
@@ -19,5 +22,8 @@ export default defineConfig({
       },
     },
   },
-  plugins: [vue(), dts()],
+  plugins: [vue(), dts({
+    insertTypesEntry: true,
+    include: ['lib']
+  })],
 });

@@ -38,7 +38,7 @@ export default defineUserConfig({
     viteOptions: {
       resolve: {
         alias: {
-          '@tomsoftware/webgl-chart-vue': path.resolve(__dirname, '../../../packages/webgl-chart-vue/src/index.ts'),
+          '@tomsoftware/webgl-chart-vue': path.resolve(__dirname, '../../../packages/webgl-chart-vue/lib/index.ts'),
           '@tomsoftware/webgl-chart': path.resolve(__dirname, '../../../packages/webgl-chart/src/index.ts'),
         }
       },
