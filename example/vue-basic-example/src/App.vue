@@ -24,9 +24,8 @@ function onBind(element: HTMLElement | null): void {
   eventDispatcher.bind(element)
 }
 
-
-const data1 = new ChartConfig()
-    .setRenderCallback((context) => {
+const chartConfig = new ChartConfig()
+  .setRenderCallback((context) => {
       context.calculateLayout(baseContainer);
 
       // draw
@@ -34,13 +33,20 @@ const data1 = new ChartConfig()
 
   });
 
+chartConfig.setMaxFrameRate(10);
+
+window.setInterval(() => {
+  scaleX.pan(-0.008);
+}, 100);
+
 </script>
 
 <template>
   <main>
+    <h1>webgl-chart-vue + VUE</h1>
     <Chart
       class="chart"
-      :data="data1"
+      :data="chartConfig"
       @on-bind="onBind"
     />
   </main>

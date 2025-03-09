@@ -1,4 +1,4 @@
-# Webgl-chart-Vue basic example
+# Webgl-Chart-React basic example
 
 ## Project Setup
 

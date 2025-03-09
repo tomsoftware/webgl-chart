@@ -5,7 +5,14 @@ docu/docs/.vuepress/.temp/
 docu/docs/.vuepress/dist/
 docu/node_modules/
 
-packages/webgl-chart-vue/node_modules/
 packages/webgl-chart/node_modules/
 packages/webgl-chart/dist/
+
+packages/webgl-chart-vue/node_modules/
 packages/webgl-chart-vue/dist/
+
+packages/webgl-chart-react/node_modules/
+packages/webgl-chart-react/dist/
+
+example/react-basic-example/node_modules/
+example/vue-basic-example/node_modules/

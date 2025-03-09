@@ -1,0 +1,42 @@
+{
+  "name": "@tomsoftware/webgl-chart-react",
+  "version": "0.0.3",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tomsoftware/webgl-chart"
+  },
+  "author": "Thomas Zeugner",
+  "license": "MIT",
+  "homepage": "https://chart.hmilch.net/",
+  "keywords": [
+    "chart",
+    "webgl",
+    "react",
+    "component"
+  ],
+  "module": "./dist/webgl-chart-react.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite --force",
+    "build": "vite build"
+  },
+  "peerDependencies": {
+    "@tomsoftware/webgl-chart": ">=0.0.11",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.2.0",
+    "vite-plugin-dts": "^4.5.3"
+  }
+}

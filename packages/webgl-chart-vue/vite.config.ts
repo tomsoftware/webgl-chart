@@ -14,8 +14,7 @@ export default defineConfig({
       external: ['vue', '@tomsoftware/webgl-chart'],
       output: {
         globals: {
-          Vue: 'vue',
-          '@tomsoftware/webgl-chart': 'WebGLChart'
+          'Vue': 'vue'
         },
       },
     },

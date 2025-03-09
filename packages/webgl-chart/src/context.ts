@@ -72,15 +72,16 @@ export class Context {
             program.dispose();
         }
 
-        for (const buffer of this.buffers.values()) {
-            buffer.dispose(this.gl);
+        if (this.gl != null) {
+            for (const buffer of this.buffers.values()) {
+                buffer.dispose(this.gl);
+            }
+            this.textureDrawer.dispose(this.gl);
+            this.lineDrawer.dispose(this.gl);
         }
 
         this.programs.clear();
         this.buffers.clear();
-
-        this.textureDrawer.dispose(this.gl);
-        this.lineDrawer.dispose(this.gl);
     }
 
     public setInstanceBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null) {
