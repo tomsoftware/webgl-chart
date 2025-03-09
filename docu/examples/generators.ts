@@ -25,14 +25,29 @@ export class Generators {
         return y2 > 0.1 ? 1 : 0;
     }
 
-    public static generateAnnotations(maxTime: number, step: number): { x: number, color: Color, text: string }[] {
+    private static stableRandom(seed: number): () => number {
+        const m = 0x80000000; // 2^31
+        const a = 1664525;
+        const c = 1013904223;
+    
+        let state = seed;
+    
+        return function() {
+            state = (a * state + c) % m;
+            return state / (m - 1);
+        };
+    }
+
+    public static generateAnnotations(maxTime: number, count: number): { x: number, color: Color, text: string }[] {
         const list = [];
-        for (let i = 0; i < maxTime; i+= step) {
-            const x = Math.random() * maxTime;
-            const type = Math.floor(Math.random() * 3);
+        const rnd = this.stableRandom(1);
+        for (let i = 0; i < count; i+= 1) {
+            const x = rnd() * maxTime;
+            const type = Math.floor(x * 43231) % 3;
+
             const color = [Color.red, Color.green, Color.blue][type];
             const text = ['bad', 'good', 'test'][type];
-            list.push({ x , color, text });
+            list.push({x, color, text});
         }
 
         return list;

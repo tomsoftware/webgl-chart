@@ -31,7 +31,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@tomsoftware/webgl-chart-vue": ["../packages/webgl-chart-vue/src/index"],
+      "@tomsoftware/webgl-chart-vue": ["../packages/webgl-chart-vue/lib/index"],
       "@tomsoftware/webgl-chart": ["../packages/webgl-chart/src/index"]
     },
 

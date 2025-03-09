@@ -32,11 +32,13 @@ const series3 = new Series(time)
 
 // generate annotations
 const annotations = new Annotations();
-for (const a of Generators.generateAnnotations(itemCount * 0.001, 0.5)) {
-  annotations.addVerticalLine(a.x, a.color, 10, 2)
-    .addLabel(new GpuText(a.text), a.color);
-}
+const numberOfAnnotations = Math.floor(itemCount * 0.003);
+annotations.ensureCapacity(numberOfAnnotations * 3);
 
+for (const a of Generators.generateAnnotations(itemCount * 0.001, numberOfAnnotations)) {
+  annotations.addVerticalLine(a.x, a.color, 10, 2)
+     .addLabel(new GpuText(a.text), a.color);
+}
 
 
 // scales define the range that is shown by the axis

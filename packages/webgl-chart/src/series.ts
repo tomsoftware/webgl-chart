@@ -49,7 +49,6 @@ export class Series {
             return this;
         }
 
-
         this.data = GpuFloatBuffer.generateFrom(this.time, calc);
 
         return this;

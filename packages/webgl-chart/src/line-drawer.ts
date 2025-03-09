@@ -6,8 +6,8 @@ import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 
 /** Draw a batch of lines */
 export class LineDrawer {
-    private lines = new GpuFloatBuffer(0, 2);
-    private colors = new GpuFloatBuffer(0, 4);
+    private lines = new GpuFloatBuffer(250, 2);
+    private colors = new GpuFloatBuffer(1000, 4);
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-line-drawer';

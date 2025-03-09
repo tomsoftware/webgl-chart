@@ -15,6 +15,15 @@ export class Annotations {
     // draw calls are resolved in next draw call
     private drawCallbacks: CallbackHandler<Context>[] = [];
 
+    /**
+     *  make sure the underlying buffers can handle the given number of rects.
+     *  - Every Annotation is made form one rect. 
+     *  - Every Label requires two rect.
+     **/
+    public ensureCapacity(numberOfRects: number) {
+        this.rectDrawer.ensureCapacity(numberOfRects);
+    }
+
     /** create a box annotation */
     public addBox(x1: number, y1: number, x2: number, y2: number, color: Color, radius: number = 0) {
         const w = x2 - x1;

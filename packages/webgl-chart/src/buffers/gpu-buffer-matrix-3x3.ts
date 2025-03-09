@@ -9,7 +9,7 @@ export class GpuBufferMatrix3x3 extends GpuBaseBuffer<Float32Array> implements G
     }
 
     constructor(size: number) {
-        super(Float32Array, size, 9);
+        super(Float32Array, size, 'matrix', 9);
     }
 
     public setVertexAttribPointer(

@@ -4,7 +4,7 @@ import type { GpuBuffer } from "./gpu-buffer";
 export class GpuByteBuffer extends GpuBaseBuffer<Uint8Array> implements GpuBuffer {
 
     constructor(size: number, componentsPerInstance = 1) {
-        super(Uint8Array, size, componentsPerInstance);
+        super(Uint8Array, size, 'byte', componentsPerInstance);
     }
 
     public setVertexAttribPointer(

@@ -45,8 +45,8 @@ export class RectDrawer {
     private textureSize = new GpuFloatBuffer(0, 2);
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(0, 1);
-    private vertexOffset = new GpuFloatBuffer(0, 2);
+    private indexBuffer = new GpuShortBuffer(6, 1);
+    private vertexOffset = new GpuFloatBuffer(4, 2);
 
     /** texture-map to store textures to map to the rectangles */
     public textureMap = new TextureMap();
@@ -65,6 +65,19 @@ export class RectDrawer {
         this.indexBuffer.push(0, 1, 2);
         // build triangle 2 from the vertex-points
         this.indexBuffer.push(0, 2, 3);
+    }
+
+    /** make sure the underlying buffers can handle the given number of rects */
+    public ensureCapacity(numberOfRects: number) {
+        this.rectPos.ensureCapacity(numberOfRects * 2);
+        this.rectSize.ensureCapacity(numberOfRects * 2);
+        this.color.ensureCapacity(numberOfRects * 4);
+        this.margin.ensureCapacity(numberOfRects * 2);
+        this.borderRadius.ensureCapacity(numberOfRects);
+        this.stripeWidth.ensureCapacity(numberOfRects * 2);
+        this.dimensionType.ensureCapacity(numberOfRects * 4);
+        this.textureLocation.ensureCapacity(numberOfRects * 2);
+        this.textureSize.ensureCapacity(numberOfRects * 2);
     }
 
     /** returns the rectangle position for a given index */

@@ -11,21 +11,21 @@ import { GpuBufferMatrix3x3 } from "../buffers/gpu-buffer-matrix-3x3";
 
 export class TextureMapDrawer {
     /** position matrix of the rectangle to put texture on */
-    private rectTransformation = new GpuBufferMatrix3x3(0);
+    private rectTransformation = new GpuBufferMatrix3x3(250);
     /** width and height of the rectangle to draw the texture at (in pixels) */
-    private rectSize = new GpuFloatBuffer(0, 2);
+    private rectSize = new GpuFloatBuffer(250, 2);
     /** position of the texture in the texture-buffer */
-    private textureLocation = new GpuFloatBuffer(0, 2);
+    private textureLocation = new GpuFloatBuffer(250, 2);
     /** size (width/height) of the texture in the texture-buffer  */
-    private textureSize = new GpuFloatBuffer(0, 2);
+    private textureSize = new GpuFloatBuffer(250, 2);
 
     /** color for coloring the texture */
-    private color = new GpuFloatBuffer(0, 4);
+    private color = new GpuFloatBuffer(1000, 4);
     private textureMap: TextureMap;
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(0, 1);
-    private vertexOffset = new GpuFloatBuffer(0, 2);
+    private indexBuffer = new GpuShortBuffer(6, 1);
+    private vertexOffset = new GpuFloatBuffer(4, 2);
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-texture-map-drawer';
