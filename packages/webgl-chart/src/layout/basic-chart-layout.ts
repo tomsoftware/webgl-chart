@@ -68,7 +68,7 @@ export class YAxisLayout {
     }
 
     private onWheel = (event: EventValue) => {
-        this.scale.zoom(0.2 * Math.sign(event.wheelDelta));
+        this.scale.zoom(event.wheelDelta / 600);
     }
 
     private onPan = (event: EventValue, _layoutNode: LayoutNode, area: LayoutArea) => {
@@ -142,7 +142,7 @@ export class BasicChartLayout {
     }
 
     private onWheel = (event: EventValue) => {
-        this.xScale.zoom(0.2 * Math.sign(event.wheelDelta));
+        this.xScale.zoom(event.wheelDelta / 600);
     }
 
     private onPan = (event: EventValue, _layoutNode: LayoutNode, area: LayoutArea) => {

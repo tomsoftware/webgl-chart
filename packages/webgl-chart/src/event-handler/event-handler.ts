@@ -23,6 +23,10 @@ export class EventDispatcher {
     private el: HTMLElement | null = null;
     private listeners: Map<EventHandler, EventListenerInfo> = new Map();
     private eventQueue: EventValue[] = [];
+    // touch distance of last 2-finger gesture
+    private initialDistance: number | null = null;
+    private lastMousePosition: Vector2 | null = null;
+    private mouseDownPosition: Vector2 | null = null;
 
     public bind(el: HTMLElement | null) {
         if (el === this.el) {
@@ -69,10 +73,17 @@ export class EventDispatcher {
             return;
         }
 
+        el.style.touchAction ="none";
+
         el.addEventListener('wheel', this.onMouseWheel, { passive: false } );
         el.addEventListener('mousedown', this.onMouseDown);
-        el.addEventListener('mousemove', this.onMouseMove );
-        el.addEventListener('mouseup', this.onMouseUp );
+        el.addEventListener('mousemove', this.onMouseMove);
+        el.addEventListener('mouseup', this.onMouseUp);
+
+        el.addEventListener('touchstart', this.onTouchStart, { passive: false });
+        el.addEventListener('touchmove', this.onTouchMove, { passive: false });
+        el.addEventListener('touchend', this.onTouchEnd);
+        el.addEventListener('contextmenu', event => event.preventDefault());
     }
 
     private unbindEvents(el: HTMLElement | null) {
@@ -82,8 +93,12 @@ export class EventDispatcher {
 
         el.removeEventListener('wheel', this.onMouseWheel);
         el.removeEventListener('mousedown', this.onMouseDown);
-        el.removeEventListener('mousemove', this.onMouseMove );
-        el.removeEventListener('mouseup', this.onMouseUp );
+        el.removeEventListener('mousemove', this.onMouseMove);
+        el.removeEventListener('mouseup', this.onMouseUp);
+
+        el.removeEventListener('touchstart', this.onTouchStart);
+        el.removeEventListener('touchmove', this.onTouchMove);
+        el.removeEventListener('touchend', this.onTouchEnd);
     }
 
     public dispose() {
@@ -97,7 +112,7 @@ export class EventDispatcher {
         this.unbindEvents(el);
     }
 
-    private calcScreenPosition(event: MouseEvent): Vector2 {
+    private calcScreenPosition(event: MouseEvent | Touch): Vector2 {
         const el = this.el;
         if (el == null) {
             return new Vector2(0, 0);
@@ -113,41 +128,47 @@ export class EventDispatcher {
         return new Vector2(relativeX, relativeY);
     }
 
-    private onMouseWheel = (event: WheelEvent) : boolean => {
-        if (this.listeners.size === 0) {
-            return true;
+    /** calculates the distance of two fingers from the TouchList */
+    private getDistance(touches: TouchList): number {
+        if (touches.length < 2) {
+            return 0;
         }
 
-        this.eventQueue.push(
-            new EventValue(EventTypes.Wheel, this.calcScreenPosition(event))
-                .setWheel(event.deltaY)
-        );
-
-        event.preventDefault();
-        return false;
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
-    private lastMousePosition: Vector2 | null = null;
-    private mouseDownPosition: Vector2 | null = null;
+    /** calculate the center-position of of a TouchList */
+    private getTouchCenter(touches: TouchList): Vector2 {
+        let sum = new Vector2(0, 0);
 
-    private onMouseDown = (event: MouseEvent) : void => {
+        if (touches.length < 1) {
+            return sum;
+        }
+
+        for (const t of touches) {
+            sum = sum.add(this.calcScreenPosition(t));
+        }
+
+        const center = sum.scale(1.0 / touches.length);
+        return center;
+    }
+
+    /** set necessary values on panning start */
+    private handleStartPanning(event: MouseEvent | Touch) {
         const pos = this.calcScreenPosition(event);
         this.mouseDownPosition = pos;
         this.lastMousePosition = pos;
     }
 
-    private onMouseUp = (_event: MouseEvent) : void => {
-        this.mouseDownPosition = null;;
-        this.lastMousePosition = null;
-    }
-
-
-    private onMouseMove = (event: MouseEvent) : void => {
+    /** raise the panning event */
+    private handlePanning(event: MouseEvent | Touch) {
         if (this.listeners.size === 0) {
             return;
         }
 
-        if ((event.buttons !== 1) || (this.mouseDownPosition == null)) {
+        if (this.mouseDownPosition == null) {
             return;
         }
 
@@ -165,5 +186,95 @@ export class EventDispatcher {
             new EventValue(EventTypes.Pan, this.mouseDownPosition)
                 .setPan(delta)
         );
+    }
+
+    /** reset mouse and touch states */
+    private resetAll() {
+        this.mouseDownPosition = null;
+        this.lastMousePosition = null;
+        this.initialDistance = null;
+    }
+
+    /** handel touch-start event */
+    private onTouchStart = (event: TouchEvent) => {
+        event.preventDefault();
+
+        if (event.touches.length === 1) {
+            this.handleStartPanning(event.touches[0]);
+        }
+        else if (event.touches.length === 2) {
+            this.initialDistance = this.getDistance(event.touches);
+        }
+    }
+
+    /** handel touch-move event --> zoom or pan */
+    private onTouchMove = (event: TouchEvent) => {
+        event.preventDefault();
+
+        if (event.touches.length === 1) {
+            // one finger panning
+            this.handlePanning(event.touches[0]);
+        }
+        else if (event.touches.length === 2 && this.initialDistance != null) {
+            // two finger zooming
+            const currentDistance = this.getDistance(event.touches);
+            const scale = currentDistance - this.initialDistance;
+    
+            if (Math.abs(scale) < 3) {
+                return;
+            }
+            this.initialDistance = currentDistance;
+
+            this.eventQueue.push(
+                new EventValue(EventTypes.Wheel, this.getTouchCenter(event.touches))
+                    .setWheel(- scale * 2)
+            );
+
+        }
+    }
+
+    /** handel touch-end event: triggered for every finger that is removed */
+    private onTouchEnd = (event: TouchEvent) => {
+        event.preventDefault();
+
+        if (event.touches.length < 2) {
+            this.resetAll();
+        }
+    }
+
+    /** handle mouse wheel event --> mouse-zoom */
+    private onMouseWheel = (event: WheelEvent) : boolean => {
+        if (this.listeners.size === 0) {
+            return true;
+        }
+
+        this.eventQueue.push(
+            new EventValue(EventTypes.Wheel, this.calcScreenPosition(event))
+                .setWheel(event.deltaY)
+        );
+
+        event.preventDefault();
+        return false;
+    }
+
+    /** handle mouse-down event --> mouse-pan */
+    private onMouseDown = (event: MouseEvent) : void => {
+        this.handleStartPanning(event);
+        event.preventDefault();
+    }
+
+    /** handle mouse-move event --> mouse-pan */
+    private onMouseMove = (event: MouseEvent) : void => {
+        if (!event.buttons) {
+            return;
+        }
+
+        this.handlePanning(event);
+    }
+
+    /** handle mouse-up event --> mouse-pan */
+    private onMouseUp = (event: MouseEvent) : void => {
+        this.resetAll();
+        event.preventDefault();
     }
 }

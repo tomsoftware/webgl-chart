@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { onBeforeUnmount, onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
@@ -9,37 +9,20 @@ import { Series, Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell,
   EventDispatcher, Font, BasicChartLayout,
   Annotations} from '@tomsoftware/webgl-chart';
 
+let pauseAnimation = ref<boolean>(false);
+
 // generate time data
-const itemCount = 1000 * 60 * 60 / 4;
-const time = new GpuFloatBuffer(itemCount)
-    .generate((i) => i * 0.001); // in seconds
+const time = new GpuFloatBuffer(1);
 
 // generate series data
-const series1 = new Series(time)
-    .generate((t) => 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
-    .setColor(Color.byIndex(0))
-    .setThickness(3);
-
-const series2 = new Series(time)
-    .generate((t) => Generators.generateEKG(t * 10) * 10)
-    .setColor(Color.byIndex(1))
-    .setThickness(3);
-
-const series3 = new Series(time)
-    .generate((t) => Generators.generateIO(t * 10) * 20)
-    .setColor(Color.byIndex(2))
-    .setThickness(3);
+const series1 = new Series(time);
+const series2 = new Series(time);
+const series3 = new Series(time);
 
 // generate annotations
 const annotations = new Annotations();
-const numberOfAnnotations = Math.floor(itemCount * 0.003);
-annotations.ensureCapacity(numberOfAnnotations * 3);
 
-for (const a of Generators.generateAnnotations(itemCount * 0.001, numberOfAnnotations)) {
-  annotations.addVerticalLine(a.x, a.color, 10, 2)
-     .addLabel(new GpuText(a.text), a.color);
-}
-
+populate(10);
 
 // scales define the range that is shown by the axis
 const scaleX = new Scale(0, 1);
@@ -103,18 +86,60 @@ myChart.setMaxFrameRate(12);
 let animationTimer: number = 0;
 onMounted(() => {
   animationTimer = window.setInterval(() => {
-    scaleX.pan(-0.01);
-  }, 100);
+    if (pauseAnimation.value) {
+      return;
+    }
+    scaleX.pan(-0.001);
+  }, 10);
 });
 
 onBeforeUnmount(() => {
   window.clearInterval(animationTimer);
 });
 
+function populate(timeLengthInMinutes: number) {
+  const itemCount = timeLengthInMinutes * 60 * 60 / 4;
+
+  // update time values
+  time.increaseCapacity(itemCount)
+    .generate((i) => i * 0.001); // in seconds
+
+  // generate series data
+  series1
+    .generate((t) => 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
+    .setColor(Color.byIndex(0))
+    .setThickness(3);
+
+  series2
+    .generate((t) => Generators.generateEKG(t * 10) * 10)
+    .setColor(Color.byIndex(1))
+    .setThickness(3);
+
+  series3
+    .generate((t) => Generators.generateIO(t * 10) * 20)
+    .setColor(Color.byIndex(2))
+    .setThickness(3);
+
+  // update the annotations
+  const numberOfAnnotations = Math.floor(itemCount * 0.003);
+  annotations.ensureCapacity(numberOfAnnotations * 3);
+
+  for (const a of Generators.generateAnnotations(itemCount * 0.001, numberOfAnnotations)) {
+    annotations.addVerticalLine(a.x, a.color, 10, 2)
+      .addLabel(new GpuText(a.text), a.color);
+  }
+}
+
 </script>
 
 <template>
   <div class="grid-item">
+    <button @click="pauseAnimation = !pauseAnimation">{{ pauseAnimation ? 'Run' : 'Pause'}}</button>
+    <button @click="scaleX.setRange(time.first, time.last)">Zoom out</button>
+    <button @click="scaleX.setRange(0, 1)">Reset zoom</button>
+    <button @click="populate(1200)">Use 3 million data-points</button>
+    <button @click="myChart.setMaxFrameRate(60);">Framerate 60 Hz</button>
+    <br>
     <chart
       :data="myChart"
       @on-bind="onBind"
@@ -124,9 +149,13 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.chart {
-  height: 300px;
-  background-color: white;
-}
+  .chart {
+    height: 300px;
+    background-color: white;
+  }
+
+  button {
+    margin: 1px;
+  }
 
 </style>

@@ -71,13 +71,15 @@ export class GpuBaseBuffer<T extends TypedArray> {
 
         if (this.buffer.length >= this.bufferEnd + newItems) {
             // the buffer is large enough
-            return;
+            return this;
         }
 
         // do not increase the buffer by less than 32 items
         newItems = Math.max(Math.max(newItems, 32), (this.buffer.length + 1) >> 1);
 
         this.ensureCapacity(this.buffer.length + Math.max(32, newItems));
+
+        return this;
     }
 
     private pushValue(value: number) {

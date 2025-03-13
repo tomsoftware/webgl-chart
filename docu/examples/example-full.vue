@@ -109,7 +109,7 @@ console.log('itemCount: ', itemCount);
 
 
 eventDispatcher.on(EventTypes.Wheel, columnChartCell, (event) => {
-  scaleX.zoom(0.2 * Math.sign(event.wheelDelta));
+  scaleX.zoom(event.wheelDelta / 600);
 });
 
 eventDispatcher.on(EventTypes.Pan, columnChartCell, (event, _layoutNode, area) => {
@@ -118,7 +118,7 @@ eventDispatcher.on(EventTypes.Pan, columnChartCell, (event, _layoutNode, area) =
 
 
 eventDispatcher.on(EventTypes.Wheel, yAxis2Cell, (event) => {
-  scaleY.zoom(0.2 * Math.sign(event.wheelDelta));
+  scaleY.zoom(event.wheelDelta / 600);
 });
 
 eventDispatcher.on(EventTypes.Pan, yAxis2Cell, (event, _layoutNode, area) => {

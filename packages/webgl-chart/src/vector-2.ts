@@ -11,9 +11,9 @@ export class Vector2 implements IUniformValue{
     }
 
     /** transforms a given 2d-vector with this matrix */
-    public transform(tansformation: Matrix3x3): Vector2 {
+    public transform(transformation: Matrix3x3): Vector2 {
 
-        const m = tansformation.values;
+        const m = transformation.values;
 
         const x = this.x;
         const y = this.y;
@@ -49,6 +49,16 @@ export class Vector2 implements IUniformValue{
 
     public bindUniform(gl: WebGLRenderingContext, variableLoc: WebGLUniformLocation): void {
         gl.uniform2fv(variableLoc, this.values);
+    }
+
+    private numberToString(n: number): string {
+        return n.toLocaleString(undefined, {
+            useGrouping: false
+          });
+    }
+
+    public toString() {
+        return '{ x: ' + this.numberToString(this.x) + ' y: ' + this.numberToString(this.y) + ' }'
     }
 
     /** Zero Vector */

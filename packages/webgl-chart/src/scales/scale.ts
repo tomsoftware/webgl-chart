@@ -104,4 +104,18 @@ export class Scale {
         this.min -= zoomValue;
         this.max += zoomValue;
     }
+
+    public setRange(min: number | null, max: number | null) {
+        min = min ?? this.min;
+        max = max ?? this.max;
+
+        if (min <= max) {
+            this.min = min;
+            this.max = max;
+        }
+        else {
+            this.min = max;
+            this.max = min;
+        }
+    }
 }
