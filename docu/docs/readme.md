@@ -7,7 +7,7 @@ actions:
     type: primary
 
   - text: API
-    link: api.md
+    link: api/introduction.html
     type: secondary
 
   - text: Examples

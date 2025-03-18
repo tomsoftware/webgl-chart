@@ -70,7 +70,7 @@ export class Color {
     }
 
     /** create a color from float array */
-    static fromFloatArray(values: Float32Array<ArrayBuffer>): Color {
+    static fromFloatArray(values: Float32Array): Color {
         return new Color(values[0], values[1], values[2], values[3]);
     }
 
