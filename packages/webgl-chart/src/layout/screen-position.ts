@@ -10,6 +10,8 @@ export enum ScreenUnit {
 export class ScreenPosition {
     public readonly value: number;
     public readonly unit: ScreenUnit;
+    /** a ScreenPosition of value 0*/
+    public static readonly NullSize = ScreenPosition.fromPixel(0);
 
     public constructor(value: number, unit: ScreenUnit) {
         this.value = value;
@@ -34,11 +36,12 @@ export class ScreenPosition {
         }
     }
 
-    public static FromPixel(value: number): ScreenPosition {
+    public static fromPixel(value: number): ScreenPosition {
         return new ScreenPosition(value, ScreenUnit.Pixel);
     }
 
-    public static FromNormalized(value: number): ScreenPosition {
+    public static fromNormalized(value: number): ScreenPosition {
         return new ScreenPosition(value, ScreenUnit.Normalized);
     }
+
 }

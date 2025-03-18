@@ -15,13 +15,27 @@ export default defineUserConfig({
     navbar: [
       '/',
       '/get-started',
-      '/api',{
-          text: 'Examples',
-          link: '/examples/basic',
-          activeMatch: "^/examples/"
-        }],
-    sidebar: [
       {
+        text: 'API',
+        link: '/api/introduction',
+        activeMatch: "^/api/"
+      }, {
+        text: 'Examples',
+        link: '/examples/basic',
+        activeMatch: "^/examples/"
+      }],
+    sidebar: {
+      '/api/': [{
+        text: 'API',
+        collapsible: false,
+        prefix: '/api/',
+        children: [
+          'introduction',
+          'renderer',
+          'draw-text'
+        ]
+      }],
+      '/examples/': [{
           text: 'Examples',
           collapsible: false,
           prefix: '/examples/',
@@ -29,9 +43,10 @@ export default defineUserConfig({
             'basic',
             'stacked',
             'annotations',
+            'axis',
           ]
-      }
-    ]
+      }]
+    }
   }),
 
   bundler: viteBundler({

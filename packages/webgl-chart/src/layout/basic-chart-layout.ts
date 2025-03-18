@@ -8,73 +8,12 @@ import { IntersectedLayout } from "./intersected-layout";
 import { LayoutCell } from "./layout-cell";
 import { VerticalLayout } from "./vertical-layout";
 import { HorizontalAxis, HorizontalAxisPosition } from "../scales/horizontal-axis";
-import { VerticalAxis } from "../scales/vertical-axis";
+import { VerticalAxisPosition } from "../scales/vertical-axis";
 import { GpuText } from "../texture/gpu-text";
 import { TableRowLayout } from "./horizontal-table-layout";
-import { HorizontalLayout } from "./horizontal-layout";
 import { Color } from "../color";
+import { YAxisLayout } from "./basic-y-axis-layout";
 
-export class YAxisLayout {
-    public readonly axis: VerticalAxis;
-    public columnAxisCell: LayoutCell | null = null;
-    public cell: LayoutNode | null = null;
-    public chartLayout: BasicChartLayout;
-    private titleText: string;
-
-
-    public get title() {
-        return this.titleText;
-    }
-
-    public get scale() {
-        return this.axis.scale;
-    }
-
-    public constructor(layout: BasicChartLayout, scale: Scale, title: string) {
-        this.chartLayout = layout;
-        this.titleText = title;
-        this.axis = new VerticalAxis(
-            new GpuText(title)
-                .setRotation(90)
-        , scale);
-    }
-
-    public assignTo(column: TableRowLayout | HorizontalLayout) {
-        this.columnAxisCell = column.addFixedCell(this.axis);
-    }
-
-    public buildLayout(base: LayoutCell, chartCell: LayoutCell) {
-        if (this.columnAxisCell == null) {
-            return;
-        }
-        this.cell = base.addLayout(new IntersectedLayout(this.columnAxisCell, chartCell));
-    }
-
-    public draw(context: Context) {
-        if (this.cell == null) {
-            return;
-        }
-
-        this.axis.draw(context, this.cell);
-    }
-
-    public registerEvents(eventDispatcher: EventDispatcher) {
-        if (this.cell == null) {
-            return;
-        }
-
-        eventDispatcher.on(EventTypes.Wheel, this.cell, this.onWheel);
-        eventDispatcher.on(EventTypes.Pan, this.cell,  this.onPan);
-    }
-
-    private onWheel = (event: EventValue) => {
-        this.scale.zoom(event.wheelDelta / 600);
-    }
-
-    private onPan = (event: EventValue, _layoutNode: LayoutNode, area: LayoutArea) => {
-        this.scale.pan(- event.panDeltaY / area.height);
-    }
-}
 
 /** Build up the layout for a chart with x and multiple y axes */
 export class BasicChartLayout {
@@ -116,8 +55,12 @@ export class BasicChartLayout {
         this.updateLayout();
     }
 
-    public addYScale(scale: Scale, title: string): YAxisLayout {
+    public addYScale(scale: Scale, title: string, position?: VerticalAxisPosition): YAxisLayout {
         const newYAxis = new YAxisLayout(this, scale, title);
+        if (position != null) {
+            newYAxis.axis.setPosition(position)
+        }
+
         this.yAxis.push(newYAxis);
 
         this.updateLayout();
@@ -157,13 +100,27 @@ export class BasicChartLayout {
 
         // horizontal layout for y axis and chart-data
         const column = this.baseCell.addLayout(this.tableRowLayout);
+
+        // add axis on the left
         for (const yAxis of this.yAxis) {
+            if (yAxis.axis.position !== VerticalAxisPosition.Left) {
+                continue;
+            }
             // add all y-axis
             yAxis.assignTo(column);
         }
 
         // add the space for the chart-element
         const columnChartCell = column.addRelativeCell(1); // 100% of empty space
+
+        // add axis on the left
+        for (const yAxis of this.yAxis) {
+            if (yAxis.axis.position !== VerticalAxisPosition.Right) {
+                continue;
+            }
+            // add all y-axis
+            yAxis.assignTo(column);
+        }
 
         // vertical layout for x axis and chart-data
         const row = this.baseCell.addLayout(new VerticalLayout());
@@ -173,7 +130,6 @@ export class BasicChartLayout {
         // generate intersected layouts
         this.xAxisCell = this.baseCell.addLayout(new IntersectedLayout(rowAxisCell, columnChartCell));
 
-        
         for (const yAxis of this.yAxis) {
             yAxis.buildLayout(this.baseCell, rowChartCell);
         }

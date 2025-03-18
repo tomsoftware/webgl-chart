@@ -2,6 +2,10 @@ import { Color } from "@tomsoftware/webgl-chart";
 
 export class Generators {
 
+    public static generateSin(t: number): number {
+        return 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2;
+    }
+
     public static generateEKG(t: number): number {
         const noise = Math.random() * 0.5;
 

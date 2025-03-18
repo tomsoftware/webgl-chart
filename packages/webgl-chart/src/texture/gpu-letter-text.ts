@@ -87,11 +87,11 @@ export class GpuLetterText implements IHeightProvider, IWidthProvider {
             return this.textMetricsCache;
         }
         // calculate new
-        const size = new TextBoundingBox();
+        let size = new TextBoundingBox();
 
         for(const g of this.generators) {
             const m = g.computerTextMetrics(context)
-            size.increaseWidth(m.width);
+            size = size.increaseWidth(m.width);
         }
         this.textMetricsCache = size.transform(Matrix3x3.rotateDeg(this.rotationDeg));
         return this.textMetricsCache;

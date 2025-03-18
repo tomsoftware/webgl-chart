@@ -40,7 +40,7 @@ const time = new GpuFloatBuffer(itemCount)
 
 // generate series data
 const series1 = new Series(time)
-    .generate((t) => 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
+    .generate((t) => Generators.generateSin(t))
     .setColor(Color.blue)
     .setPointSize(5);
 
@@ -67,7 +67,7 @@ const baseContainer = new LayoutCell();
 
 
 // add a vertical layout-container with some padding
-const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.FromPixel(10)));
+const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.fromPixel(10)));
 
 const chartList: ChartInfo [] = [
   new ChartInfo(series1, baseRow, false),

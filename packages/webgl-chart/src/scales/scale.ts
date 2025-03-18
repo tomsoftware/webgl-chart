@@ -54,7 +54,8 @@ export class Scale {
         return maxTickPixelSize * num;
     }
 
-    public calculateTicks(letterSize: number, scaleMaxSize: number, ignoreNumberOfLetters: boolean) {
+    /** return a list of numbers that can be used as ticks for the axis */
+    public calculateTicks(letterSize: number, scaleMaxSize: number, ignoreNumberOfLetters: boolean): number[] {
         const range = this.range;
         if (Math.abs(range) < 0.0000000001) {
             return [this.min];

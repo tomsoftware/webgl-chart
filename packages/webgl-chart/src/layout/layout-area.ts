@@ -33,7 +33,7 @@ export class LayoutArea {
         return this.toMatrix().translate(x, y);
     }
 
-    /** return ture if the given point is in the area */
+    /** return true if the given point is in the area */
     public contains(pos: Vector2): boolean {
         return pos.x >= this.left && pos.x <= this.right && pos.y >= this.top && pos.y <= this.bottom;
     }
@@ -85,12 +85,15 @@ export class LayoutArea {
         this.height = height;
     }
 
-    public shrink(value: number): LayoutArea {
+    /** Adjusts the margins of the layout area by reducing its width and height symmetrically.
+     * If deltaY is not provided, it defaults to the value of deltaX */
+    public adjustMargins(deltaX: number, deltaY?: number | null): LayoutArea {
+        deltaY = deltaY ?? deltaX;
         return new LayoutArea(
-            this.left + value,
-            this.top + value,
-            Math.max(0, this.width - 2 * value),
-            Math.max(0, this.height - 2 * value)
+            this.left + deltaX,
+            this.top + deltaY,
+            Math.max(0, this.width - 2 * deltaX),
+            Math.max(0, this.height - 2 * deltaY)
         );
     }
 

@@ -10,7 +10,7 @@ HorizontalLayout, ScreenPosition, IntersectedLayout,
 LayoutBorder, Color, Font, Alignment, Scale,
 EventDispatcher, EventTypes, RectDrawer, Annotations,
 VerticalPosition, HorizontalPosition} from '@tomsoftware/webgl-chart';
-
+import { Generators } from './generators';
 
 
 let debugTexture = false;
@@ -31,12 +31,12 @@ const time = new GpuFloatBuffer(itemCount)
 
 // generate series data
 const series1 = new Series(time, null)
-    .generate((t) => 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
+    .generate((t) => Generators.generateSin(t))
     .setColor(Color.blue)
     .setPointSize(5);
   
 const series2 = new Series(time, null)
-    .generate((t) => Math.cos(t * 2 * Math.PI) * 10)
+    .generate((t) => Generators.generateEKG(t * 10) * 10)
     .setColor(Color.green)
     .setPointSize(4)
 /*
@@ -77,7 +77,7 @@ const legend = new GpuText('Legend');
 
 // define layout
 const baseContainer = new LayoutCell();
-const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.FromPixel(10)));
+const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.fromPixel(10)));
 
 const headlineLayout = baseRow.addFixedCell([headline]);
 const legendLayout = baseRow.addFixedCell([legend]);

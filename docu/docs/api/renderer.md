@@ -1,14 +1,11 @@
-# Api
-
-
-## Renderer
+# Basic Renderer
 
 The renderer is used to draw all elements of the chart, including axes, series, and text. It is implemented as a callback providing a `context` object. Depending on your setup you can create the renderer:
 
 ::: code-tabs#shell
 
 @tab plain js
-```ts
+```ts{6}
 const gpuChart = new GpuChart();
 // bind the chart a <canvas> element
 gpuChart.bind(document.getElementById('MyCanvas'));
@@ -19,22 +16,76 @@ gpuChart.setRenderCallback((context) => {
 ```
 
 @tab VUE
-```vue
+```vue{11-13}
 <script setup lang="ts">
-  const myChart = new ChartConfig()
-    .setRenderCallback((context) => {
-        // render the chart here
-    });
-  chartData.setMaxFrameRate(12); // Hz
+import { EventDispatcher, LayoutCell } from '@tomsoftware/webgl-chart'
+import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue'
+
+// setup data and layout
+const baseContainer = new LayoutCell();
+const eventDispatcher = new EventDispatcher();
+
+const chartData = new ChartConfig()
+  .setRenderCallback((context) => {
+      // process events
+      eventDispatcher.dispatch(context);
+      // render the chart here
+  });
+
+// config chart
+chartData.setMaxFrameRate(12); // Hz
+
+// event that is fired when the canvas and the 3d context is created
+function onBind(element: HTMLElement | null): void {
+  eventDispatcher.bind(element)
+}
+
 </script>
 
 <template>
-  <chart :data="myChart" @on-bind="onBind" />
+  <chart :data="chartData" @on-bind="onBind" />
 </template>
 ```
+
+@tab React
+```js{13-15}
+import './App.css'
+import { EventDispatcher, LayoutCell } from '@tomsoftware/webgl-chart';
+import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-react';
+
+function App() {
+  // setup data and layout
+  const baseContainer = new LayoutCell();
+  const eventDispatcher = new EventDispatcher();
+
+  // create chart
+  const chartData = new ChartConfig()
+    .setRenderCallback((context) => {
+        // process events
+        eventDispatcher.dispatch(context);
+        // render the chart here
+    });
+
+  // config chart
+  chartData.setMaxFrameRate(10);
+
+  // event that is fired when the canvas and the 3d context is created
+  function onBind(element: HTMLElement | null): void {
+    eventDispatcher.bind(element)
+  }
+
+  return (
+    <>
+      <Chart data={chartData} onBind={onBind} />
+    </>
+  )
+}
+
+export default App
+
 :::
 
-
+<!--
 
 ### Layout
 Layout defines how different components (e.g. text, axis and series) are arranged within the chart.
@@ -99,3 +150,4 @@ Events are used to add interactivity to the chart, such as zooming and panning.
 
 ---
 
+-->

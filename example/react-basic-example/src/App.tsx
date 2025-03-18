@@ -29,7 +29,8 @@ function App() {
   const chartConfig = new ChartConfig()
     .setRenderCallback((context) => {
         context.calculateLayout(baseContainer);
-  
+        eventDispatcher.dispatch(context);
+
         // draw
         series1.drawPoints(context, scaleX, scaleY, baseContainer);
     });

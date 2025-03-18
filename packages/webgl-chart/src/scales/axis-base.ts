@@ -21,13 +21,21 @@ export class AxisBase {
         return this;
     }
 
+    /** set the color of the grid that is displayed with the scale inside the chart */
     public setGridColor(color: Color | null) {
         this.gridColor = color;
         return this;
     }
 
+    /** set the font of the tick number */
     public setTickFont(font: Font) {
         this.tickFont = font;
+        return this;
+    }
+
+    /** set the color of the tick line and the font of the tick number */
+    public setTickColor(color: Color) {
+        this.tickColor = color;
         return this;
     }
 }

@@ -32,19 +32,22 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
         const chartArea = chartLayout?.getArea(context.layoutCache);
 
         let align: Alignment;
+        let tickLabelOffset: number;
 
         // draw axis border
         if (this.position === HorizontalAxisPosition.Bottom) {
             context.drawLine(area.p0, area.p1, this.borderColor);
             align = Alignment.centerBottom;
+            tickLabelOffset = -context.pixelToScreenX(2);
         }
         else {
             context.drawLine(area.p2, area.p3, this.borderColor);
             align = Alignment.centerTop;
+            tickLabelOffset = context.pixelToScreenX(2);
         }
 
         if (this.label != null) {
-            this.label.draw(context, axisLayout, align);
+            this.label.draw(context, axisLayout, align, Matrix3x3.translate(0, tickLabelOffset));
         }
 
         // get font width
@@ -57,7 +60,9 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
         for (const tick of ticks) {
             const m = new Matrix3x3().translate((tick - this.scale.min) * positionScaling, 0);
             context.drawLine(area.p0.transform(m), area.p0p3(0.1).transform(m), this.tickColor);
-            const text = new GpuLetterText(tick.toLocaleString(), this.tickFont);
+            const text = new GpuLetterText(tick.toLocaleString(), this.tickFont)
+                .setColor(this.tickColor);
+
             text.draw(context, axisLayout, Alignment.leftTop, m.translate(0, area.height * 0.5));
         
             if ((this.gridColor != null) && (chartArea != null)){

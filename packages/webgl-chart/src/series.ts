@@ -1,6 +1,6 @@
 import type { LayoutNode } from "./layout/layout-node";
 import type { Scale } from "./scales/scale";
-import type { Color } from "./color";
+import { Color } from "./color";
 import { Context } from "./context";
 import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { Matrix3x3 } from "./matrix-3x3";
@@ -9,7 +9,7 @@ import { GpuNumber } from "./gpu-number";
 import { Vector2 } from "./vector-2";
 
 export class Series {
-    public color = new Vector4(1, 0, 0, 0.5);
+    private colorValue = new Vector4(1, 0, 0, 0.5);
     public bbox = new Vector4(0, 0, 1, 1);
     public thickness: number = 1;
     protected time: GpuFloatBuffer | null = null;
@@ -28,8 +28,13 @@ export class Series {
 
     /** set the color of the series */
     public setColor(color: Color): Series {
-        this.color.setFromArray(color.toArray());
+        this.colorValue.setFromArray(color.toArray());
         return this;
+    }
+
+    /** get the color of the series */
+    public get color(): Color {
+      return Color.fromFloatArray(this.colorValue.values);
     }
 
     /** set the line thickness */
@@ -147,7 +152,7 @@ export class Series {
 
         // set uniforms
         context.setUniform(program, 'uniformCamTransformation', m);
-        context.setUniform(program, 'uniformColor', this.color);
+        context.setUniform(program, 'uniformColor', this.colorValue);
         context.setUniform(program, 'uniformPointSize', this.pointSize.boundFromArray(this.getMinMaxPointSize(context.gl)));
 
         // set clipping bounds
@@ -183,7 +188,7 @@ export class Series {
         context.setArrayBuffer(program, 'y', this.data);
   
         // set uniforms
-        context.setUniform(program, 'uniformColor', this.color);
+        context.setUniform(program, 'uniformColor', this.colorValue);
         context.setUniform(program, 'uniformPointSize', this.pointSize);
   
         // set clipping bounds

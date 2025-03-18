@@ -67,6 +67,16 @@ export class Context {
         return this;
     }
 
+    /** converts a given pixel-x value to a screen value */
+    public pixelToScreenX(pixelX: number) {
+        return pixelX * this.pixelScale.x;
+    }
+
+    /** converts a given pixel-y value to a screen value */
+    public pixelToScreenY(pixelY: number): number {
+        return pixelY * this.pixelScale.y;
+    }
+
     public dispose() {
         for (const program of this.programs.values()) {
             program.dispose();

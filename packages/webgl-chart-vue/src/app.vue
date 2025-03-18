@@ -10,7 +10,7 @@ import { ChartConfig } from '../lib/chart-config';
 
   // generate series data
   const series1 = new Series(time)
-      .generate((t) => 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
+      .generate((t) => Generators.generateSin(t))
       .setColor(Color.blue)
       .setPointSize(5);
 

@@ -27,6 +27,7 @@ function onBind(element: HTMLElement | null): void {
 const chartConfig = new ChartConfig()
   .setRenderCallback((context) => {
       context.calculateLayout(baseContainer);
+      eventDispatcher.dispatch(context);
 
       // draw
       series1.drawPoints(context, scaleX, scaleY, baseContainer);

@@ -38,7 +38,7 @@ const eventDispatcher = new EventDispatcher();
 const baseContainer = new LayoutCell();
 
 // add a vertical layout-container with some padding
-const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.FromPixel(10)));
+const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.fromPixel(10)));
 
 // fist item for headline
 const headlineLayout = baseRow.addFixedCell([headline]);
@@ -106,7 +106,7 @@ function populate(timeLengthInMinutes: number) {
 
   // generate series data
   series1
-    .generate((t) => 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2)
+    .generate((t) => Generators.generateSin(t))
     .setColor(Color.byIndex(0))
     .setThickness(3);
 

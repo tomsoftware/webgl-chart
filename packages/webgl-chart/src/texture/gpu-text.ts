@@ -87,18 +87,30 @@ export class GpuText implements IHeightProvider, IWidthProvider {
             // unable to generate texture
             return;
         }
-        const area = layout.getArea(context.layoutCache);
 
+        // get the area of the layout to draw to
+        let area = layout.getArea(context.layoutCache);
+
+        // to make the text to be always in the area we shrink the area by the size of the text
+        const size = this.getBoundingBox(context);
+        area = area.adjustMargins(context.pixelToScreenX(size.width * 0.5), context.pixelToScreenY(size.height * 0.5));
+
+        // apply alignment
         let m = area.getAligned(alignment);
 
+        // apply transformation
+        if (transformation != null) {
+            m = m.multiply(transformation.values);
+        }
+
+        // apply rotation
         if (this.rotationDeg !== 0) {
             m = m.multiply(new Matrix3x3().rotateDeg(this.rotationDeg).values);
         }
 
-        if (transformation != null) {
-            m = m.multiply(transformation.values);
-        }
+  
     
+        // finally draw the texture
         context.drawTexture(state, m, this.color);
     }
 }

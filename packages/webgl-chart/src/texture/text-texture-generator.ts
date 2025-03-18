@@ -64,7 +64,7 @@ export class TextTextureGenerator implements TextureGenerator {
         }
 
         const ctx = this.setupCanvas(context);
-        return this.textMetricsCache = new TextBoundingBox(ctx.measureText(this.text));
+        return this.textMetricsCache = TextBoundingBox.fromTextMetrics(ctx.measureText(this.text));
     }
 
     public computerTexture(context: Context): GpuTexture | null {
@@ -78,7 +78,7 @@ export class TextTextureGenerator implements TextureGenerator {
 
         let textMetrics = this.textMetricsCache;
         if (textMetrics == null) {
-            textMetrics = new TextBoundingBox(ctx.measureText(this.text));
+            textMetrics = TextBoundingBox.fromTextMetrics(ctx.measureText(this.text));
             this.textMetricsCache = textMetrics;
         }
 
