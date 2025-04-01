@@ -11,7 +11,7 @@ export default defineUserConfig({
   description: 'High performance web chart library to plot line-charts using WebGL',
 
   theme: defaultTheme({
-    logo: 'https://vuejs.press/images/hero.png',
+    logo: '/webgl-chart-logo.svg',
     navbar: [
       '/',
       '/get-started',

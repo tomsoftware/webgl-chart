@@ -58,7 +58,7 @@ import { ChartConfig } from '../lib/chart-config';
 </script>
 
 <template>
-  <h1>webgl-chart-vue</h1>
+  <h1>WebGl-Chart-vue</h1>
   <Chart
     :data="myChart"
     :onBind="onBind"

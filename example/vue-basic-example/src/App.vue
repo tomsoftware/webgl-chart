@@ -44,7 +44,7 @@ window.setInterval(() => {
 
 <template>
   <main>
-    <h1>webgl-chart-vue + VUE</h1>
+    <h1>WebGl-Chart-vue + VUE</h1>
     <Chart
       class="chart"
       :data="chartConfig"

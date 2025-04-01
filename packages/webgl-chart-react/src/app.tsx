@@ -62,7 +62,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <h1>webgl-chart-react</h1>
+      <h1>WebGl-Chart-react</h1>
       <Chart
         data={myChart}
         onBind={onBind}

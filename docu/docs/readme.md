@@ -25,5 +25,7 @@ features:
 footer: MIT Licensed | Copyright © 2025
 ---
 
+<p align="center">
 Basic example plotting 3 million points
 <example-showcase />
+</p>

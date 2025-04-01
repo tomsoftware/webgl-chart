@@ -43,7 +43,7 @@ function App() {
 
   return (
     <>
-      <h1>webgl-chart-react + React</h1>
+      <h1>WebGl-Chart-react + React</h1>
       <div className="card">
         <Chart data={chartConfig} onBind={onBind} />
       </div>

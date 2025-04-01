@@ -1,4 +1,9 @@
-# webgl-chart
+# WebGl-chart
+<p align="center">
+   <img src="./logo/webgl-chart-logo.svg" alt="logo" width="100"/>
+   <br />
+</p>
+
 High performance web Chart Library to plot line-charts and annotations using WebGL.
 
 ![showcase](showcase.png)
@@ -10,8 +15,8 @@ High performance web Chart Library to plot line-charts and annotations using Web
 npm i @tomsoftware/webgl-chart -save
 ```
 
-# webgl-chart-vue
-Utilize the Vue wrapper to seamlessly integrate the webgl-chart into your Vue application.
+# WebGl-chart-vue
+Utilize the Vue wrapper to seamlessly integrate the WebGl-Chart into your Vue application.
 
 ## Install
 [NPM](https://www.npmjs.com/package/@tomsoftware/webgl-chart-vue)
@@ -20,8 +25,8 @@ Utilize the Vue wrapper to seamlessly integrate the webgl-chart into your Vue ap
 npm i @tomsoftware/webgl-chart-vue -save
 ```
 
-# webgl-chart-react
-Use the React wrapper to seamlessly integrate the webgl-chart into your React application."
+# WebGl-chart-react
+Use the React wrapper to seamlessly integrate the WebGl-Chart into your React application."
 
 ## Install
 [NPM](https://www.npmjs.com/package/@tomsoftware/webgl-chart-react)
