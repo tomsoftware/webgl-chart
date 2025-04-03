@@ -2,10 +2,10 @@ import { GpuBufferView } from "./buffer-view";
 import { GpuBaseBuffer } from "./gpu-base-buffer";
 import type { GpuBuffer } from "./gpu-buffer";
 
-export class GpuByteBuffer extends GpuBaseBuffer<Uint8Array> implements GpuBuffer {
+export class GpuInt32Buffer extends GpuBaseBuffer<Uint32Array> implements GpuBuffer {
 
     constructor(size: number, componentsPerInstance = 1) {
-        super(Uint8Array, size, 'byte', componentsPerInstance);
+        super(Uint32Array, size, 'uint32', componentsPerInstance);
     }
 
     public setVertexAttribPointer(
@@ -20,8 +20,9 @@ export class GpuByteBuffer extends GpuBaseBuffer<Uint8Array> implements GpuBuffe
             variableLoc,
             angleExtension,
             bufferView,
-            gl.UNSIGNED_BYTE,
-            Uint8Array.BYTES_PER_ELEMENT
+            gl.UNSIGNED_INT,
+            Uint32Array.BYTES_PER_ELEMENT
         );
     }
+
 }

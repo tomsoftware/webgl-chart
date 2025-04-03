@@ -10,6 +10,7 @@ export * from './line-drawer';
 export * from './matrix-3x3';
 export * from './rect-drawer';
 export * from './series';
+export * from './series-envelope';
 export * from './uniform';
 export * from './vector-2';
 export * from './vector-4';

@@ -1,3 +1,4 @@
+import { GpuBufferView } from "./buffer-view";
 import { GpuBaseBuffer } from "./gpu-base-buffer";
 import type { GpuBuffer } from "./gpu-buffer";
 
@@ -44,15 +45,16 @@ export class GpuFloatBuffer extends GpuBaseBuffer<Float32Array> implements GpuBu
         gl: WebGLRenderingContext,
         variableLoc: GLint,
         angleExtension: ANGLE_instanced_arrays | null,
-        vertexAttribDivisor: number
+        bufferView: GpuBufferView
     ): void {
 
         super.setBasicVertexAttribPointer(
             gl,
             variableLoc,
             angleExtension,
-            vertexAttribDivisor,
-            gl.FLOAT
+            bufferView,
+            gl.FLOAT,
+            Float32Array.BYTES_PER_ELEMENT
         );
     }
 

@@ -6,6 +6,10 @@ export class Generators {
         return 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.random() * 2;
     }
 
+    public static generateSin2(t: number): number {
+        return 10 + Math.sin(t * 2 * Math.PI) * 10 + Math.cos(t * 10 * Math.PI) * 2;
+    }
+
     public static generateEKG(t: number): number {
         const noise = Math.random() * 0.5;
 

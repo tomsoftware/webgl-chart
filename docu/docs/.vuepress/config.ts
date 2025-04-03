@@ -44,6 +44,7 @@ export default defineUserConfig({
             'stacked',
             'annotations',
             'axis',
+            'series-envelope',
           ]
       }]
     }

@@ -49,7 +49,7 @@ export class GpuChart {
         }
 
         this.element = element;
-        this.gl = element.getContext("webgl");
+        this.gl = element.getContext('webgl');
         if (this.gl == null) {
             throw new Error('webgl not supported for the given canvas element');
         }

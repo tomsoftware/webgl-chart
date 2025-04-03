@@ -2,13 +2,13 @@ import type { Color } from "./color";
 import type { Context } from "./context";
 import type { Matrix3x3 } from "./matrix-3x3";
 import type { LayoutNode } from "./layout/layout-node";
+import type { TextureMapItem } from "./texture/texture-map-item";
 import { Vector4 } from "./vector-4";
 import { Vector2 } from "./vector-2";
 import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
 import { GpuShortBuffer } from "./buffers/gpu-buffer-short";
 import { GpuByteBuffer } from "./buffers/gpu-buffer-byte";
 import { TextureMap } from "./texture/texture-map";
-import type { TextureMapItem } from "./texture/texture-map-item";
 
 /** defines how to calculate the vertex position in the shader */
 export enum DimensionTypes {
@@ -118,15 +118,13 @@ export class RectDrawer {
         context.setInstanceBuffer(program, 'textureLocation', this.textureLocation);
         context.setInstanceBuffer(program, 'textureSize', this.textureSize);
         
-        // set texture
+        // set texture / uniforms
         context.setUniform(program, 'uniformTexture', this.textureMap);
+        context.setUniform(program, 'cameraTransformation', transformation);
+        context.setUniform(program, 'uniformScreenSize', new Vector2(context.width, context.height));
 
         // set element-index buffer
         context.setElementBuffer(this.indexBuffer);
-
-        // set uniforms
-        context.setUniform(program, 'cameraTransformation', transformation);
-        context.setUniform(program, 'uniformScreenSize', new Vector2(context.width, context.height));
 
         // set clipping bounds
         const p1 = new Vector2(layoutArea.left, layoutArea.top).transform(p);

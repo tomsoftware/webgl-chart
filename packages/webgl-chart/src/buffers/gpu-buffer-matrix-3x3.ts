@@ -1,3 +1,4 @@
+import { GpuBufferView } from "./buffer-view";
 import { GpuBaseBuffer } from "./gpu-base-buffer";
 import type { GpuBuffer } from "./gpu-buffer";
 
@@ -16,7 +17,7 @@ export class GpuBufferMatrix3x3 extends GpuBaseBuffer<Float32Array> implements G
         gl: WebGLRenderingContext,
         variableLoc: GLint,
         angleExtension: ANGLE_instanced_arrays | null,
-        vertexAttribDivisor: number
+        bufferView: GpuBufferView
     ): void {
         
         gl.enableVertexAttribArray(variableLoc + 0);
@@ -24,6 +25,7 @@ export class GpuBufferMatrix3x3 extends GpuBaseBuffer<Float32Array> implements G
         gl.enableVertexAttribArray(variableLoc + 2);
 
         const bytesPerMatrix = 4 * 3 * 3;
+        const offset = bufferView.offset * bytesPerMatrix;
 
         gl.vertexAttribPointer(
             variableLoc + 0,  // location
@@ -31,7 +33,7 @@ export class GpuBufferMatrix3x3 extends GpuBaseBuffer<Float32Array> implements G
             gl.FLOAT,         // type of data in buffer
             false,            // normalize
             bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
-            0,           // offset in buffer
+            offset,           // offset in buffer
         );
 
         gl.vertexAttribPointer(
@@ -40,7 +42,7 @@ export class GpuBufferMatrix3x3 extends GpuBaseBuffer<Float32Array> implements G
             gl.FLOAT,         // type of data in buffer
             false,            // normalize
             bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
-            4 * 3,           // offset in buffer
+            offset + 4 * 3,   // offset in buffer
         );
 
         gl.vertexAttribPointer(
@@ -49,14 +51,14 @@ export class GpuBufferMatrix3x3 extends GpuBaseBuffer<Float32Array> implements G
             gl.FLOAT,         // type of data in buffer
             false,            // normalize
             bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
-            4 * 6,           // offset in buffer
+            offset + 4 * 6,   // offset in buffer
         );
 
 
         if (angleExtension != null) {
-            angleExtension.vertexAttribDivisorANGLE(variableLoc + 0, vertexAttribDivisor);
-            angleExtension.vertexAttribDivisorANGLE(variableLoc + 1, vertexAttribDivisor);
-            angleExtension.vertexAttribDivisorANGLE(variableLoc + 2, vertexAttribDivisor);
+            angleExtension.vertexAttribDivisorANGLE(variableLoc + 0, bufferView.vertexAttribDivisor);
+            angleExtension.vertexAttribDivisorANGLE(variableLoc + 1, bufferView.vertexAttribDivisor);
+            angleExtension.vertexAttribDivisorANGLE(variableLoc + 2, bufferView.vertexAttribDivisor);
         }
 
 

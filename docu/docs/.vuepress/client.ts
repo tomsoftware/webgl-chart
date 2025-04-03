@@ -7,6 +7,7 @@ import ExampleAnnotations from "./../../examples/example-annotations.vue";
 import ExampleAxis from "../../examples/example-multi-axis.vue";
 import ExampleGpuTextAlignment from "./../../examples/example-gpu-text-alignment.vue";
 import ExampleGpuTextRotation from "./../../examples/example-gpu-text-rotation.vue";
+import ExampleSeriesEnvelope from "./../../examples/example-series-envelope.vue";
 
 export default defineClientConfig({
   enhance({ app, router, siteData }) {
@@ -18,6 +19,7 @@ export default defineClientConfig({
     app.component("example-multi-axis", ExampleAxis);
     app.component("example-gpu-text-alignment", ExampleGpuTextAlignment);
     app.component("example-gpu-text-rotation", ExampleGpuTextRotation);
+    app.component("example-series-envelope", ExampleSeriesEnvelope);
   },
   setup() {},
   rootComponents: [],

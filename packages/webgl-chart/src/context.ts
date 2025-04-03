@@ -14,6 +14,7 @@ import { LineDrawer } from "./line-drawer";
 import { Matrix3x3 } from "./matrix-3x3";
 import { TextureMap } from "./texture/texture-map";
 import { TextureMapItem } from "./texture/texture-map-item";
+import { GpuBufferView } from "./buffers/buffer-view";
 
 /** The context provides functions and data used for one draw iteration */
 export class Context {
@@ -94,11 +95,11 @@ export class Context {
         this.buffers.clear();
     }
 
-    public setInstanceBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null) {
-        this.setArrayBuffer(program, name, buffer, 1);
+    public setInstanceBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null, bufferView = GpuBufferView.InstanceBuffer) {
+        this.setArrayBuffer(program, name, buffer, bufferView);
     }
 
-    public setArrayBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null, vertexAttribDivisor = 0) {
+    public setArrayBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null, bufferView = GpuBufferView.Default) {
         if (buffer == null) {
             return null;
         }
@@ -122,7 +123,7 @@ export class Context {
         }
 
         state.bindBuffer(this.gl, GlBufferTypes.ARRAY_BUFFER);
-        state.setVertexAttribPointer(this.gl, variableLoc, this.angleExtension, vertexAttribDivisor);
+        state.setVertexAttribPointer(this.gl, variableLoc, this.angleExtension, bufferView);
 
         return variableLoc;
     }

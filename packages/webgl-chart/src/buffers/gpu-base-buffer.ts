@@ -1,3 +1,5 @@
+import { GpuBufferView } from "./buffer-view";
+
 type TypedArray =
   | Float32Array
   | Float64Array
@@ -113,28 +115,31 @@ export class GpuBaseBuffer<T extends TypedArray> {
     }
 
     protected setBasicVertexAttribPointer(
-        gl: WebGLRenderingContext,
-        variableLoc: number,
-        angleExtension: ANGLE_instanced_arrays | null,
-        vertexAttribDivisor: number,
-        type: GLenum) {
+            gl: WebGLRenderingContext,
+            variableLoc: number,
+            angleExtension: ANGLE_instanced_arrays | null,
+            bufferView: GpuBufferView,
+            type: GLenum,
+            bytesPerInstance: number,
+        ) {
+
         // Turn on the attribute
         gl.enableVertexAttribArray(variableLoc);
 
         // Tell the attribute how to get data out of idBuffer (ARRAY_BUFFER)
         const normalize = false; // don't normalize the data
         const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-        const offset = 0;        // start at the beginning of the buffer
+
         gl.vertexAttribPointer(
             variableLoc,
             this.componentsPerInstance,
             type,
             normalize,
             stride,
-            offset
+            bufferView.offset * bytesPerInstance
         );
 
-        angleExtension?.vertexAttribDivisorANGLE(variableLoc, vertexAttribDivisor);
+        angleExtension?.vertexAttribDivisorANGLE(variableLoc, bufferView.vertexAttribDivisor);
    }
 
     /** return the size = (count * componentsPerIteration) of the buffer */

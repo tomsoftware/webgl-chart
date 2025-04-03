@@ -1,3 +1,4 @@
+import { GpuBufferView } from "./buffer-view";
 import type { GpuBuffer } from "./gpu-buffer";
 
 const isBrowser = typeof WebGLRenderingContext !== 'undefined';
@@ -52,12 +53,12 @@ export class GpuBufferState {
         gl: WebGLRenderingContext,
         variableLoc: GLint,
         angleExtension: ANGLE_instanced_arrays | null,
-        vertexAttribDivisor: number) {
+        bufferView: GpuBufferView) {
 
         this.data.setVertexAttribPointer(
             gl,
             variableLoc,
             angleExtension,
-            vertexAttribDivisor);
+            bufferView);
     }
 }

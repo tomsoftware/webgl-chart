@@ -80,7 +80,10 @@ export class Color {
     }
 
     public static red = new Color(1, 0, 0, 1);
+    public static lightRed = new Color(1, 0.28, 0.3, 1);
     public static blue = new Color(0, 0, 1, 1);
+    public static darkBlue = new Color(0, 0, 0.55, 1);
+    public static lightBlue = new Color(0.6, 0.8, 1, 1);
     public static green = new Color(0, 1, 0, 1);
     public static darkGreen = new Color(0, 0.39, 0, 1);
     public static yellow = new Color(1, 1, 0);
