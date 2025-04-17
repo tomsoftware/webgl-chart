@@ -35,7 +35,7 @@ When rendering text into a `LayoutNode`, the position within the area can be def
 </details>
 
 
-## Text rotate
+## rotating
 To set the rotation of a text use the `setRotation(deg: number)` function.
 
 <example-gpu-text-rotation />
@@ -57,7 +57,7 @@ new GpuLetterText(text: string, font?: Font, color?: Color);
 
 
 
-## Letter Text rotate
+## rotating
 To set the rotation of a text use the `setRotation(deg: number)` function.
 
 <example-gpu-letter-text-rotation />
