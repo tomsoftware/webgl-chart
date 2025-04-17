@@ -200,7 +200,14 @@ export class Context {
     }
 
     public drawLine(p1: Vector2, p2: Vector2, color: Color): void {
-        return this.lineDrawer.addLine(p1, p2, color);
+        this.lineDrawer.addLine(p1, p2, color);
+    }
+
+    public drawRect(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2, color: Color): void {
+        this.lineDrawer.addLine(p1, p2, color);
+        this.lineDrawer.addLine(p2, p3, color);
+        this.lineDrawer.addLine(p3, p4, color);
+        this.lineDrawer.addLine(p4, p1, color);
     }
 
     public drawTexture(textureInfo: TextureMapItem, transformation: Matrix3x3, color: Color) {

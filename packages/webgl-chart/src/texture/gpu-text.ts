@@ -9,7 +9,6 @@ import { Color } from "../color";
 import { TextTextureGenerator } from "./text-texture-generator";
 import { IHeightProvider, IWidthProvider } from "../layout/size-provider";
 
-
 export class GpuText implements IHeightProvider, IWidthProvider {
     private generator: TextTextureGenerator;
     private rotationDeg: number = 0;
@@ -93,7 +92,7 @@ export class GpuText implements IHeightProvider, IWidthProvider {
 
         // to make the text to be always in the area we shrink the area by the size of the text
         const size = this.getBoundingBox(context);
-        area = area.adjustMargins(context.pixelToScreenX(size.width * 0.5), context.pixelToScreenY(size.height * 0.5));
+        area = area.adjustMargin(context.pixelToScreenX(size.width * 0.5), context.pixelToScreenY(size.height * 0.5));
 
         // apply alignment
         let m = area.getAligned(alignment);
@@ -105,11 +104,9 @@ export class GpuText implements IHeightProvider, IWidthProvider {
 
         // apply rotation
         if (this.rotationDeg !== 0) {
-            m = m.multiply(new Matrix3x3().rotateDeg(this.rotationDeg).values);
+            m = m.multiply(Matrix3x3.rotateDeg(this.rotationDeg).values);
         }
 
-  
-    
         // finally draw the texture
         context.drawTexture(state, m, this.color);
     }

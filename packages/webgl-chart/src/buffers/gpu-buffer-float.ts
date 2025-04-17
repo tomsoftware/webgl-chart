@@ -1,4 +1,5 @@
 import { GpuBufferView } from "./buffer-view";
+import { ArrayUtilities } from "./array-utilities";
 import { GpuBaseBuffer } from "./gpu-base-buffer";
 import type { GpuBuffer } from "./gpu-buffer";
 
@@ -39,6 +40,32 @@ export class GpuFloatBuffer extends GpuBaseBuffer<Float32Array> implements GpuBu
         this.updateDataVersion();
 
         return this;
+    }
+
+    /** Return the closes index a given value matches in the buffer-values */
+    public findIndex(value: number): number | null {
+        var range = ArrayUtilities.guessIndexRange(this.buffer, this.bufferOffset, this.bufferEnd - 1, value);
+        if (range == null) {
+            // value is outside of the arrays values
+            if (value < this.buffer[this.bufferOffset]) {
+                // value is before the first element
+                return this.bufferOffset;
+            }
+            // value is after last element
+            return this.bufferEnd - 1;
+        }
+
+        // value is inside the array -> get best index
+        const pos = ArrayUtilities.binarySearch(this.buffer, range[0], range[1], value);
+        const low = pos[0];
+        const high = pos[1];
+
+        // check what is closer low or high to given value
+        if (Math.abs(value - this.buffer[low]) < Math.abs(value - this.buffer[high])) {
+            return low;
+        }
+        return high;
+
     }
 
     public setVertexAttribPointer(

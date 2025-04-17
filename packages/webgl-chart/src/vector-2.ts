@@ -18,11 +18,9 @@ export class Vector2 implements IUniformValue{
         const x = this.x;
         const y = this.y;
 
-        const w = 1 / (m[2] * x + m[5] * y + m[8]);
-
         return new Vector2(
-            (m[0] * x + m[3] * y + m[6]) * w,
-            (m[1] * x + m[4] * y + m[7]) * w
+            m[0] * x + m[3] * y + m[6],
+            m[1] * x + m[4] * y + m[7]
         );
     }
 
@@ -45,6 +43,10 @@ export class Vector2 implements IUniformValue{
 
     public add(v: Vector2): Vector2 {
         return new Vector2(this.x + v.x, this.y + v.y);
+    }
+
+    public addValues(x: number, y: number) {
+        return new Vector2(this.x + x, this.y + y);
     }
 
     public bindUniform(gl: WebGLRenderingContext, variableLoc: WebGLUniformLocation): void {

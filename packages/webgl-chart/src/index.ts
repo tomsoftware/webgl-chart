@@ -14,6 +14,8 @@ export * from './series-envelope';
 export * from './uniform';
 export * from './vector-2';
 export * from './vector-4';
+export * from './tooltip-line';
+export * from './tooltip-markers';
 
 // annotations
 export * from './annotation/annotations';
@@ -48,6 +50,7 @@ export * from './layout/variable-vertical-item';
 export * from './layout/vertical-item';
 export * from './layout/vertical-layout';
 export * from './layout/basic-chart-layout';
+export * from './layout/basic-y-axis-layout';
 
 // scales
 export * from './scales/axis-base';

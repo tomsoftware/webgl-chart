@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuText, LayoutCell, Alignment, LayoutBorder, Color } from '@tomsoftware/webgl-chart';
+import { LayoutCell, Alignment, LayoutBorder, Color, GpuLetterText } from '@tomsoftware/webgl-chart';
 import { ref } from 'vue';
 
 const deg = ref<number>(45);
 
-const texts = new Map<Alignment, GpuText>(
+const texts = new Map<Alignment, GpuLetterText>(
   Alignment.list
-    .map((key) => [key, new GpuText(key.toString(), undefined, Color.red)])
+    .map((key) => [key, new GpuLetterText(key.toString(), undefined, Color.red)])
 );
 
 // define layout

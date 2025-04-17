@@ -26,6 +26,8 @@ export class EventDispatcher {
     // touch distance of last 2-finger gesture
     private initialDistance: number | null = null;
     private lastMousePosition: Vector2 | null = null;
+    private lastMouseButtons: number = 0;
+    private lastMousePanningPosition: Vector2 | null = null;
     private mouseDownPosition: Vector2 | null = null;
 
     public bind(el: HTMLElement | null) {
@@ -79,6 +81,7 @@ export class EventDispatcher {
         el.addEventListener('mousedown', this.onMouseDown);
         el.addEventListener('mousemove', this.onMouseMove);
         el.addEventListener('mouseup', this.onMouseUp);
+        el.addEventListener('mouseleave', this.onMouseleave);
 
         el.addEventListener('touchstart', this.onTouchStart, { passive: false });
         el.addEventListener('touchmove', this.onTouchMove, { passive: false });
@@ -110,6 +113,16 @@ export class EventDispatcher {
         }
 
         this.unbindEvents(el);
+    }
+
+    /** Returns the last Mouse position relative to the html element bind to */
+    public getMousePosition(): Vector2 | null {
+        return this.lastMousePosition;
+    }
+
+    /** Returns the last Mouse buttons */
+    public getMouseButtons(): number {
+        return this.lastMouseButtons;
     }
 
     private calcScreenPosition(event: MouseEvent | Touch): Vector2 {
@@ -159,7 +172,7 @@ export class EventDispatcher {
     private handleStartPanning(event: MouseEvent | Touch) {
         const pos = this.calcScreenPosition(event);
         this.mouseDownPosition = pos;
-        this.lastMousePosition = pos;
+        this.lastMousePanningPosition = pos;
     }
 
     /** raise the panning event */
@@ -173,8 +186,8 @@ export class EventDispatcher {
         }
 
         const pos = this.calcScreenPosition(event);
-        const lastPos = this.lastMousePosition;
-        this.lastMousePosition = pos;
+        const lastPos = this.lastMousePanningPosition;
+        this.lastMousePanningPosition = pos;
 
         if (lastPos == null) {
             return;
@@ -191,8 +204,10 @@ export class EventDispatcher {
     /** reset mouse and touch states */
     private resetAll() {
         this.mouseDownPosition = null;
+        this.lastMousePanningPosition = null;
         this.lastMousePosition = null;
         this.initialDistance = null;
+        this.lastMouseButtons = 0;
     }
 
     /** handel touch-start event */
@@ -265,6 +280,9 @@ export class EventDispatcher {
 
     /** handle mouse-move event --> mouse-pan */
     private onMouseMove = (event: MouseEvent) : void => {
+        this.lastMousePosition = this.calcScreenPosition(event);
+        this.lastMouseButtons = event.buttons;
+
         if (!event.buttons) {
             return;
         }
@@ -276,5 +294,10 @@ export class EventDispatcher {
     private onMouseUp = (event: MouseEvent) : void => {
         this.resetAll();
         event.preventDefault();
+    }
+
+    /** handle leaving the mouse out of the bonded element */
+    private onMouseleave = (event: MouseEvent): void => {
+        this.resetAll();
     }
 }

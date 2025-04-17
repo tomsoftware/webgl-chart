@@ -12,6 +12,12 @@ export class Scale {
         return (+this.max) - (+this.min);
     }
 
+    /** Maps a given value in a given system to the corresponding internal value */
+    public valueAt(minValue: number, value: number, maxValue: number) {
+        var relativeValue = (value - minValue) / (maxValue - minValue);
+        return this.min + (this.max - this.min) * relativeValue;
+    }
+
     private static calcTicksPositive(step: number, start: number, min: number, max: number) {
         let pos =  start;
         const result = [];

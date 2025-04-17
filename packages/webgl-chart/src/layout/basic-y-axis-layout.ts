@@ -13,7 +13,7 @@ import { LayoutArea } from "./layout-area";
 import { LayoutCell } from "./layout-cell";
 import { LayoutNode } from "./layout-node";
 
-export class YAxisLayout {
+export class BasicYAxisLayout {
     public readonly axis: VerticalAxis;
     public columnAxisCell: LayoutCell | null = null;
     /** the layout element the axis is drawn to */
@@ -78,7 +78,7 @@ export class YAxisLayout {
     }
 
     /** set the color of the tick and label of this axis */
-    public setTickColor(color: Color, labelColor?: Color): YAxisLayout {
+    public setTickColor(color: Color, labelColor?: Color): BasicYAxisLayout {
         this.axis.setTickColor(color);
         this.axis.setBorderColor(color);
         this.axis.label?.setColor(labelColor ?? color);

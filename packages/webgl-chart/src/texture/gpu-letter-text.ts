@@ -8,6 +8,7 @@ import { Alignment } from "../alignment";
 import { Color } from "../color";
 import { TextTextureGenerator } from "./text-texture-generator";
 import { IHeightProvider, IWidthProvider } from "../layout/size-provider";
+import { Vector2 } from "../vector-2";
 
 
 export class GpuLetterText implements IHeightProvider, IWidthProvider {
@@ -87,20 +88,66 @@ export class GpuLetterText implements IHeightProvider, IWidthProvider {
             return this.textMetricsCache;
         }
         // calculate new
-        let size = new TextBoundingBox();
-
+        let w = 0;
+        let h = 0;
         for(const g of this.generators) {
-            const m = g.computerTextMetrics(context)
-            size = size.increaseWidth(m.width);
+            const m = g.computerTextMetrics(context);
+            h = Math.max(h, m.height);
+            w = w + m.width;
         }
+        let size = new TextBoundingBox(0, 0, w, h);
+
         this.textMetricsCache = size.transform(Matrix3x3.rotateDeg(this.rotationDeg));
         return this.textMetricsCache;
     }
 
+    /** draw a text at a given position */
+    public drawAt(context: Context, pos: Vector2, alignment: Alignment = Alignment.centerCenter, padding: Vector2 = Vector2.zero, transformation: Matrix3x3 | null = null) {
+        let m = Matrix3x3.translate(pos.x, pos.y);
+
+        if (this.rotationDeg !== 0) {
+            m = m.multiply(new Matrix3x3().rotateDeg(this.rotationDeg).values);
+        }
+
+        if (transformation != null) {
+            m = m.multiply(transformation.values);
+        }
+
+        const scaleX = context.pixelScale.x;
+        const scaleY = context.pixelScale.y;
+
+        const paddingX =  padding.x * scaleX;
+        const paddingY =  padding.y * scaleY;
+
+        const fullSize = this.getBoundingBox(context);
+        const w = fullSize.width * scaleX;
+        const h = fullSize.height * scaleY;
+
+
+        // move first letter and add alignment to the position
+        m = m.translate(
+            -w * 0.5 + (alignment.alignX - 0.5) * (w + paddingX),
+             h * 0.5 + (alignment.alignY - 0.5) * (h + paddingY)
+        );
+
+        let posX = 0;
+        for (const g of this.generators) {
+            const state = context.addTexture(g);
+            if (state == null) {
+                continue;
+            }
+            const metric = g.computerTextMetrics(context);
+            const p = m.translate((posX + state.width / 2) * scaleX, -metric.bottom / 2 * scaleY);
+            posX += metric.width;
+
+            context.drawTexture(state, p, this.color);
+        }
+    }
+
+    /** draw a text into a layout node */
     public draw(context: Context, layout: LayoutNode, alignment: Alignment | null = null, transformation: Matrix3x3 | null = null) {
 
-        const area = layout.getArea(context.layoutCache);
-
+        let area = layout.getArea(context.layoutCache);
         let m = area.getAligned(alignment);
 
         if (this.rotationDeg !== 0) {
@@ -112,7 +159,7 @@ export class GpuLetterText implements IHeightProvider, IWidthProvider {
         }
         
         const fullSize = this.getBoundingBox(context);
-        m = m.translate(-(fullSize.width / 2) / context.width, 2 / context.width);
+        m = m.translate(-(fullSize.width / 2) / context.width,fullSize.height / 2 / context.width);
 
         let posX = 0;
         for (const g of this.generators) {
@@ -126,7 +173,5 @@ export class GpuLetterText implements IHeightProvider, IWidthProvider {
 
             context.drawTexture(state, p, this.color);
         }
-
-
     }
 }

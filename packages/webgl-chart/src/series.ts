@@ -9,12 +9,12 @@ import { GpuNumber } from "./gpu-number";
 import { Vector2 } from "./vector-2";
 
 export class Series {
-    private colorValue = new Vector4(1, 0, 0, 0.5);
-    public bbox = new Vector4(0, 0, 1, 1);
-    public thickness: number = 1;
+    protected colorValue = new Vector4(1, 0, 0, 0.5);
+    protected bbox = new Vector4(0, 0, 1, 1);
+    protected thickness: number = 1;
     protected time: GpuFloatBuffer | null = null;
     protected data: GpuFloatBuffer | null = null;
-    private pointSize: GpuNumber = new GpuNumber(2);
+    protected pointSize: GpuNumber = new GpuNumber(2);
     private minMaxPointSizeCache: number[] = [];
   
     /** this is a unique id to identifies this shader programs */
@@ -161,8 +161,7 @@ export class Series {
         context.setUniform(program, 'uniformBounds', this.bbox.set(p1.x, p1.y, p2.x, p2.y));
 
         // draw buffer / series data
-        const offset = 0;
-        context.gl.drawArrays(WebGLRenderingContext.POINTS, offset, this.data.count);
+        context.gl.drawArrays(WebGLRenderingContext.POINTS, 0, this.data.count);
     }
 
     public drawLines(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode) {
@@ -170,7 +169,7 @@ export class Series {
             return;
         }
         if (this.thickness < 1) {
-          // dont draw lines with no thickness
+          // don't draw lines with no thickness
           return;
         }
 
@@ -199,17 +198,17 @@ export class Series {
         // draw buffer / series data
         const offset = 0;
         const count = this.data.count;
-        const pixleScale = context.pixelScale;
+        const pixelScale = context.pixelScale;
 
         // pure man's thick line -> just draw the line multiple times
         const baseOffset = (this.thickness % 2 == 0) ? 0.5 : 0.0; // returns 0 or 0.5
-        const baseOffsetY = pixleScale.y * baseOffset;
+        const baseOffsetY = pixelScale.y * baseOffset;
 
         for (let i = 0; i < this.thickness; i++) {
           const sign = (i % 2 === 0) ? 1 : -1;
           const f = sign * (i + 1) >> 1; // f is oscillates around the center: 0, -1, 1, -2, 2 or -0.5
 
-          const lineThicknessShift = Matrix3x3.translate(0, baseOffsetY + pixleScale.y * f);
+          const lineThicknessShift = Matrix3x3.translate(0, baseOffsetY + pixelScale.y * f);
 
           const m = p.multiply(l.values).multiply(lineThicknessShift.values).multiply(s.values);
           context.setUniform(program, 'uniformCamTransformation', m);

@@ -10,6 +10,9 @@ export class AxisBase {
     public tickColor: Color = Color.black;
     public gridColor: Color | null = null;
     public tickFont: Font = new Font();
+    public tickLength: number = 7;
+    public tickTextPadding: number = 2;
+    public labelPadding: number = 2;
 
     constructor(label?: GpuText | null, scale?: Scale | null) {
         this.scale = scale ?? new Scale(0, 1000);
@@ -20,6 +23,17 @@ export class AxisBase {
         this.borderColor = color;
         return this;
     }
+
+    /** set the length of the tick lines */
+    public setTickLength(pixels: number) {
+        this.tickLength = pixels;
+    }
+
+    /** set the padding around the tick text */
+    public setTickTextPadding(pixels: number) {
+        this.tickTextPadding = pixels;
+    }
+
 
     /** set the color of the grid that is displayed with the scale inside the chart */
     public setGridColor(color: Color | null) {

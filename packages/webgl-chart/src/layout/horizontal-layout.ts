@@ -36,7 +36,7 @@ export class HorizontalLayout extends BaseLayoutNode implements LayoutNode {
 
     public calculate(context: Context, cache: LayoutCache, area: LayoutArea): void {
         if (this.padding) {
-            area = area.adjustMargins(this.padding.toNormalized(context));
+            area = area.adjustMargin(this.padding.toNormalized(context));
         }
 
         this.setArea(cache, area);

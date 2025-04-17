@@ -9,6 +9,8 @@ export class LayoutArea {
     public width: number;
     public height: number;
 
+    public static readonly fullArea = new LayoutArea(0, 0, 1, 1);
+
     public get right(): number {
         return this.left + this.width;
     }
@@ -85,9 +87,9 @@ export class LayoutArea {
         this.height = height;
     }
 
-    /** Adjusts the margins of the layout area by reducing its width and height symmetrically.
+    /** Adjusts the margin of the layout area by reducing its width and height symmetrically.
      * If deltaY is not provided, it defaults to the value of deltaX */
-    public adjustMargins(deltaX: number, deltaY?: number | null): LayoutArea {
+    public adjustMargin(deltaX: number, deltaY?: number | null): LayoutArea {
         deltaY = deltaY ?? deltaX;
         return new LayoutArea(
             this.left + deltaX,

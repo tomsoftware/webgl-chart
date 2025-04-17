@@ -1,6 +1,6 @@
 # Drawing Texts
 
-Texts can be rendered using the `GpuText` and `GpuLetterText` classes. Internally, all texts are treated as textures, meaning they are stored as images on the GPU and then displayed. The primary distinction between `GpuText` and `GpuLetterText` lies in how they handle textures. The `GpuText` class creates and stores a single texture for the entire text, while the `GpuLetterText` class stores textures for individual letters and renders them letter by letter on the display. Although `GpuLetterText` is more complex, it eliminates the need to update the texture image whenever the text needs to change.
+Texts can be rendered using the `GpuText` and `GpuLetterText` classes. Internally, all texts are treated as textures, meaning they are stored as images on the GPU and then displayed. The primary distinction between `GpuText` and `GpuLetterText` lies in how they handle textures. The `GpuText` class creates and stores a single texture for the entire text, while the `GpuLetterText` class stores textures for individual letters and renders them letter by letter on the display. Although `GpuLetterText` is more complex, it eliminates the need to update the texture image whenever the text-value needs to change.
 
 
 ## GpuText
@@ -24,7 +24,7 @@ myText.draw(context: Context, baseContainer, Alignment.centerCenter);
 ```
 
 ## Text alignment
-When drawing the text can be aligned into the `LayoutNode` by setting the `Alignment` argument:
+When rendering text into a `LayoutNode`, the position within the area can be defined by setting the `Alignment` argument.
 
 <example-gpu-text-alignment />
 
@@ -44,4 +44,26 @@ To set the rotation of a text use the `setRotation(deg: number)` function.
   <summary>Source</summary>
 
   @[code](../../examples/example-gpu-text-rotation.vue)
+</details>
+
+
+## GpuLetterText
+
+Creating a new text
+
+```ts
+new GpuLetterText(text: string, font?: Font, color?: Color);
+```
+
+
+
+## Letter Text rotate
+To set the rotation of a text use the `setRotation(deg: number)` function.
+
+<example-gpu-letter-text-rotation />
+
+<details>
+  <summary>Source</summary>
+
+  @[code](../../examples/example-gpu-letter-text-rotation.vue)
 </details>

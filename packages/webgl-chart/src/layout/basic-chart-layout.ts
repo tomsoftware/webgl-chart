@@ -12,12 +12,12 @@ import { VerticalAxisPosition } from "../scales/vertical-axis";
 import { GpuText } from "../texture/gpu-text";
 import { TableRowLayout } from "./horizontal-table-layout";
 import { Color } from "../color";
-import { YAxisLayout } from "./basic-y-axis-layout";
+import { BasicYAxisLayout } from "./basic-y-axis-layout";
 
 
 /** Build up the layout for a chart with x and multiple y axes */
 export class BasicChartLayout {
-    public readonly yAxis: YAxisLayout[] = [];
+    public readonly yAxis: BasicYAxisLayout[] = [];
     public readonly xAxis: HorizontalAxis;
     public readonly baseCell: LayoutCell;
     public chartCell: LayoutNode = new LayoutCell();
@@ -55,8 +55,8 @@ export class BasicChartLayout {
         this.updateLayout();
     }
 
-    public addYScale(scale: Scale, title: string, position?: VerticalAxisPosition): YAxisLayout {
-        const newYAxis = new YAxisLayout(this, scale, title);
+    public addYScale(scale: Scale, title: string, position?: VerticalAxisPosition): BasicYAxisLayout {
+        const newYAxis = new BasicYAxisLayout(this, scale, title);
         if (position != null) {
             newYAxis.axis.setPosition(position)
         }

@@ -45,6 +45,7 @@ export default defineUserConfig({
             'annotations',
             'axis',
             'series-envelope',
+            'tooltip',
           ]
       }]
     }
