@@ -94,6 +94,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         // get font hight
         const g = TextTextureGenerator.getCached('0', this.tickFont);
         const m = g.computerTextMetrics(context);
+        const tickLetterHightHalf= context.pixelToScreenY(m.height * 0.5);
 
         // calculate ticks
         const ticks = this.scale.calculateTicks(m.height, area.height * context.width, true);
@@ -113,7 +114,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
             // draw tick text
             new GpuLetterText(tick.toLocaleString())
                 .setColor(this.tickColor)
-                .draw(context, axisLayout, tickTextAlign, Matrix3x3.translate(tickTextSpacing, yOffset));
+                .draw(context, axisLayout, tickTextAlign, Matrix3x3.translate(tickTextSpacing, yOffset - tickLetterHightHalf));
         
             // draw grid lines
             if ((this.gridColor != null) && (chartArea != null)) {

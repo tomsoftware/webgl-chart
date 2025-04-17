@@ -81,9 +81,11 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
             context.drawLine(area.p0.addValues(xOffset, 0), area.p0.addValues(xOffset, tickLength), this.tickColor);
 
             // draw tick text
-            new GpuLetterText(tick.toLocaleString(), this.tickFont)
-                .setColor(this.tickColor)
-                .draw(context, axisLayout, Alignment.leftTop, Matrix3x3.translate(xOffset, tickTextSpacing));
+            const text = new GpuLetterText(tick.toLocaleString(), this.tickFont)
+                .setColor(this.tickColor);
+            // get the text-width to center align the text to the tick-line
+            const tickLetterWidthHalf = context.pixelToScreenY(text.getAxisAlignedBoundingBox(context).width * 0.5);
+            text.draw(context, axisLayout, Alignment.leftTop, Matrix3x3.translate(xOffset - tickLetterWidthHalf, tickTextSpacing));
         
             // draw grid
             if ((this.gridColor != null) && (chartArea != null)){

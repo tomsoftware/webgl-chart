@@ -49,7 +49,7 @@ To set the rotation of a text use the `setRotation(deg: number)` function.
 
 ## GpuLetterText
 
-Creating a new text
+A letter-text is a text build from simple texture-letters.
 
 ```ts
 new GpuLetterText(text: string, font?: Font, color?: Color);

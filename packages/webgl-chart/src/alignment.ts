@@ -1,8 +1,8 @@
+/** Defines constants used ot align objects in layout areas */
 export class Alignment {
-
     public readonly alignX: number;
     public readonly alignY: number;
-    private name: string;
+    private readonly name: string;
 
     public constructor(alignX: number = 0, alignY: number = 0, name = 'unknown') {
         this.alignX = alignX;
@@ -38,41 +38,16 @@ export class Alignment {
         return new Alignment(this.alignX, 0);
     }
 
-    public static get leftTop(): Alignment {
-        return new Alignment(0, 0, 'leftTop');
-    }
+    public static leftTop = new Alignment(0, 0, 'leftTop')
+    public static centerTop = new Alignment(0.5, 0, 'centerTop');
+    public static rightTop =  new Alignment(1, 0, 'rightTop');
+    public static leftCenter = new Alignment(0, 0.5, 'leftCenter');
+    public static centerCenter = new Alignment(0.5, 0.5, 'centerCenter');
+    public static rightCenter = new Alignment(1, 0.5, 'rightCenter');
+    public static leftBottom = new Alignment(0, 1, 'leftBottom');
+    public static centerBottom = new Alignment(0.5, 1, 'centerBottom');
+    public static rightBottom = new Alignment(1, 1, 'rightBottom');
 
-    public static get centerTop(): Alignment {
-        return new Alignment(0.5, 0, 'centerTop');
-    }
-
-    public static get rightTop(): Alignment {
-        return new Alignment(1, 0, 'rightTop');
-    }
-
-    public static get leftCenter(): Alignment {
-        return new Alignment(0, 0.5, 'leftCenter');
-    }
-
-    public static get centerCenter(): Alignment {
-        return new Alignment(0.5, 0.5, 'centerCenter');
-    }
-
-    public static get rightCenter(): Alignment {
-        return new Alignment(1, 0.5, 'rightCenter');
-    }
-
-    public static get leftBottom(): Alignment {
-        return new Alignment(0, 1, 'leftBottom');
-    }
-
-    public static get centerBottom(): Alignment {
-        return new Alignment(0.5, 1, 'centerBottom');
-    }
-
-    public static get rightBottom(): Alignment {
-        return new Alignment(1, 1, 'rightBottom');
-    }
 
     /** return a array with all alignments */
     public static get list(): Alignment[] {

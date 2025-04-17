@@ -1,4 +1,6 @@
 import type { Alignment } from "../alignment";
+import { Color } from "../color";
+import { Context } from "../context";
 import { Matrix3x3 } from "../matrix-3x3";
 import { Vector2 } from "../vector-2";
 
@@ -115,5 +117,9 @@ export class LayoutArea {
 
     public static fromPos(x1: number, y1: number, x2: number, y2: number): LayoutArea {
         return new LayoutArea(x1, y1, Math.max(0, x2 - x1), Math.max(y2 - y1));
+    }
+
+    public drawBorder(context: Context, color: Color) {
+        context.drawRect(this.p0, this.p1, this.p2, this.p3, color);
     }
 }

@@ -1,8 +1,9 @@
+/** Defines Colors and methods to convert or change them */
 export class Color {
-    public r: number;
-    public g: number;
-    public b: number;
-    public a: number;
+    public readonly r: number;
+    public readonly g: number;
+    public readonly b: number;
+    public readonly a: number;
 
     constructor(r: number, g: number, b: number, a: number = 1) {
         this.r = r;
@@ -111,7 +112,7 @@ export class Color {
         Color.fromBytes(201, 203, 207)  // grey
     ];
 
-    /** return a color for a given index/number */
+    /** return a color for a given index/number from the common color list */
     public static byIndex(i: number) {
         return Color.colorList[i % Color.colorList.length];
     }
