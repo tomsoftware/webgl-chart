@@ -8,7 +8,11 @@ export default defineUserConfig({
   lang: 'en-US',
 
   title: 'WebGl-Chart Documentation',
-  description: 'High performance web chart library to plot line-charts using WebGL',
+  description: 'High performance web chart library to plot line-charts, area-charts and annotations using WebGL',
+
+  head: [
+    ['link', { rel: "icon", type: "image/x-icon", href: "/favicon.ico"}]
+  ],
 
   theme: defaultTheme({
     logo: '/webgl-chart-logo.svg',
