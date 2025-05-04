@@ -150,8 +150,8 @@ function populate(timeLengthInMinutes: number) {
 
 <style scoped>
   .chart {
-    height: 300px;
     background-color: white;
+    width: 100%;
   }
 
   button {

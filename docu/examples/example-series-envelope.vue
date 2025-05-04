@@ -120,7 +120,7 @@ myChart.setMaxFrameRate(12);
 
 <style scoped>
 .chart {
-  height: 300px;
+  width: 100%;
   background-color: white;
 }
 label {

@@ -5,12 +5,8 @@ export type RenderCallback = (context: Context) => void;
 
 export class GpuChart {
     private element: HTMLCanvasElement | null = null;
-    private resizeObserver: ResizeObserver | null = null;
-    private width: number = 0;
-    private height: number = 0;
-    private devicePixelRatio: number = GpuChart.getDevicePixelRatio();
     private gl: WebGLRenderingContext | null = null;
-    private context: Context | null = new Context(GpuChart.getDevicePixelRatio());
+    private context: Context | null = new Context(1);
     private renderCallback: RenderCallback | null = null;
     // reduce framerate
     private frameDelay: number = 10;
@@ -19,14 +15,7 @@ export class GpuChart {
     private previousRenderTimestamp = 0;
     // indicate that the chart is disposed
     private disposed = false;
-
-    public static getDevicePixelRatio(): number {
-        if (typeof window === 'undefined') {
-            return 1;
-        }
-
-        return window.devicePixelRatio;
-    }
+    private boundResizeCallback: (() => void) | null = null;
 
     /** set max framerate */
     public setMaxFrameRate(fps: number): GpuChart {
@@ -53,20 +42,27 @@ export class GpuChart {
         if (this.gl == null) {
             throw new Error('webgl not supported for the given canvas element');
         }
-        
-        this.resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => this.onResize(entries));
-        this.resizeObserver.observe( this.element, {box: 'content-box'});
+
+        this.boundResizeCallback = () => this.onResize();
+        window.addEventListener('resize', this.boundResizeCallback);
+        window.addEventListener('orientationchange', this.boundResizeCallback);
+        element.addEventListener('resize', this.boundResizeCallback);
 
         return this;
     }
 
+
     /** dispose gpu chart */
     public dispose(): void {
         this.disposed = true;
-        this.resizeObserver?.disconnect();
         this.context?.dispose();
         this.context = null;
-        this.resizeObserver = null;
+        if (this.boundResizeCallback != null) {
+            window.removeEventListener('resize', this.boundResizeCallback);
+            window.removeEventListener('orientationchange', this.boundResizeCallback);
+            this.element?.removeEventListener('resize', this.boundResizeCallback);
+        }
+        this.boundResizeCallback = null;
         this.element = null;
         
         this.gl = null;
@@ -106,23 +102,28 @@ export class GpuChart {
         requestAnimationFrame(this.renderInternal);
     }
 
+    /** set the function that is called when ever the chart needs to be redrawn */
     public setRenderCallback(callback: RenderCallback): void {
         this.renderCallback = callback;
+    }
+
+    private updateSize(element: HTMLCanvasElement) {
+        const contentSize = GpuChart.getElementContentWidth(element);
+        element.width = Math.floor(contentSize.width);
+        element.height = Math.floor(contentSize.height);
+        return contentSize;
     }
 
     /** this will draw the chart elements */
     public drawScene(time: number): GpuChart {
         const gl = this.gl;
-        if ((gl == null) || (this.context == null)) {
+        if ((gl == null) || (this.context == null) || (this.element == null)) {
             return this;
         }
 
-        if (this.width == 0 || this.height == 0) {
-            // the canvas is not ready?
-            return this;
-        }
+        const contentSize = this.updateSize(this.element);
 
-        const context = this.context.init(time, this.width, this.height, this.devicePixelRatio, gl);
+        const context = this.context.init(time, contentSize.width, contentSize.height, contentSize.devicePixelRatio, gl);
 
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -135,60 +136,27 @@ export class GpuChart {
         return this;
     }
 
-    /** callback  */
-    private onResize(entries: ResizeObserverEntry[]) {
+    private static getElementContentWidth(element: HTMLElement) {
+        const rect = element.getBoundingClientRect();
+
+        //const styles = window.getComputedStyle(element);
+        //const paddingWidth = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+        //const paddingHeight = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+        return {
+            width: Math.floor(rect.right - rect.left),
+            height: Math.floor(rect.bottom - rect.top),
+            devicePixelRatio: window.devicePixelRatio
+        };
+      }
+
+    /** event listener callback for resize of canvas */
+    private onResize() {
         console.log('onResize');
 
-        for (const entry of entries) {
-            if (entry.target !== this.element) {
-                continue;
-            }
-
-            // see: https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
-
-            let width;
-            let height;
-            let dpr = GpuChart.getDevicePixelRatio();
-            let dprSupport = false;
-            if (entry.devicePixelContentBoxSize) {
-              // NOTE: Only this path gives the correct answer
-              // The other paths are an imperfect fallback
-              // for browsers that don't provide anyway to do this
-              width = entry.devicePixelContentBoxSize[0].inlineSize;
-              height = entry.devicePixelContentBoxSize[0].blockSize;
-              dpr = 1; // it's already in width and height
-              dprSupport = true;
-            } else if (entry.contentBoxSize) {
-              if (Array.isArray(entry.contentBoxSize)) {
-                width = entry.contentBoxSize[0].inlineSize;
-                height = entry.contentBoxSize[0].blockSize;
-              } else {
-                // legacy
-                const boxSize = entry.contentBoxSize as any;
-                width = boxSize.inlineSize;
-                height = boxSize.blockSize;
-              }
-            } else {
-              // legacy
-              width = entry.contentRect.width;
-              height = entry.contentRect.height;
-            }
-            const displayWidth = Math.round(width * dpr);
-            const displayHeight = Math.round(height * dpr);
-      
-            if (this.width == displayWidth && this.height == displayHeight) {
-                // ignore small changes
-                continue;
-            }
-
-            this.width = displayWidth;
-            this.height = displayHeight;
-            this.devicePixelRatio = GpuChart.getDevicePixelRatio();
-
-            this.element.width = displayWidth;
-            this.element.height = displayHeight;
+        if (this.element == null) {
+            return;
         }
-
+        
         this.render();
     }
 }

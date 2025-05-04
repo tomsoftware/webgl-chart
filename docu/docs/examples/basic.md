@@ -1,5 +1,5 @@
 # Basics
-This example uses the `BasicChartLayout` to display multiple series in on chart.
+This example uses the `BasicChartLayout` to display multiple series in one chart.
 
 <example-basic />
 

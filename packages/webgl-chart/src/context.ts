@@ -50,8 +50,8 @@ export class Context {
     public init(time: number, width: number, height: number, devicePixelRatio: number, gl: WebGLRenderingContext): Context {
         this.gl = gl;
         this.time = time;
-        this.width = width;
-        this.height = height;
+        this.width = width * devicePixelRatio;
+        this.height = height * devicePixelRatio;
         this.canvas2d.devicePixelRatio = devicePixelRatio;
 
         // reset the texture drawer
@@ -59,7 +59,7 @@ export class Context {
         this.lineDrawer.clear();
 
         this.projectionMatrix = Matrix3x3.projection(1, height / width);
-        this.pixelScale = new Vector2(1 / width, 1 / width);
+        this.pixelScale = new Vector2(1 / (width * devicePixelRatio), 1 / (width * devicePixelRatio));
 
         // gl.clearColor(0.0, 0.0, 0.0, 0.0);
         // gl.clearStencil(0.0);

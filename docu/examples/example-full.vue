@@ -268,7 +268,7 @@ function onDownloadTexture() {
 
 <style scoped>
 .chart {
-  height: 300px;
+  width: 100%;
 }
 
 .grid-container {

@@ -14,7 +14,7 @@ const App: React.FC = () => {
 
   // generate series data
   const series1 = new Series(time)
-      .generate((t) => Generators.generateSin(t))
+      .generate((t) => Math.sin(t * 0.001))
       .setColor(Color.blue)
       .setPointSize(5);
 
