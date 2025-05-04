@@ -128,6 +128,12 @@ export class GpuProgram {
 
         gl.linkProgram(program);
 
+        // check linking
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            const info = gl.getProgramInfoLog(program);
+            throw `Program link error. \n\n${info}`;
+        }
+
         this.program = program;
     }
 }

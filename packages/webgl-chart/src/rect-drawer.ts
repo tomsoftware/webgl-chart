@@ -259,42 +259,42 @@ export class RectDrawer {
         /* position of the texture */
         varying vec2 o_textureLocation;
 
-        vec2 ratio = vec2(2.0, uniformScreenSize.x / uniformScreenSize.y * 2.0);
-
         void main(void) {
+            vec2 ratio = vec2(2.0, uniformScreenSize.x / uniformScreenSize.y * 2.0);
+
             //// step 1: calculate real width and height of the rect
             vec3 zeroPos = cameraTransformation * vec3(0.0, 0.0, 1.0);
             vec3 realRectSize = cameraTransformation * vec3(rectSize.xy, 1.0) - zeroPos;
 
-            int dimensionTypeWidth = int(dimensionType.z + 0.5);
-            int dimensionTypeHeight = int(dimensionType.w + 0.5);
+            float dimensionTypeWidth = floor(dimensionType.z + 0.5);
+            float dimensionTypeHeight = floor(dimensionType.w + 0.5);
 
             ///////
             /// calculate width of rect
-            if (dimensionTypeWidth == 1) {
+            if (dimensionTypeWidth == 1.0) {
                 // use width depending on the bounds
                 realRectSize.x = rectSize.x * (uniformBounds.z - uniformBounds.x); // p2.x - p1.x
             }
-            else if (dimensionTypeWidth == 2) {
+            else if (dimensionTypeWidth == 2.0) {
                 // use absolute width
                 realRectSize.x = rectSize.x * ratio.x;
             }
-            else if (dimensionTypeWidth == 3) {
+            else if (dimensionTypeWidth == 3.0) {
                 // use pixels
                 realRectSize.x = rectSize.x / uniformScreenSize.x * 2.0;
             }
 
             ///////
             // calculate height of rect
-            if (dimensionTypeHeight == 1) {
+            if (dimensionTypeHeight == 1.0) {
                 // use height depending on the bounds
                 realRectSize.y = rectSize.y * (uniformBounds.w - uniformBounds.y); // p2.y - p1.y
             }
-            else if (dimensionTypeHeight == 2) {
+            else if (dimensionTypeHeight == 2.0) {
                 // use absolute height
                 realRectSize.y = rectSize.y * ratio.y;
             }
-            else if (dimensionTypeHeight == 3) {
+            else if (dimensionTypeHeight == 3.0) {
                 // use pixels
                 realRectSize.y = rectSize.y / uniformScreenSize.y * 2.0;
             }
@@ -357,9 +357,18 @@ export class RectDrawer {
           }
 
           /* dashed line */
-          vec2 stripe = mod(o_vertexOffset * o_rectSize / o_stripeWidth, 2.0);
-          if ((stripe.x < 1.0) || (stripe.y < 1.0)) {
+          if (o_stripeWidth.y > 0.0001) {
+            float stripe_y = mod(o_vertexOffset.y * o_rectSize.y / o_stripeWidth.y, 2.0);
+            if (stripe_y < 1.0) {
               discard;
+            }
+          }
+
+          if (o_stripeWidth.x > 0.0001) {
+            float stripe_x = mod(o_vertexOffset.x * o_rectSize.x / o_stripeWidth.x, 2.0);
+            if (stripe_x < 1.0) {
+              discard;
+            }
           }
 
           /* rounded edges */
