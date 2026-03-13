@@ -10,6 +10,10 @@ import ExampleGpuTextRotation from './../../examples/example-gpu-text-rotation.v
 import ExampleLetterGpuTextRotation from './../../examples/example-gpu-letter-text-rotation.vue';
 import ExampleSeriesEnvelope from './../../examples/example-series-envelope.vue';
 import ExampleTooltip from './../../examples/example-tooltip.vue';
+import ExampleEventHandling from './../../examples/example-event-handling.vue';
+import ExampleHorizontalLayout from './../../examples/example-horizontal-layout.vue';
+import ExampleVerticalLayout from './../../examples/example-vertical-layout.vue';
+import ExampleIntersectedLayout from './../../examples/example-intersected-layout.vue';
 
 export default defineClientConfig({
   enhance({ app, router, siteData }) {
@@ -24,6 +28,11 @@ export default defineClientConfig({
     app.component('example-gpu-letter-text-rotation', ExampleLetterGpuTextRotation);
     app.component('example-series-envelope', ExampleSeriesEnvelope);
     app.component('example-tooltip', ExampleTooltip);
+    app.component('example-event-handling', ExampleEventHandling);
+    app.component('example-horizontal-layout', ExampleHorizontalLayout);
+    app.component('example-vertical-layout', ExampleVerticalLayout);
+    app.component('example-intersected-layout', ExampleIntersectedLayout);
+    
   },
   setup() {},
   rootComponents: [],

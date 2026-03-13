@@ -1,9 +1,11 @@
 # Drawing Texts
 
-Texts can be rendered using the `GpuText` and `GpuLetterText` classes. Internally, all texts are treated as textures, meaning they are stored as images on the GPU and then displayed. The primary distinction between `GpuText` and `GpuLetterText` lies in how they handle textures. The `GpuText` class creates and stores a single texture for the entire text, while the `GpuLetterText` class stores textures for individual letters and renders them letter by letter on the display. Although `GpuLetterText` is more complex, it eliminates the need to update the texture image whenever the text-value needs to change.
+Texts are rendered using `GpuText` or `GpuLetterText`. `GpuText` renders the entire text as a single GPU texture, while `GpuLetterText` renders each letter individually for better performance when text changes frequently.
 
 
 ## GpuText
+
+This class renders the entire text as a single GPU texture, making it efficient for static text.
 
 Creating a new text
 
@@ -49,7 +51,7 @@ To set the rotation of a text use the `setRotation(deg: number)` function.
 
 ## GpuLetterText
 
-A letter-text is a text build from simple texture-letters.
+This class renders each letter as a separate GPU texture, allowing for efficient updates when the text content changes frequently.
 
 ```ts
 new GpuLetterText(text: string, font?: Font, color?: Color);

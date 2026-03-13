@@ -38,7 +38,7 @@ export * from './event-handler/event-value';
 
 // layout
 export * from './layout/horizontal-item';
-export * from './layout/horizontal-layout'
+export * from './layout/horizontal-layout';
 export * from './layout/intersected-layout';
 export * from './layout/layout-area';
 export * from './layout/layout-cache';

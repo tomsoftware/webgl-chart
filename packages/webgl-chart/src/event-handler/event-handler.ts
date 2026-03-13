@@ -59,6 +59,10 @@ export class EventDispatcher {
 
         for (const event of queue) {
             for (const listener of this.listeners.values()) {
+                if (event.type !== listener.type) {
+                    continue;
+                }
+
                 const area = listener.layoutNode.getArea(context.layoutCache);
                 if (area.contains(event.position)) {
                     if (listener.callback(event, listener.layoutNode, area)) {

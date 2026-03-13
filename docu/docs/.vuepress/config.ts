@@ -27,7 +27,11 @@ export default defineUserConfig({
         text: 'Examples',
         link: '/examples/basic',
         activeMatch: "^/examples/"
-      }],
+      },{
+        text: 'Source',
+        link: 'https://github.com/tomsoftware/webgl-chart',
+      }
+    ],
     sidebar: {
       '/api/': [{
         text: 'API',
@@ -36,7 +40,9 @@ export default defineUserConfig({
         children: [
           'introduction',
           'renderer',
-          'draw-text'
+          'layout',
+          'draw-text',
+          'event-handling'
         ]
       }],
       '/examples/': [{

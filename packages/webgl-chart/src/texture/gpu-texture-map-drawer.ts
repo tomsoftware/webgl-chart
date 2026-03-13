@@ -94,7 +94,7 @@ export class TextureMapDrawer {
         /* width and height of the screen to convert pixels to screen-coordinates */
         uniform vec2 uniformScalePixel;
 
-        /* ** passing to fragment ** */
+        /* passing to fragment */
         varying vec4 o_color;
         varying vec2 o_textureLocation;
     
@@ -102,26 +102,8 @@ export class TextureMapDrawer {
             // Calculate the vertex position in screen coordinates
             vec2 realRectSize = rectSize * uniformScalePixel;
             vec3 realPos = uniformCamTransformation * rectTransformation * vec3(realRectSize * vertexOffset, 1.0);
-            //realPos = uniformCamTransformation * mat3(1.0, 0.0, 0.0,   0.0, 1.0, 0.0,   0.5, 0.1, 1.0) * vec3(realRectSize * vertexOffset, 1.0);
-
-            vec3 v1 = rectTransformation * vec3(realRectSize * vertexOffset, 1.0);
-            realPos = uniformCamTransformation * v1;
-            realPos = uniformCamTransformation * mat3(1.0, 0.0, 0.0,   0.0, 1.0, 0.0,   0.5, 0.1, 1.0) * vec3(realRectSize * vertexOffset, 1.0);
-            realPos = uniformCamTransformation * mat3(1, 0, 0, 0, 1, 0, 0.5, 0.24, 1) * vec3(realRectSize * vertexOffset, 1.0);
-            realPos = uniformCamTransformation * rectTransformation * vec3(realRectSize * vertexOffset, 1.0);
 
             gl_Position = vec4(realPos.xy, 0.0, 1.0);
-
-            /*
-            vec2 realRectPos = vec2(0.5, 0.1);
-
-            vec2 transformed = vec2(
-                realRectPos.x + (realRectSize.x * vertexOffset.x * 0.5) ,
-                realRectPos.y + (realRectSize.y * vertexOffset.y * 0.5) 
-            );
-
-            gl_Position = vec4(transformed.xy, 0.0, 1.0);
-            */
 
             // Pass the texcoord to the fragment shader.
             o_textureLocation = textureLocation + (vertexOffset + 1.0) * 0.5 * textureSize;
