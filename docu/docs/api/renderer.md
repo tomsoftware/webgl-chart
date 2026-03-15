@@ -100,16 +100,19 @@ Layout defines how different components (e.g. text, axis and series) are arrange
 
 ---
 
-### Series
-Series represent the dataset that is plotted on the chart.
+### Series Drawer
+Series are responsible for plotted datasets on the chart.
+
+#### Example: Series Line to plot lines
 
 | Argument | Type | Description |
 | --- | --- | --- |
 | Series | Object | The series object containing data points. |
 | GpuFloatBuffer | Object | The buffer containing data points. |
 | setColor | Function | Sets the color of the series. |
-| setPointSize | Function | Sets the size of points in the series. |
-| drawLines | Function | Draws the series as lines on the chart. |
+| draw | Function | Draws the series as lines on the chart. |
+
+see examples for other series types
 
 ---
 

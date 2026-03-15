@@ -4,10 +4,11 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Series, Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell,
+import { SeriesPoint, Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell,
   VerticalLayout, ScreenPosition, Color, Alignment,  Scale,
   EventDispatcher, Font, BasicChartLayout,
-  Annotations} from '@tomsoftware/webgl-chart';
+  Annotations,
+  SeriesLine} from '@tomsoftware/webgl-chart';
 
 let pauseAnimation = ref<boolean>(false);
 
@@ -15,9 +16,9 @@ let pauseAnimation = ref<boolean>(false);
 const time = new GpuFloatBuffer(1);
 
 // generate series data
-const series1 = new Series(time);
-const series2 = new Series(time);
-const series3 = new Series(time);
+const series1 = new SeriesLine(time);
+const series2 = new SeriesPoint(time);
+const series3 = new SeriesLine(time);
 
 // generate annotations
 const annotations = new Annotations();
@@ -67,9 +68,9 @@ const myChart = new ChartConfig()
       basicLayout.draw(context);
 
       // draw the series
-      series1.drawLines(context, scaleX, scaleY, basicLayout.chartCell);
-      series3.drawLines(context, scaleX, scaleY, basicLayout.chartCell);
-      series2.drawPoints(context, scaleX, scaleY, basicLayout.chartCell);
+      series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
+      series3.draw(context, scaleX, scaleY, basicLayout.chartCell);
+      series2.draw(context, scaleX, scaleY, basicLayout.chartCell);
 
       // draw annotations
       annotations.draw(context, scaleX, scaleY, basicLayout.chartCell);
@@ -113,7 +114,7 @@ function populate(timeLengthInMinutes: number) {
   series2
     .generate((t) => Generators.generateEKG(t * 10) * 10)
     .setColor(Color.byIndex(1))
-    .setThickness(3);
+    .setPointSize(3);
 
   series3
     .generate((t) => Generators.generateIO(t * 10) * 20)
@@ -126,7 +127,7 @@ function populate(timeLengthInMinutes: number) {
 
   for (const a of Generators.generateAnnotations(itemCount * 0.001, numberOfAnnotations)) {
     annotations.addVerticalLine(a.x, a.color, 10, 2)
-      .addLabel(new GpuText(a.text), a.color);
+      .addLabel(new GpuText(a.text), a.color.withAlpha(0.7));
   }
 }
 

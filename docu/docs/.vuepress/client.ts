@@ -14,6 +14,8 @@ import ExampleEventHandling from './../../examples/example-event-handling.vue';
 import ExampleHorizontalLayout from './../../examples/example-horizontal-layout.vue';
 import ExampleVerticalLayout from './../../examples/example-vertical-layout.vue';
 import ExampleIntersectedLayout from './../../examples/example-intersected-layout.vue';
+import ExampleSeriesBubble from '../../examples/example-series-bubble.vue';
+import ExampleSeriesBar from '../../examples/example-series-bar.vue';
 
 export default defineClientConfig({
   enhance({ app, router, siteData }) {
@@ -32,6 +34,8 @@ export default defineClientConfig({
     app.component('example-horizontal-layout', ExampleHorizontalLayout);
     app.component('example-vertical-layout', ExampleVerticalLayout);
     app.component('example-intersected-layout', ExampleIntersectedLayout);
+    app.component('example-series-bubble', ExampleSeriesBubble);
+    app.component('example-series-bar', ExampleSeriesBar);
     
   },
   setup() {},

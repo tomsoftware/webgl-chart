@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Series, GpuFloatBuffer, LayoutCell,
+import { SeriesPoint, GpuFloatBuffer, LayoutCell,
   Color, Scale, EventDispatcher, BasicChartLayout, SeriesEnvelope} from '@tomsoftware/webgl-chart';
 import { ref } from 'vue';
 
@@ -24,17 +24,18 @@ const data = GpuFloatBuffer.generateFrom(time, t => sinData(t, 0));
 
 // create area-series
 const envelope1 = new SeriesEnvelope(time, upperData, lowerData)
-    .setColor(Color.darkGray, Color.lightGray);
+    .setColor(Color.lightRed, Color.lightGray);
 
-const seriesUpper = new Series(time, upperData)
-    .setColor(Color.black);
+// to show upper and lower outlines of the area
+const seriesUpper = new SeriesPoint(time, upperData)
+    .setColor(Color.blue);
 
-const seriesLower = new Series(time, lowerData)
-    .setColor(Color.black);
+const seriesLower = new SeriesPoint(time, lowerData)
+    .setColor(Color.green);
 
 // create inner sin-series
-const series1 = new Series(time, data)
-    .setColor(Color.red)
+const series1 = new SeriesPoint(time, data)
+    .setColor(Color.darkGray)
     .setPointSize(4)
 
 // scales define the range that is shown by the axis
@@ -70,19 +71,19 @@ const myChart = new ChartConfig()
       envelope1.draw(context, scaleX, scaleY, basicLayout.chartCell);
 
       if (drawLines.value) {
-        series1.drawLines(context, scaleX, scaleY, basicLayout.chartCell);
+        series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
 
         if (drawBounds.value) {
-          seriesLower.drawLines(context, scaleX, scaleY, basicLayout.chartCell);
-          seriesUpper.drawLines(context, scaleX, scaleY, basicLayout.chartCell);
+          seriesLower.draw(context, scaleX, scaleY, basicLayout.chartCell);
+          seriesUpper.draw(context, scaleX, scaleY, basicLayout.chartCell);
         }
       }
       if (drawDots.value) {
-        series1.drawPoints(context, scaleX, scaleY, basicLayout.chartCell);
+        series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
 
         if (drawBounds.value) {
-          seriesLower.drawPoints(context, scaleX, scaleY, basicLayout.chartCell);
-          seriesUpper.drawPoints(context, scaleX, scaleY, basicLayout.chartCell);
+          seriesLower.draw(context, scaleX, scaleY, basicLayout.chartCell);
+          seriesUpper.draw(context, scaleX, scaleY, basicLayout.chartCell);
         }
       }
 
@@ -119,12 +120,11 @@ myChart.setMaxFrameRate(12);
 </template>
 
 <style scoped>
-.chart {
-  width: 100%;
-  background-color: white;
-}
-label {
-  padding-right: 10pt;
-}
-
+  .chart {
+    width: 100%;
+    background-color: white;
+  }
+  label {
+    padding-right: 10pt;
+  }
 </style>

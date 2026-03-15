@@ -9,13 +9,19 @@ export * from './layout-border';
 export * from './line-drawer';
 export * from './matrix-3x3';
 export * from './rect-drawer';
-export * from './series';
-export * from './series-envelope';
 export * from './uniform';
 export * from './vector-2';
 export * from './vector-4';
 export * from './tooltip-line';
 export * from './tooltip-markers';
+
+// series
+export * from './drawable-series';
+export * from './series-point';
+export * from './series-line';
+export * from './series-bubble';
+export * from './series-envelope';
+export * from './series-bar';
 
 // annotations
 export * from './annotation/annotations';

@@ -1,5 +1,5 @@
 # Stacked charts
-This example uses the `BasicChartLayout` to display multiple series a stacked chart.
+This example uses the `BasicChartLayout` inside a `VerticalLayout` to display multiple series in a stacked chart.
 
 <example-stacked />
 

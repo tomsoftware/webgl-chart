@@ -153,7 +153,7 @@ export class TextureMapDrawer {
         // set uniforms
         context.setUniform(program, 'uniformCamTransformation', cameraTransformation);
         context.setUniform(program, 'uniformTexture', this.textureMap);
-        context.setUniform(program, 'uniformScalePixel', new Vector2(0.5 /context.width, 0.5 / context.width));
+        context.setUniform(program, 'uniformScalePixel', new Vector2(0.5 / context.width, 0.5 / context.width));
 
         // draw textures
         context.angleExtension?.drawElementsInstancedANGLE(

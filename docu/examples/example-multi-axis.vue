@@ -2,10 +2,10 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Series, GpuFloatBuffer, LayoutCell,
+import { SeriesPoint, GpuFloatBuffer, LayoutCell,
   Color, Scale, EventDispatcher, BasicChartLayout,
   VerticalAxisPosition,
-  Font} from '@tomsoftware/webgl-chart';
+  SeriesLine} from '@tomsoftware/webgl-chart';
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
@@ -13,20 +13,18 @@ const time = new GpuFloatBuffer(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
 // generate series data
-const series1 = new Series(time)
+const series1 = new SeriesPoint(time)
     .generate((t) => Generators.generateSin(t))
     .setColor(Color.blue)
     .setPointSize(5);
 
-const series2 = new Series(time)
+const series2 = new SeriesLine(time)
     .generate((t) => Generators.generateEKG(t * 10) * 10)
-    .setColor(Color.red)
-    .setPointSize(4)
+    .setColor(Color.red);
 
-const series3 = new Series(time)
+const series3 = new SeriesLine(time)
     .generate((t) => Generators.generateIO(t * 10) * 20)
     .setColor(Color.darkGreen)
-    .setPointSize(4)
 
 // scales define the range that is shown by the axis
 const scaleX = new Scale(0, 1);
@@ -67,9 +65,9 @@ const myChart = new ChartConfig()
       basicLayout.draw(context);
 
       // draw the series
-      series1.drawLines(context, scaleX, scaleY1, basicLayout.chartCell);
-      series2.drawPoints(context, scaleX, scaleY2, basicLayout.chartCell);
-      series3.drawLines(context, scaleX, scaleY3, basicLayout.chartCell);
+      series1.draw(context, scaleX, scaleY1, basicLayout.chartCell);
+      series2.draw(context, scaleX, scaleY2, basicLayout.chartCell);
+      series3.draw(context, scaleX, scaleY3, basicLayout.chartCell);
   });
 
 function onBind(element: HTMLElement | null): void {

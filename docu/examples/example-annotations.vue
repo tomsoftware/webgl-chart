@@ -2,7 +2,7 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Series, GpuFloatBuffer, LayoutCell,
+import { SeriesLine, GpuFloatBuffer, LayoutCell,
   Color, Scale, EventDispatcher, BasicChartLayout,
   Annotations,
   GpuText,
@@ -14,7 +14,7 @@ const itemCount = 1000 * 60 * 60 / 4;
 const time = new GpuFloatBuffer(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
-const series1 = new Series(time)
+const series1 = new SeriesLine(time)
     .generate((t) => Generators.generateIO(t * 10) * 20)
     .setColor(Color.darkGreen)
     .setThickness(1);
@@ -64,7 +64,7 @@ const myChart = new ChartConfig()
       basicLayout.draw(context);
 
       // draw the series
-      series1.drawLines(context, scaleX, scaleY, basicLayout.chartCell);
+      series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
       
       // draw annotations
       annotations.draw(context, scaleX, scaleY, basicLayout.chartCell);

@@ -8,8 +8,9 @@ import { Vector4 } from "./vector-4";
 import { Vector2 } from "./vector-2";
 import { GpuShortBuffer } from "./buffers/gpu-buffer-short";
 import { GpuBufferView } from "./buffers/buffer-view";
+import { DrawableSeries } from "./drawable-series";
 
-export class SeriesEnvelope {
+export class SeriesEnvelope implements DrawableSeries {
     protected upperColorValue = new Vector4(1, 0, 0, 0.5);
     protected lowerColorValue = new Vector4(1, 0, 0, 0.5);
     public bbox = new Vector4(0, 0, 1, 1);
@@ -166,6 +167,6 @@ export class SeriesEnvelope {
           WebGLRenderingContext.UNSIGNED_SHORT,
           0,
           (this.upperData.count - 1)
-      );
+        );
     }
 }

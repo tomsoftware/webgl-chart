@@ -3,13 +3,13 @@
 import { ref } from 'vue';
 
 import { Chart, Utilities, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Series, Matrix3x3, GpuFloatBuffer,
-GpuText, LayoutCell, VerticalAxis, VerticalAxisPosition,
-HorizontalAxis, HorizontalAxisPosition , VerticalLayout,
-HorizontalLayout, ScreenPosition, IntersectedLayout,
-LayoutBorder, Color, Font, Alignment, Scale,
-EventDispatcher, EventTypes, RectDrawer, Annotations,
-VerticalPosition, HorizontalPosition} from '@tomsoftware/webgl-chart';
+import { SeriesPoint, Matrix3x3, GpuFloatBuffer,
+  GpuText, LayoutCell, VerticalAxis, VerticalAxisPosition,
+  HorizontalAxis, HorizontalAxisPosition , VerticalLayout,
+  HorizontalLayout, ScreenPosition, IntersectedLayout,
+  LayoutBorder, Color, Font, Alignment, Scale,
+  EventDispatcher, EventTypes, RectDrawer, Annotations,
+  VerticalPosition, HorizontalPosition} from '@tomsoftware/webgl-chart';
 import { Generators } from './generators';
 
 
@@ -30,12 +30,12 @@ const time = new GpuFloatBuffer(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
 // generate series data
-const series1 = new Series(time, null)
+const series1 = new SeriesPoint(time, null)
     .generate((t) => Generators.generateSin(t))
     .setColor(Color.blue)
     .setPointSize(5);
   
-const series2 = new Series(time, null)
+const series2 = new SeriesPoint(time, null)
     .generate((t) => Generators.generateEKG(t * 10) * 10)
     .setColor(Color.green)
     .setPointSize(4)
@@ -173,17 +173,17 @@ const data1 = new ChartConfig()
 
       // draw the series
       if (showDots.value) {
-        series1.drawPoints(context, scaleX, scaleY, chartCell);
+        series1.draw(context, scaleX, scaleY, chartCell);
       }
       if (showLines.value) {
-        series1.setThickness(lineThickness.value).drawLines(context, scaleX, scaleY, chartCell);
+        series1.draw(context, scaleX, scaleY, chartCell);
       }
       
       if (showDots.value) {
-        series2.drawPoints(context, scaleX, scaleY, chartCell);
+        series2.draw(context, scaleX, scaleY, chartCell);
       }
       if (showLines.value) {
-        series2.drawLines(context, scaleX, scaleY, chartCell);
+        series2.draw(context, scaleX, scaleY, chartCell);
       }
 
       /*
@@ -209,7 +209,7 @@ const data2 = new ChartConfig()
       context.calculateLayout(baseContainer);
       context.layoutCache.draw(context);
 
-      series1.drawPoints(context, scaleX, scaleY, xAxisCell);
+      series1.draw(context, scaleX, scaleY, xAxisCell);
   });
 
 

@@ -126,7 +126,7 @@ export class RectDrawer {
         // set element-index buffer
         context.setElementBuffer(this.indexBuffer);
 
-        // set clipping bounds
+        // Set clipping bounds
         const p1 = new Vector2(layoutArea.left, layoutArea.top).transform(p);
         const p2 = new Vector2(layoutArea.right, layoutArea.bottom).transform(p);
         context.setUniform(program, 'uniformBounds', this.bbox.set(p1.x, p1.y, p2.x, p2.y));

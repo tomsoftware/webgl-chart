@@ -1,4 +1,4 @@
-# Envelope
+# Area Series
 This example uses the `SeriesEnvelope` to display area-charts between two series. Use `SeriesLine` or `SeriesPoint` to add outlines.
 
 <example-series-envelope />
@@ -16,5 +16,7 @@ new SeriesEnvelope(time: GpuFloatBuffer, upper: GpuFloatBuffer | null = null, lo
  lower | GpuFloatBuffer    | Lower values
 
 
-
+<details>
+  <summary>Source</summary>
 @[code](../../examples/example-series-envelope.vue)
+</details>

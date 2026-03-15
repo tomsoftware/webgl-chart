@@ -14,6 +14,7 @@ export class GpuFloatBuffer extends GpuBaseBuffer<Float32Array> implements GpuBu
         super(Float32Array, size, 'float', componentsPerInstance);
     }
 
+    /** generate data from a given buffer: = calc(src(i)) */
     public static generateFrom(src: GpuFloatBuffer, calc: (srcValue: number) => number): GpuFloatBuffer {
         const srcData = src.data;
         const newBuffer = new GpuFloatBuffer(srcData.length);
@@ -28,7 +29,20 @@ export class GpuFloatBuffer extends GpuBaseBuffer<Float32Array> implements GpuBu
         return newBuffer;
     }
 
-    public generate(calc: (index: number) => number): GpuFloatBuffer {
+    /** generate buffer with the given number of elements: = calc(i) */
+    public static generate(length: number, calc: (index: number) => number) {
+        const newBuffer = new GpuFloatBuffer(length);
+        newBuffer.bufferOffset = 0;
+        newBuffer.bufferEnd = length;
+        const newData = newBuffer.buffer;
+        for (let i = 0; i < length; i++) {
+            newData[i] = calc(i);
+        }
+    
+        return newBuffer;
+    }
+
+    public generate(calc: (srcValue: number) => number): GpuFloatBuffer {
         this.bufferOffset = 0;
         this.bufferEnd = this.buffer.length;
 

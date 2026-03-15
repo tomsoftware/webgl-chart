@@ -2,9 +2,10 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Series, GpuFloatBuffer, LayoutCell,
+import { SeriesPoint, GpuFloatBuffer, LayoutCell,
   Color, Scale, EventDispatcher, BasicChartLayout,
-  TooltipLine, TooltipMarkers} from '@tomsoftware/webgl-chart';
+  TooltipLine, TooltipMarkers,
+  SeriesLine} from '@tomsoftware/webgl-chart';
 
 // define ToolTip
 const tooltipLine = new TooltipLine()
@@ -23,19 +24,19 @@ const time = new GpuFloatBuffer(itemCount)
 
 // generate series data
 const data1 = GpuFloatBuffer.generateFrom(time, (t) => Generators.generateSin(t));
-const series1 = new Series(time, data1)
+const series1 = new SeriesPoint(time, data1)
     .setColor(Color.blue)
     .setPointSize(5);
 
 const data2 = GpuFloatBuffer.generateFrom(time, (t) => Generators.generateEKG(t * 10) * 10);
-const series2 = new Series(time, data2)
+const series2 = new SeriesPoint(time, data2)
     .setColor(Color.red)
     .setPointSize(4)
 
 const data3 = GpuFloatBuffer.generateFrom(time, (t) => Generators.generateIO(t * 10) * 20);
-const series3 = new Series(time, data3)
+const series3 = new SeriesLine(time, data3)
     .setColor(Color.darkGreen)
-    .setPointSize(4)
+
 
 // scales define the range that is shown by the axis
 const scaleX = new Scale(0, 0.2);
@@ -72,9 +73,9 @@ const myChart = new ChartConfig()
       basicLayout.draw(context);
 
       // draw the series
-      series1.drawLines(context, scaleX, scaleY, basicLayout.chartCell);
-      series3.drawLines(context, scaleX, scaleY, basicLayout.chartCell);
-      series2.drawPoints(context, scaleX, scaleY, basicLayout.chartCell);
+      series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
+      series3.draw(context, scaleX, scaleY, basicLayout.chartCell);
+      series2.draw(context, scaleX, scaleY, basicLayout.chartCell);
 
       // get position of mouse
       const mousePosition = eventDispatcher.getMousePosition();

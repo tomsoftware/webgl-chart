@@ -3,33 +3,35 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Series, GpuFloatBuffer, LayoutCell,
+import { SeriesPoint, GpuFloatBuffer, LayoutCell,
   Color, Scale, EventDispatcher, BasicChartLayout,
-  VerticalLayout,
-  ScreenPosition,
-  Context} from '@tomsoftware/webgl-chart';
+  VerticalLayout, ScreenPosition, Context,
+  SeriesBar, DrawableSeries,
+  SeriesLine} from '@tomsoftware/webgl-chart';
 
 class ChartInfo {
-  public series: Series;
+  public series: DrawableSeries;
   public layout: BasicChartLayout;
   public layoutCell: LayoutCell;
+  public text: string;
 
-  constructor(series: Series, baseContainer: VerticalLayout, showXAxisLabel: boolean = false) {
+  constructor(series: DrawableSeries, baseContainer: VerticalLayout, text: string, showXAxisLabel: boolean = false) {
     this.series = series;
+    this.text = text;
 
     // second item for the chart
     this.layoutCell = baseContainer.addRelativeCell(1);
 
     // use a basic chart layout for arranging the chart-elements
     const layout = new BasicChartLayout(eventDispatcher, this.layoutCell, scaleX);
-    layout.addYScale(scaleY, 'Value');
+    layout.addYScale(scaleY, text);
     layout.setXAxisLabel(showXAxisLabel ? 'Time' : null);
     this.layout = layout;
   }
 
   public draw(context: Context, scaleX: Scale, scaleY: Scale) {
     this.layout.draw(context);
-    this.series.drawLines(context, scaleX, scaleY, this.layout.chartCell);
+    this.series.draw(context, scaleX, scaleY, this.layout.chartCell);
   }
 }
 
@@ -39,20 +41,23 @@ const time = new GpuFloatBuffer(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
 // generate series data
-const series1 = new Series(time)
+const series1 = new SeriesPoint(time)
     .generate((t) => Generators.generateSin(t))
     .setColor(Color.blue)
-    .setPointSize(5);
+    .setPointSize(4)
 
-const series2 = new Series(time)
-    .generate((t) => Generators.generateEKG(t * 10) * 10)
+const series2 = new SeriesLine(time)
+    .generate((t) => Generators.generateIO(t * 10) * 10)
     .setColor(Color.red)
-    .setPointSize(4)
+    .setThickness(1);
 
-const series3 = new Series(time)
-    .generate((t) => Generators.generateIO(t * 10) * 20)
-    .setColor(Color.darkGreen)
-    .setPointSize(4)
+const series3 = new SeriesBar(
+  time,
+  GpuFloatBuffer.generateFrom(time, (t) => Generators.generateEKG(t * 10) * 20)
+)
+  .setColor(Color.darkGreen)
+  .setBarWidth(0.0008)
+
 
 
 // scales define the range that is shown by the axis
@@ -67,14 +72,15 @@ const baseContainer = new LayoutCell();
 
 
 // add a vertical layout-container with some padding
-const baseRow = baseContainer.addLayout(new VerticalLayout(ScreenPosition.fromPixel(10)));
+const baseRow = baseContainer.addLayout(
+  new VerticalLayout(ScreenPosition.fromPixel(10))
+);
 
 const chartList: ChartInfo [] = [
-  new ChartInfo(series1, baseRow, false),
-  new ChartInfo(series2, baseRow, false),
-  new ChartInfo(series3, baseRow, true)
+  new ChartInfo(series1, baseRow, 'point', false),
+  new ChartInfo(series2, baseRow, 'line', false),
+  new ChartInfo(series3, baseRow, 'bar', true)
 ]
-
 
 // set render callback: here you need to define what elements you want to draw
 const myChart = new ChartConfig()
@@ -109,9 +115,8 @@ myChart.setMaxFrameRate(12);
 </template>
 
 <style scoped>
-.chart {
-  width: 100%;
-  background-color: white;
-}
-
+  .chart {
+    width: 100%;
+    background-color: white;
+  }
 </style>
