@@ -1,7 +1,6 @@
-import type { GpuText } from "../texture/gpu-text";
-import { Scale } from "./scale";
-import { Color } from "../color";
-import { Font } from "../texture/font";
+import type { GpuText } from '@tomsoftware/webgl-lib';
+import { Color, Font } from '@tomsoftware/webgl-lib';
+import { Scale } from './scale';
 
 export class AxisBase {
     public label: GpuText | null;

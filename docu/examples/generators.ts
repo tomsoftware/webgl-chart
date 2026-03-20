@@ -1,4 +1,4 @@
-import { Color } from "@tomsoftware/webgl-chart";
+import { Color } from "@tomsoftware/webgl-lib";
 
 export class Generators {
 

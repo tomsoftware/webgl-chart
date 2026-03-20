@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, GpuFloatBuffer, LayoutCell,
-  Color, Scale, EventDispatcher, BasicChartLayout, SeriesEnvelope} from '@tomsoftware/webgl-chart';
+import { GpuFloatBuffer, LayoutCell,Color, EventDispatcher} from '@tomsoftware/webgl-lib';
+import { SeriesPoint, Scale, BasicChartLayout, SeriesEnvelope} from '@tomsoftware/webgl-chart';
 import { ref } from 'vue';
 
 const drawLines = ref<boolean>(false);

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue';
-import { SeriesBar, GpuFloatBuffer, LayoutCell, Scale, Color, BasicChartLayout, EventDispatcher } from '@tomsoftware/webgl-chart';
+import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher } from '@tomsoftware/webgl-lib';
+import { SeriesBar, Scale, BasicChartLayout } from '@tomsoftware/webgl-chart';
 
 // Generate circle data
 const numBars = 200;

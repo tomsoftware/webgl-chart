@@ -2,9 +2,8 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, GpuFloatBuffer, LayoutCell,
-  Color, Scale, EventDispatcher, BasicChartLayout,
-  SeriesLine,
+import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher, } from '@tomsoftware/webgl-lib';
+import {SeriesPoint, BasicChartLayout, SeriesLine, Scale,
   SeriesBar} from '@tomsoftware/webgl-chart';
 
 // generate time data

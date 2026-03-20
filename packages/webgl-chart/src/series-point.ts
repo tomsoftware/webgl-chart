@@ -1,13 +1,7 @@
-import type { LayoutNode } from "./layout/layout-node";
-import type { Scale } from "./scales/scale";
-import { Color } from "./color";
-import { Context } from "./context";
-import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
-import { Matrix3x3 } from "./matrix-3x3";
-import { Vector4 } from "./vector-4";
-import { GpuNumber } from "./gpu-number";
-import { Vector2 } from "./vector-2";
-import { DrawableSeries } from "./drawable-series";
+import type { LayoutNode, Context } from '@tomsoftware/webgl-lib';
+import { Color, GpuFloatBuffer ,Matrix3x3, Vector4, GpuNumber, Vector2 } from '@tomsoftware/webgl-lib';
+import type { Scale } from './scales/scale';
+import type { DrawableSeries } from './drawable-series';
 
 export class SeriesPoint implements DrawableSeries {
     protected colorValue = new Vector4(1, 0, 0, 0.5);

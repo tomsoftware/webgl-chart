@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "esnext",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@tomsoftware/webgl-lib": [ "packages/webgl-lib/src" ],
+      "@tomsoftware/webgl-chart": [ "packages/webgl-chart/src" ],
+    }
+  },
+  "files": [],
+  "references": [
+    { "path": "./packages/webgl-lib" },
+    { "path": "./packages/webgl-chart" }
+  ]
+}

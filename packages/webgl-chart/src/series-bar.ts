@@ -1,13 +1,7 @@
-import type { LayoutNode } from './layout/layout-node';
-import type { Scale } from './scales/scale';
-import { Color } from './color';
-import { Context } from './context';
-import { GpuFloatBuffer } from './buffers/gpu-buffer-float';
-import { GpuShortBuffer } from './buffers/gpu-buffer-short';
-import { Matrix3x3 } from './matrix-3x3';
-import { Vector4 } from './vector-4';
-import { Vector2 } from './vector-2';
-import { DrawableSeries } from './drawable-series';
+import type { LayoutNode, Context } from '@tomsoftware/webgl-lib';
+import { Color, GpuFloatBuffer, GpuShortBuffer, Matrix3x3, Vector4, Vector2 } from '@tomsoftware/webgl-lib';
+import type { DrawableSeries } from './drawable-series';
+import { Scale } from './scales/scale';
 
 /** Renders a vertical bar chart series defined by x- and y-values */
 export class SeriesBar implements DrawableSeries {

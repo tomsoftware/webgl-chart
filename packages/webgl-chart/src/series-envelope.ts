@@ -1,14 +1,6 @@
-import type { LayoutNode } from "./layout/layout-node";
-import type { Scale } from "./scales/scale";
-import { Color } from "./color";
-import { Context } from "./context";
-import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
-import { Matrix3x3 } from "./matrix-3x3";
-import { Vector4 } from "./vector-4";
-import { Vector2 } from "./vector-2";
-import { GpuShortBuffer } from "./buffers/gpu-buffer-short";
-import { GpuBufferView } from "./buffers/buffer-view";
-import { DrawableSeries } from "./drawable-series";
+import type { LayoutNode, Scale, Context } from '@tomsoftware/webgl-lib';
+import { Color, Matrix3x3, Vector4, Vector2, GpuShortBuffer, GpuFloatBuffer, GpuBufferView } from '@tomsoftware/webgl-lib';
+import type { DrawableSeries } from "./drawable-series";
 
 export class SeriesEnvelope implements DrawableSeries {
     protected upperColorValue = new Vector4(1, 0, 0, 0.5);

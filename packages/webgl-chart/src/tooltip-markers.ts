@@ -1,14 +1,7 @@
-import { Alignment } from "./alignment";
-import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
-import { Color } from "./color";
-import { Context } from "./context";
-import { LayoutArea } from "./layout/layout-area";
-import { LayoutNode } from "./layout/layout-node";
-import { Matrix3x3 } from "./matrix-3x3";
-import { Scale } from "./scales/scale";
-import { GpuLetterText } from "./texture/gpu-letter-text";
-import { Vector2 } from "./vector-2";
-import { Vector4 } from "./vector-4";
+import type { Context} from '@tomsoftware/webgl-lib';
+import { Alignment, GpuFloatBuffer, Color, LayoutArea, LayoutNode, 
+    Matrix3x3, GpuLetterText, Vector2, Vector4 } from '@tomsoftware/webgl-lib';
+import { Scale } from './scales/scale';
 
 class SeriesInfo {
     public valuesX: GpuFloatBuffer;

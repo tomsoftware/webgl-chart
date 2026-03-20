@@ -3,11 +3,10 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, GpuFloatBuffer, LayoutCell,
-  Color, Scale, EventDispatcher, BasicChartLayout,
-  VerticalLayout, ScreenPosition, Context,
-  SeriesBar, DrawableSeries,
-  SeriesLine} from '@tomsoftware/webgl-chart';
+import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher,
+  VerticalLayout, ScreenPosition, Context } from '@tomsoftware/webgl-lib';
+import { SeriesPoint, Scale,BasicChartLayout, SeriesBar,
+  DrawableSeries, SeriesLine } from '@tomsoftware/webgl-chart';
 
 class ChartInfo {
   public series: DrawableSeries;

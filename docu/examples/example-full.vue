@@ -3,13 +3,12 @@
 import { ref } from 'vue';
 
 import { Chart, Utilities, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, Matrix3x3, GpuFloatBuffer,
-  GpuText, LayoutCell, VerticalAxis, VerticalAxisPosition,
-  HorizontalAxis, HorizontalAxisPosition , VerticalLayout,
-  HorizontalLayout, ScreenPosition, IntersectedLayout,
-  LayoutBorder, Color, Font, Alignment, Scale,
-  EventDispatcher, EventTypes, RectDrawer, Annotations,
-  VerticalPosition, HorizontalPosition} from '@tomsoftware/webgl-chart';
+import { Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell, VerticalLayout,
+  HorizontalLayout, ScreenPosition, IntersectedLayout, LayoutBorder,
+  Color, Font, Alignment, EventDispatcher, EventTypes, RectDrawer } from '@tomsoftware/webgl-lib';
+import {SeriesPoint, VerticalAxis, VerticalAxisPosition,
+  HorizontalAxis, HorizontalAxisPosition, Scale, Annotations,
+  VerticalPosition, HorizontalPosition } from '@tomsoftware/webgl-chart';
 import { Generators } from './generators';
 
 

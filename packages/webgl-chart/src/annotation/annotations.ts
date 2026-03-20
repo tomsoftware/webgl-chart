@@ -1,13 +1,9 @@
-import type { Color } from "../color";
-import type { Context } from "../context";
-import type { Scale } from "../scales/scale";
-import type { LayoutNode } from "../layout/layout-node";
-import { DimensionTypes, RectDrawer } from "../rect-drawer";
-import { Vector2 } from "../vector-2";
-import { Matrix3x3 } from "../matrix-3x3";
-import { VerticalLineAnnotation } from "./vertical-line-annotation";
-import { CallbackHandler } from "./callback-handler";
-import { HorizontalLineAnnotation } from "./horizontal-line-annotation";
+import type { Color, Context, LayoutNode } from '@tomsoftware/webgl-lib';
+import  { Vector2, Matrix3x3, DimensionTypes, RectDrawer } from '@tomsoftware/webgl-lib';
+import type { Scale } from '../scales/scale';
+import { VerticalLineAnnotation } from './vertical-line-annotation';
+import { CallbackHandler } from './callback-handler';
+import { HorizontalLineAnnotation } from './horizontal-line-annotation';
 
 /** Define and draw annotations to a LayoutNode */
 export class Annotations {

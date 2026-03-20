@@ -1,12 +1,7 @@
-import type { Context } from "../context";
-import type { LayoutNode } from "../layout/layout-node";
-import { ScreenPosition, ScreenUnit } from "../layout/screen-position";
-import { AxisBase } from "./axis-base";
-import { Matrix3x3 } from "../matrix-3x3";
-import { Alignment } from "../alignment";
-import { GpuLetterText } from "../texture/gpu-letter-text";
-import { IHeightProvider } from "../layout/size-provider";
-import { TextTextureGenerator } from "../texture/text-texture-generator";
+import type { Context, LayoutNode, IHeightProvider } from '@tomsoftware/webgl-lib';
+import { ScreenPosition, ScreenUnit, Matrix3x3, Alignment, 
+    GpuLetterText, TextTextureGenerator } from '@tomsoftware/webgl-lib';
+import { AxisBase } from './axis-base';
 
 export enum HorizontalAxisPosition {
     Top,

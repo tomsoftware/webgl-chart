@@ -1,9 +1,6 @@
-import type { Color } from "../color";
-import type { Context } from "../context";
+import type { Color, Context, GpuText, RectDrawer } from '@tomsoftware/webgl-lib';
+import { DimensionTypes, Vector2 } from '@tomsoftware/webgl-lib';
 import type { CallbackHandler } from "./callback-handler";
-import type { GpuText } from "../texture/gpu-text";
-import { DimensionTypes, type RectDrawer } from "../rect-drawer";
-import { Vector2 } from "../vector-2";
 
 export enum HorizontalPosition {
     Left,

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import Chart from '../lib/chart.vue'
-import { BasicChartLayout, Color, EventDispatcher, GpuFloatBuffer, LayoutCell, Scale, SeriesLine } from '@tomsoftware/webgl-chart';
+import Chart from '../lib/chart.vue';
+import { BasicChartLayout, Scale, SeriesPoint } from '@tomsoftware/webgl-chart';
+import { Color, EventDispatcher, GpuFloatBuffer, LayoutCell } from '@tomsoftware/webgl-lib';
 import { ChartConfig } from '../lib/chart-config';
 
  // generate time data
@@ -9,7 +10,7 @@ import { ChartConfig } from '../lib/chart-config';
       .generate((i) => i * 0.001); // in seconds
 
   // generate series data
-  const series1 = new SeriesLine(time)
+  const series1 = new SeriesPoint(time)
       .generate((t) => Math.sin(t * 0.001))
       .setColor(Color.blue)
       .setPointSize(5);

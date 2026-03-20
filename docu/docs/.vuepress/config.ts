@@ -69,6 +69,7 @@ export default defineUserConfig({
         alias: {
           '@tomsoftware/webgl-chart-vue': path.resolve(__dirname, '../../../packages/webgl-chart-vue/lib/index.ts'),
           '@tomsoftware/webgl-chart': path.resolve(__dirname, '../../../packages/webgl-chart/src/index.ts'),
+          '@tomsoftware/webgl-lib': path.resolve(__dirname, '../../../packages/webgl-lib/src/index.ts'),
         }
       },
     }

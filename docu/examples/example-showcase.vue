@@ -4,11 +4,9 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell,
-  VerticalLayout, ScreenPosition, Color, Alignment,  Scale,
-  EventDispatcher, Font, BasicChartLayout,
-  Annotations,
-  SeriesLine} from '@tomsoftware/webgl-chart';
+import { Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell, VerticalLayout, 
+  ScreenPosition, Color, Alignment, EventDispatcher, Font} from '@tomsoftware/webgl-lib';
+import { SeriesPoint, Scale, Annotations, SeriesLine, BasicChartLayout } from '@tomsoftware/webgl-chart';
 
 let pauseAnimation = ref<boolean>(false);
 

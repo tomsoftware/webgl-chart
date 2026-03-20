@@ -14,5 +14,9 @@ packages/webgl-chart-vue/dist/
 packages/webgl-chart-react/node_modules/
 packages/webgl-chart-react/dist/
 
+packages/webgl-lib/node_modules/
+packages/webgl-lib/dist/
+
 example/react-basic-example/node_modules/
 example/vue-basic-example/node_modules/
+

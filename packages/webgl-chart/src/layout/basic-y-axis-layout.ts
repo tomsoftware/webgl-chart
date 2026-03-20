@@ -1,17 +1,8 @@
-import { Color } from "../color";
-import { Context } from "../context";
-import { EventDispatcher } from "../event-handler/event-handler";
-import { EventTypes, EventValue } from "../event-handler/event-value";
-import { Scale } from "../scales/scale";
-import { VerticalAxis } from "../scales/vertical-axis";
-import { GpuText } from "../texture/gpu-text";
-import { BasicChartLayout } from "./basic-chart-layout";
-import { HorizontalLayout } from "./horizontal-layout";
-import { TableRowLayout } from "./horizontal-table-layout";
-import { IntersectedLayout } from "./intersected-layout";
-import { LayoutArea } from "./layout-area";
-import { LayoutCell } from "./layout-cell";
-import { LayoutNode } from "./layout-node";
+import { Color , Context , EventDispatcher, EventTypes, EventValue,
+   GpuText , BasicChartLayout , HorizontalLayout, IntersectedLayout,
+   LayoutArea , LayoutCell, LayoutNode, TableRowLayout } from '@tomsoftware/webgl-lib';
+import { Scale } from '../scales/scale';
+import { VerticalAxis } from '../scales/vertical-axis';
 
 export class BasicYAxisLayout {
     public readonly axis: VerticalAxis;

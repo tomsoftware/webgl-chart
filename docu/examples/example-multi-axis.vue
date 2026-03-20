@@ -2,10 +2,8 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, GpuFloatBuffer, LayoutCell,
-  Color, Scale, EventDispatcher, BasicChartLayout,
-  VerticalAxisPosition,
-  SeriesLine} from '@tomsoftware/webgl-chart';
+import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher} from '@tomsoftware/webgl-lib';
+import { SeriesPoint, Scale,  BasicChartLayout, VerticalAxisPosition, SeriesLine} from '@tomsoftware/webgl-chart';
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;

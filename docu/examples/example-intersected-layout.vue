@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue';
-import { GpuText, LayoutCell, HorizontalLayout, VerticalLayout, IntersectedLayout, Alignment, Color, LayoutBorder } from '@tomsoftware/webgl-chart';
+import { GpuText, LayoutCell, HorizontalLayout, VerticalLayout, IntersectedLayout,
+  Alignment, Color, LayoutBorder } from '@tomsoftware/webgl-lib';
 
 // define layout
 const baseContainer = new LayoutCell();
