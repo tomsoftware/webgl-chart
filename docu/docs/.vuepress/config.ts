@@ -24,9 +24,9 @@ export default defineUserConfig({
         link: '/api/introduction',
         activeMatch: "^/api/"
       }, {
-        text: 'Examples',
-        link: '/examples/basic',
-        activeMatch: "^/examples/"
+        text: 'Features',
+        link: '/features/basic',
+        activeMatch: "^/features/"
       },{
         text: 'Source',
         link: 'https://github.com/tomsoftware/webgl-chart',
@@ -45,17 +45,17 @@ export default defineUserConfig({
           'event-handling'
         ]
       }],
-      '/examples/': [{
-          text: 'Examples',
+      '/features/': [{
+          text: 'Features',
           collapsible: false,
-          prefix: '/examples/',
+          prefix: '/features/',
           children: [
             'basic',
             'stacked',
             'annotations',
             'axis',
             'series-bar',
-            'series-envelope',
+            'series-area',
             'series-bubble',
             'tooltip',
           ]

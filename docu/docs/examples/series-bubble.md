@@ -2,6 +2,15 @@
 
 Bubble Charts / Series can be rendered using the `SeriesBubble` class. Each circle is defined by its center coordinates (x, y) and radius. All circles in a series share the same color.
 
+
+<example-series-bubble />
+
+<details>
+  <summary>Source</summary>
+
+  @[code](../../examples/example-series-bubble.vue)
+</details>
+
 ## SeriesBubble
 
 Creating a new bubble series:
@@ -27,11 +36,3 @@ And drawing the circles:
 ```ts
 bubble.draw(context, scaleX, scaleY, chartLayout);
 ```
-
-<example-series-bubble />
-
-<details>
-  <summary>Source</summary>
-
-  @[code](../../examples/example-series-bubble.vue)
-</details>

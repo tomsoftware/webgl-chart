@@ -10,8 +10,8 @@ actions:
     link: api/introduction.html
     type: secondary
 
-  - text: Examples
-    link: examples/basic
+  - text: Features
+    link: features/basic
     type: secondary
 
 features:

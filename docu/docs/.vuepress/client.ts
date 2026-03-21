@@ -8,7 +8,7 @@ import ExampleAxis from '../../examples/example-multi-axis.vue';
 import ExampleGpuTextAlignment from './../../examples/example-gpu-text-alignment.vue';
 import ExampleGpuTextRotation from './../../examples/example-gpu-text-rotation.vue';
 import ExampleLetterGpuTextRotation from './../../examples/example-gpu-letter-text-rotation.vue';
-import ExampleSeriesEnvelope from './../../examples/example-series-envelope.vue';
+import ExampleSeriesArea from '../../examples/example-series-area.vue';
 import ExampleTooltip from './../../examples/example-tooltip.vue';
 import ExampleEventHandling from './../../examples/example-event-handling.vue';
 import ExampleHorizontalLayout from './../../examples/example-horizontal-layout.vue';
@@ -28,7 +28,7 @@ export default defineClientConfig({
     app.component('example-gpu-text-alignment', ExampleGpuTextAlignment);
     app.component('example-gpu-text-rotation', ExampleGpuTextRotation);
     app.component('example-gpu-letter-text-rotation', ExampleLetterGpuTextRotation);
-    app.component('example-series-envelope', ExampleSeriesEnvelope);
+    app.component('example-series-area', ExampleSeriesArea);
     app.component('example-tooltip', ExampleTooltip);
     app.component('example-event-handling', ExampleEventHandling);
     app.component('example-horizontal-layout', ExampleHorizontalLayout);

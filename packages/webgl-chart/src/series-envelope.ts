@@ -1,11 +1,12 @@
-import type { LayoutNode, Scale, Context } from '@tomsoftware/webgl-lib';
+import type { LayoutNode, Context } from '@tomsoftware/webgl-lib';
 import { Color, Matrix3x3, Vector4, Vector2, GpuShortBuffer, GpuFloatBuffer, GpuBufferView } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from "./drawable-series";
+import { Scale } from './scales/scale';
 
-export class SeriesEnvelope implements DrawableSeries {
+export class SeriesArea implements DrawableSeries {
     protected upperColorValue = new Vector4(1, 0, 0, 0.5);
     protected lowerColorValue = new Vector4(1, 0, 0, 0.5);
-    public bbox = new Vector4(0, 0, 1, 1);
+    protected bbox = new Vector4(0, 0, 1, 1);
     protected time: GpuFloatBuffer | null = null;
     protected upperData: GpuFloatBuffer | null = null;
     protected lowerData: GpuFloatBuffer | null = null;
@@ -15,7 +16,7 @@ export class SeriesEnvelope implements DrawableSeries {
     private vertexOffset = new GpuFloatBuffer(4, 2);
 
     /** this is a unique id to identifies this shader programs */
-    private static Id = 'gpu-series-envelope';
+    private static Id = 'gpu-series-area';
 
     constructor(time: GpuFloatBuffer, upper: GpuFloatBuffer | null = null, lower: GpuFloatBuffer | null = null) {
         this.time = time;
@@ -35,7 +36,7 @@ export class SeriesEnvelope implements DrawableSeries {
     }
 
     /** set the color of the series - using same color for lowerColor if not set */
-    public setColor(upperColor: Color, lowerColor?: Color | null): SeriesEnvelope {
+    public setColor(upperColor: Color, lowerColor?: Color | null): SeriesArea {
         if (lowerColor == null) {
           lowerColor = upperColor;
         }
@@ -126,7 +127,7 @@ export class SeriesEnvelope implements DrawableSeries {
         const m = p.multiply(l.values).multiply(s.values);
 
         // create and use shader program
-        const program = context.useProgram(SeriesEnvelope.Id, SeriesEnvelope.vertexShader, SeriesEnvelope.fragmentShader);
+        const program = context.useProgram(SeriesArea.Id, SeriesArea.vertexShader, SeriesArea.fragmentShader);
   
         // bind data buffer to attribute
         context.setArrayBuffer(program, 'vertexOffset', this.vertexOffset);

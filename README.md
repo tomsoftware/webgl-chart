@@ -82,7 +82,7 @@ const config = new ChartConfig().setRenderCallback(ctx => {
 This repository monorepo structure:
 
 - `packages/webgl-lib`: core utilities (vector/math, colors, layout, event handling, text rendering).
-- `packages/webgl-chart`: chart rendering engine (line, bar, bubble, envelope, tooltip) depending on `webgl-lib`.
+- `packages/webgl-chart`: chart rendering engine (line, bar, bubble, area, tooltip) depending on `webgl-lib`.
 - `packages/webgl-chart-vue`: Vue wrapper for `webgl-chart`.
 - `packages/webgl-chart-react`: React wrapper for `webgl-chart`.
 - `docu`: VuePress documentation site.
