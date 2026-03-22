@@ -57,4 +57,27 @@ export class Generators {
         return list;
     }
 
+
+    private static randomNumber(min: number, max: number, numberOfDecimals: number = 2): number {
+        return +(Math.random() * (max - min) + min).toFixed(numberOfDecimals);
+    }
+
+    private static lastClose: number = this.randomNumber(20, 40);
+
+    public static generateNextFinanceData() {
+        const open = this.randomNumber(this.lastClose * 0.95, this.lastClose * 1.05);
+        const close = this.randomNumber(open * 0.95, open * 1.05);
+        const high = this.randomNumber(Math.max(open, close), Math.max(open, close) * 1.05);
+        const low = this.randomNumber(Math.min(open, close) * 0.95, Math.min(open, close));
+
+        this.lastClose = close;
+
+        return {
+            open,
+            high,
+            low,
+            close
+        };
+    }
+
 }

@@ -78,6 +78,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
             // draw tick text
             const text = new GpuLetterText(tick.toLocaleString(), this.tickFont)
                 .setColor(this.tickColor);
+
             // get the text-width to center align the text to the tick-line
             const tickLetterWidthHalf = context.pixelToScreenY(text.getAxisAlignedBoundingBox(context).width * 0.5);
             text.draw(context, axisLayout, Alignment.leftTop, Matrix3x3.translate(xOffset - tickLetterWidthHalf, tickTextSpacing));

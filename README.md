@@ -11,8 +11,10 @@ Free high performance web Chart Library to plot line-, bar-, area-, bubble-chart
 | Bubble Chart | Bar Chart |
 | --------- | ----- |
 | ![showcase](images/showcase_bubble_chart.png) | ![showcase](images/showcase_bar_chart.png) |
-| Area Charts | Annotations |
-| ![showcase](images/showcase_area.png) | ![showcase](images/showcase_annotations.png) |
+| Area Charts | Candlestick Chart |
+| ![showcase](images/showcase_area.png) | ![showcase](images/showcase_candlestick_chart.png) |
+| Annotations |
+| ![showcase](images/showcase_annotations.png) |
 | Stacked | Multi axis |
 | ![showcase](images/showcase_stacked.png) | ![showcase](images/shaowcase_multi_axis.png) |
 

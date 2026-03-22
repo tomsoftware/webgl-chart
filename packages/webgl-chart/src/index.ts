@@ -8,8 +8,10 @@ export * from './drawable-series';
 export * from './series-point';
 export * from './series-line';
 export * from './series-bubble';
-export * from './series-envelope';
+export * from './series-area';
 export * from './series-bar';
+export * from './series-range-rect';
+export * from './series-range-line';
 
 // annotations
 export * from './annotation/annotations';

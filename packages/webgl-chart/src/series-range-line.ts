@@ -1,66 +1,54 @@
 import type { LayoutNode, Context } from '@tomsoftware/webgl-lib';
-import { Color, GpuFloatBuffer, GpuShortBuffer, Matrix3x3, Vector4, Vector2, GpuNumber } from '@tomsoftware/webgl-lib';
+import { Color, GpuFloatBuffer, GpuShortBuffer, Matrix3x3, Vector4, Vector2 } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from './drawable-series';
 import { Scale } from './scales/scale';
 
-/** Renders a vertical bar chart series defined by x- and y-values */
-export class SeriesBar implements DrawableSeries {
+/** Renders a vertical line between y1 and y2-values */
+export class SeriesRangeLine implements DrawableSeries {
     protected colorValue = new Vector4(0, 0.4, 1, 1);
     protected bBox = new Vector4(0, 0, 1, 1);
 
     protected x: GpuFloatBuffer | null = null;
-    protected y: GpuFloatBuffer | null = null;
+    protected y1: GpuFloatBuffer | null = null;
+    protected y2: GpuFloatBuffer | null = null;
 
-    /** width of each bar in data-units */
-    protected barWidth = 1;
+    /** line width in pixels */
+    protected lineWidth = 1;
 
-    /** x-offset in data-units for multi-series alignment */
-    protected offsetX = 0;
+    private indexBuffer = new GpuShortBuffer(2, 1);
+    private vertexOffset = new GpuFloatBuffer(2, 2);
 
-    private indexBuffer = new GpuShortBuffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
+    private static IdLine = 'gpu-series-range-line';
 
-    private static IdBar = 'gpu-series-bar';
-
-    constructor(x: GpuFloatBuffer, y: GpuFloatBuffer) {
+    constructor(x: GpuFloatBuffer, y1: GpuFloatBuffer, y2: GpuFloatBuffer) {
         this.x = x;
-        this.y = y;
+        this.y1 = y1;
+        this.y2 = y2;
 
-        // vertex offsets
-        this.vertexOffset.push(-1, 1);  // top-left
-        this.vertexOffset.push(1, 1);   // top-right
-        this.vertexOffset.push(1, 0);   // bottom-right
-        this.vertexOffset.push(-1, 0);  // bottom-left
+        // vertex offsets for line (top and bottom point)
+        this.vertexOffset.push(0, 1);  // top point
+        this.vertexOffset.push(0, 0);  // bottom point
 
-        this.indexBuffer.push(0, 1, 2); // triangle 1
-        this.indexBuffer.push(0, 2, 3); // triangle 2
+        this.indexBuffer.push(0, 1);   // line from top to bottom
     }
 
-    public setColor(color: Color): SeriesBar {
+    public setColor(color: Color): SeriesRangeLine {
         this.colorValue.setFromArray(color.toArray());
         return this;
     }
 
-    /** Bar width in scale-units */
-    public setBarWidth(value: number): SeriesBar {
-        this.barWidth = value;
+    /** Rectangular width in pixels */
+    public setLineWidth(value: number): SeriesRangeLine {
+        this.lineWidth = value;
         return this;
     }
 
-    /** Bar offset in X in scale-units */
-    public setOffsetX(value: number): SeriesBar {
-        this.offsetX = value;
-        return this;
-    }
-
-    // Vertex shader for instanced bar drawing
-    private static vertexShaderBar = `
-        attribute vec2 vertexOffset; // (-1..1) quad
-        attribute float x;           // bar x-position (data)
-        attribute float y;           // bar height (data)
-
-        uniform float barWidth;      // width in relative world coordinates
-        uniform float barOffset;     // x-offset in relative world coordinates
+    // Vertex shader for instanced line drawing
+    private static vertexShaderLine = `
+        attribute vec2 vertexOffset; // (0,0) or (0,1) for line endpoints
+        attribute float x;           // line x-position (data)
+        attribute float y1;          // lower y-value (data)
+        attribute float y2;          // upper y-value (data)
 
         uniform mat3 uniformCamTransformation;
 
@@ -69,10 +57,8 @@ export class SeriesBar implements DrawableSeries {
         void main() {
             // transform into world coords
             vec3 worldPos = uniformCamTransformation * vec3(
-                // dataX + offsetX + barWidth
-                x + barOffset + (vertexOffset.x * barWidth),
-                // set y to 0 for bottom vertexes
-                y * vertexOffset.y,
+                x,
+                mix(y1, y2, vertexOffset.y),
                 1.0
             );
 
@@ -81,7 +67,7 @@ export class SeriesBar implements DrawableSeries {
         }
     `;
 
-    private static fragmentShaderBar = `
+    private static fragmentShaderLine = `
         precision mediump float;
 
         uniform vec4 uniformColor;
@@ -101,7 +87,7 @@ export class SeriesBar implements DrawableSeries {
     `;
 
     public draw(context: Context, scaleX: Scale, scaleY: Scale, chartLayout: LayoutNode) {
-        if (this.x == null || this.y == null) {
+        if (this.x == null || this.y1 == null || this.y2 == null) {
             return;
         }
 
@@ -116,9 +102,9 @@ export class SeriesBar implements DrawableSeries {
         const m = p.multiply(l.values).multiply(s.values);
 
         const program = context.useProgram(
-            SeriesBar.IdBar,
-            SeriesBar.vertexShaderBar,
-            SeriesBar.fragmentShaderBar
+            SeriesRangeLine.IdLine,
+            SeriesRangeLine.vertexShaderLine,
+            SeriesRangeLine.fragmentShaderLine
         );
 
         // Bind buffers
@@ -126,24 +112,21 @@ export class SeriesBar implements DrawableSeries {
 
         // Bind instance attributes
         context.setInstanceBuffer(program, 'x', this.x);
-        context.setInstanceBuffer(program, 'y', this.y);
+        context.setInstanceBuffer(program, 'y1', this.y1);
+        context.setInstanceBuffer(program, 'y2', this.y2);
 
         // Set uniforms
         context.setUniform(program, 'uniformCamTransformation', m);
         context.setUniform(program, 'uniformColor', this.colorValue);
-
-        // width is drawn in positive and negative direction
-        context.setUniform(program, 'barWidth', new GpuNumber(this.barWidth * 0.5));
-        context.setUniform(program, 'barOffset', new GpuNumber(this.offsetX));
 
         // Set clipping bounds
         const p1 = new Vector2(layoutArea.left, layoutArea.top).transform(p);
         const p2 = new Vector2(layoutArea.right, layoutArea.bottom).transform(p);
         context.setUniform(program, 'uniformBounds', this.bBox.set(p1.x, p1.y, p2.x, p2.y));
 
-        // Draw instanced
+        // Draw instanced with LINE_STRIP
         context.angleExtension?.drawElementsInstancedANGLE(
-            WebGLRenderingContext.TRIANGLES,
+            WebGLRenderingContext.LINE_STRIP,
             this.indexBuffer.count,
             WebGLRenderingContext.UNSIGNED_SHORT,
             0,

@@ -16,9 +16,12 @@ import ExampleVerticalLayout from './../../examples/example-vertical-layout.vue'
 import ExampleIntersectedLayout from './../../examples/example-intersected-layout.vue';
 import ExampleSeriesBubble from '../../examples/example-series-bubble.vue';
 import ExampleSeriesBar from '../../examples/example-series-bar.vue';
+import ExampleSeriesRangeRect from '../../examples/example-series-range-rect.vue';
+import ExampleSeriesRangeLine from '../../examples/example-series-range-line.vue';
+import ExampleSeriesCandlestick from '../../examples/example-series-candlestick.vue';
 
 export default defineClientConfig({
-  enhance({ app, router, siteData }) {
+  enhance({ app }) {
     app.component('example-full', ExampleFull);
     app.component('example-showcase', ExampleTitle);
     app.component('example-basic', ExampleBasic);
@@ -36,6 +39,9 @@ export default defineClientConfig({
     app.component('example-intersected-layout', ExampleIntersectedLayout);
     app.component('example-series-bubble', ExampleSeriesBubble);
     app.component('example-series-bar', ExampleSeriesBar);
+    app.component('example-series-range-rect', ExampleSeriesRangeRect);
+    app.component('example-series-range-line', ExampleSeriesRangeLine);
+    app.component('example-series-candlestick', ExampleSeriesCandlestick);
     
   },
   setup() {},

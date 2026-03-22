@@ -57,6 +57,7 @@ export default defineUserConfig({
             'series-bar',
             'series-area',
             'series-bubble',
+            'series-ranges',
             'tooltip',
           ]
       }]

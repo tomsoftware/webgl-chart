@@ -14,9 +14,9 @@ Area Charts / Series can be rendered using the `SeriesArea` class. Each area is 
 
 An area series requires three GPU buffers:
 
-- `time: GpuFloatBuffer` — the time positions along the x-axis
-- `upper: GpuFloatBuffer` — the upper boundary values
-- `lower: GpuFloatBuffer` — the lower boundary values
+- `time: GpuFloatBuffer` : the time positions along the x-axis
+- `upper: GpuFloatBuffer` : the upper boundary values
+- `lower: GpuFloatBuffer` : the lower boundary values
 
 ```ts
 const time = new GpuFloatBuffer([0, 1, 2, 3]);
@@ -31,14 +31,17 @@ const area = new SeriesArea(time, upper, lower)
 
 ## Configuration
 
-### `setColor(upperColor: Color, lowerColor?: Color | null)`
-Sets the RGBA colors for the upper and lower parts of the area. The upper color is used for the top fill, and the lower color for the bottom if specified.
+### setColor
+
+`setColor(upperColor: Color, lowerColor?: Color | null)`
+
+Sets the RGBA colors for the top and bottom boundaries of the area. If the colors are different, they will be blended.
 
 ```ts
 area.setColor(new Color(0.2, 0.6, 1.0, 1.0), new Color(0.8, 0.8, 0.8, 0.5));
 ```
 
-> **Tip:** Use `SeriesPoint` or `SeriesLine` to add outlines or points to the area boundaries for better visualization.
+> **Tip:** Use additional `SeriesPoint` or `SeriesLine` to add outlines or points to the area boundaries for better visualization.
 
 Finally, drawing the area in the rendering loop:
 
