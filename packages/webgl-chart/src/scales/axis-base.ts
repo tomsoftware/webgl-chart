@@ -2,6 +2,8 @@ import type { GpuText } from '@tomsoftware/webgl-lib';
 import { Color, Font } from '@tomsoftware/webgl-lib';
 import { Scale } from './scale';
 
+export type TickLabelFormat = (value: number) => string;
+
 export class AxisBase {
     public label: GpuText | null;
     public scale: Scale;
@@ -33,7 +35,6 @@ export class AxisBase {
         this.tickTextPadding = pixels;
     }
 
-
     /** set the color of the grid that is displayed with the scale inside the chart */
     public setGridColor(color: Color | null) {
         this.gridColor = color;
@@ -51,4 +52,24 @@ export class AxisBase {
         this.tickColor = color;
         return this;
     }
+
+    /** default label formation function */
+    public static defaultFormatTickLabel(value: number) {
+        // check for "-0" value and make it 0
+        if (Object.is(value, -0)) {
+            value = 0;
+        }
+        return value.toLocaleString();
+    }
+
+    /** get / set format-callback for tick label */
+    public formatTickLabel: TickLabelFormat = AxisBase.defaultFormatTickLabel;
+
+    /** set format-callback for tick label */
+    public setTickFormat(func: TickLabelFormat) {
+        this.formatTickLabel = func;
+        return this;
+    }
+
+
 }

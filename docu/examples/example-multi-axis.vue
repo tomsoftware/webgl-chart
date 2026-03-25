@@ -3,25 +3,34 @@ import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
 import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher} from '@tomsoftware/webgl-lib';
-import { SeriesPoint, Scale,  BasicChartLayout, VerticalAxisPosition, SeriesLine} from '@tomsoftware/webgl-chart';
+import { SeriesPoint, Scale,  BasicChartLayout, VerticalAxisOrientation, SeriesLine} from '@tomsoftware/webgl-chart';
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
 const time = new GpuFloatBuffer(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
+const data1 = GpuFloatBuffer.generateFrom(time,
+  (t) => Generators.generateSin(t)
+);
+
+const data2 = GpuFloatBuffer.generateFrom(time,
+  (t) => Generators.generateEKG(t * 10) * 10
+);
+
+const data3 = GpuFloatBuffer.generateFrom(time,
+  (t) => Generators.generateIO(t * 10) * 20
+);
+
 // generate series data
-const series1 = new SeriesPoint(time)
-    .generate((t) => Generators.generateSin(t))
+const series1 = new SeriesPoint(time, data1)
     .setColor(Color.blue)
     .setPointSize(5);
 
-const series2 = new SeriesLine(time)
-    .generate((t) => Generators.generateEKG(t * 10) * 10)
+const series2 = new SeriesLine(time, data2)
     .setColor(Color.red);
 
-const series3 = new SeriesLine(time)
-    .generate((t) => Generators.generateIO(t * 10) * 20)
+const series3 = new SeriesLine(time, data3)
     .setColor(Color.darkGreen)
 
 // scales define the range that is shown by the axis
@@ -43,7 +52,7 @@ basicLayout.addYScale(scaleY1, 'Axis 1')
   .setTickColor(series1.color);
 basicLayout.addYScale(scaleY2, 'Axis 2')
   .setTickColor(series2.color);
-basicLayout.addYScale(scaleY3, 'Axis 3', VerticalAxisPosition.Right)
+basicLayout.addYScale(scaleY3, 'Axis 3', VerticalAxisOrientation.Right)
   .setTickColor(series3.color)
   .axis.setGridColor(Color.red);
 

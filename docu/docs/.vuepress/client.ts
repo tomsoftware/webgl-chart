@@ -19,6 +19,9 @@ import ExampleSeriesBar from '../../examples/example-series-bar.vue';
 import ExampleSeriesRangeRect from '../../examples/example-series-range-rect.vue';
 import ExampleSeriesRangeLine from '../../examples/example-series-range-line.vue';
 import ExampleSeriesCandlestick from '../../examples/example-series-candlestick.vue';
+import ExampleAxisGrid from '../../examples/example-axis-grid.vue';
+import ExampleAxisOrientation from '../../examples/example-axis-orientation.vue';
+import ExampleAisTickFormat from '../../examples/example-axis-tick-format.vue';
 
 export default defineClientConfig({
   enhance({ app }) {
@@ -42,7 +45,9 @@ export default defineClientConfig({
     app.component('example-series-range-rect', ExampleSeriesRangeRect);
     app.component('example-series-range-line', ExampleSeriesRangeLine);
     app.component('example-series-candlestick', ExampleSeriesCandlestick);
-    
+    app.component('example-axis-grid', ExampleAxisGrid);
+    app.component('example-axis-orientation', ExampleAxisOrientation);
+    app.component('example-axis-tick-format', ExampleAisTickFormat);
   },
   setup() {},
   rootComponents: [],

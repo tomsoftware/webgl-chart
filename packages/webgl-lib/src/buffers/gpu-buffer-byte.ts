@@ -4,8 +4,18 @@ import type { GpuBuffer } from './gpu-buffer';
 
 export class GpuByteBuffer extends GpuBaseBuffer<Uint8Array> implements GpuBuffer {
 
-    constructor(size: number, componentsPerInstance = 1) {
-        super(Uint8Array, size, 'byte', componentsPerInstance);
+    constructor(values: number[], componentsPerInstance?: number)
+    constructor(size: number, componentsPerInstance?: number)
+    constructor(sizeOrValue: number | number[], componentsPerInstance = 1) {
+        if (Array.isArray(sizeOrValue)) {
+            // using values
+            super(Uint8Array, sizeOrValue.length, 'byte', componentsPerInstance);
+            this.pushRange(sizeOrValue);
+        }
+        else {
+            // using size
+            super(Uint8Array, sizeOrValue, 'byte', componentsPerInstance);
+        }
     }
 
     public setVertexAttribPointer(

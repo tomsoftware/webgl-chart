@@ -2,7 +2,7 @@ import { GpuBufferView } from './gpu-buffer-view';
 import { GpuBaseBuffer } from './gpu-base-buffer';
 import type { GpuBuffer } from './gpu-buffer';
 
-export class GpuBufferMatrix3x3 extends GpuBaseBuffer<Float32Array> implements GpuBuffer {
+export class GpuMatrix3x3Buffer extends GpuBaseBuffer<Float32Array> implements GpuBuffer {
 
     /** return a view of the buffer with the current data */
     public get data() {

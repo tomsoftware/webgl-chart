@@ -1,5 +1,5 @@
-import type { LayoutNode, Context } from '@tomsoftware/webgl-lib';
-import { Color, GpuFloatBuffer, Matrix3x3, Vector4, GpuShortBuffer, Vector2 } from '@tomsoftware/webgl-lib';
+import type { LayoutNode, Context, GpuBuffer } from '@tomsoftware/webgl-lib';
+import { Color, GpuFloatBuffer, Matrix3x3, Vector4, GpuUint16Buffer, Vector2 } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from './drawable-series';
 import { Scale } from './scales/scale';
 
@@ -10,19 +10,19 @@ export class SeriesBubble implements DrawableSeries {
     /** scaling of the circles */
     protected scaling = 1;
     protected bBox = new Vector4(0, 0, 1, 1);
-    protected x: GpuFloatBuffer | null = null;
-    protected y: GpuFloatBuffer | null = null;
-    protected radius: GpuFloatBuffer | null = null;
+    protected x: GpuBuffer;
+    protected y: GpuBuffer;
+    protected radius: GpuBuffer;
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(6, 1);
+    private indexBuffer = new GpuUint16Buffer(6, 1);
     private vertexOffset = new GpuFloatBuffer(4, 2);
     private quadTexcoords = new GpuFloatBuffer(4, 2);
 
     /** this is a unique id to identifies this shader programs */
     private static IdCircle = 'gpu-series-bubble';
 
-    constructor(x: GpuFloatBuffer, y: GpuFloatBuffer, radius: GpuFloatBuffer) {
+    constructor(x: GpuBuffer, y: GpuBuffer, radius: GpuBuffer) {
         this.x = x;
         this.y = y;
         this.radius = radius;

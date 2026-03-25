@@ -5,13 +5,13 @@ import { Matrix3x3 } from '../matrix-3x3';
 import { TextureMap } from './texture-map';
 import { TextureMapItem } from './texture-map-item';
 import { Color } from '../color';
-import { GpuShortBuffer } from '../buffers/gpu-buffer-short';
+import { GpuUint16Buffer } from '../buffers/gpu-buffer-short';
 import { Vector2 } from '../vector-2';
-import { GpuBufferMatrix3x3 } from '../buffers/gpu-buffer-matrix-3x3';
+import { GpuMatrix3x3Buffer } from '../buffers/gpu-buffer-matrix-3x3';
 
 export class TextureMapDrawer {
     /** position matrix of the rectangle to put texture on */
-    private rectTransformation = new GpuBufferMatrix3x3(250);
+    private rectTransformation = new GpuMatrix3x3Buffer(250);
     /** width and height of the rectangle to draw the texture at (in pixels) */
     private rectSize = new GpuFloatBuffer(250, 2);
     /** position of the texture in the texture-buffer */
@@ -24,7 +24,7 @@ export class TextureMapDrawer {
     private textureMap: TextureMap;
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(6, 1);
+    private indexBuffer = new GpuUint16Buffer(6, 1);
     private vertexOffset = new GpuFloatBuffer(4, 2);
 
     /** this is a unique id to identifies this shader programs */

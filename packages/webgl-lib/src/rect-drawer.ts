@@ -6,7 +6,7 @@ import type { TextureMapItem } from './texture/texture-map-item';
 import { Vector4 } from './vector-4';
 import { Vector2 } from './vector-2';
 import { GpuFloatBuffer } from './buffers/gpu-buffer-float';
-import { GpuShortBuffer } from './buffers/gpu-buffer-short';
+import { GpuUint16Buffer } from './buffers/gpu-buffer-short';
 import { GpuByteBuffer } from './buffers/gpu-buffer-byte';
 import { TextureMap } from './texture/texture-map';
 
@@ -45,7 +45,7 @@ export class RectDrawer {
     private textureSize = new GpuFloatBuffer(0, 2);
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(6, 1);
+    private indexBuffer = new GpuUint16Buffer(6, 1);
     private vertexOffset = new GpuFloatBuffer(4, 2);
 
     /** texture-map to store textures to map to the rectangles */

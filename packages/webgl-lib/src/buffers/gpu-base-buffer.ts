@@ -1,4 +1,4 @@
-import { TypedArray } from './array-utilities';
+import { ArrayUtilities, TypedArray } from './array-utilities';
 import { GpuBufferView } from './gpu-buffer-view';
 
 export class GpuBaseBuffer<T extends TypedArray> {
@@ -41,12 +41,12 @@ export class GpuBaseBuffer<T extends TypedArray> {
     }
 
     /** makes sure the current buffer can handle the given number of items */
-    public ensureCapacity(size: number = 1) {
+    public ensureCapacity(size: number = 1): this {
         size = Math.max(0, size);
 
         if (this.buffer.length >= this.bufferOffset + size) {
             // the buffer is large enough
-            return;
+            return this;
         }
 
         console.log('GpuBuffer<' + this.typeName + '>: new capacity:', size);
@@ -55,6 +55,8 @@ export class GpuBaseBuffer<T extends TypedArray> {
         const newBuffer = new this.activator(this.bufferOffset + size);
         newBuffer.set(this.buffer);
         this.buffer = newBuffer;
+
+        return this;
     }
 
     /** makes sure the given number of new items fits into the internal buffer */
@@ -98,10 +100,37 @@ export class GpuBaseBuffer<T extends TypedArray> {
         this.pushRange(args);
     }
 
-    public clear() {
+    public clear(): this {
         this.bufferOffset = 0;
         this.bufferEnd = 0;
         this.updateDataVersion();
+        return this;
+    }
+
+   /** Return the closes index a given value matches in the buffer-values */
+    public findIndex(value: number): number | null {
+        var range = ArrayUtilities.guessIndexRange(this.buffer, this.bufferOffset, this.bufferEnd - 1, value);
+        if (range == null) {
+            // value is outside of the arrays values
+            if (value < this.buffer[this.bufferOffset]) {
+                // value is before the first element
+                return this.bufferOffset;
+            }
+            // value is after last element
+            return this.bufferEnd - 1;
+        }
+
+        // value is inside the array -> get best index
+        const pos = ArrayUtilities.binarySearch(this.buffer, range[0], range[1], value);
+        const low = pos[0];
+        const high = pos[1];
+
+        // check what is closer low or high to given value
+        if (Math.abs(value - this.buffer[low]) < Math.abs(value - this.buffer[high])) {
+            return low;
+        }
+
+        return high;
     }
 
     protected setBasicVertexAttribPointer(
@@ -158,5 +187,56 @@ export class GpuBaseBuffer<T extends TypedArray> {
         }
 
         return this.buffer[this.bufferEnd - 1];
+    }
+
+    /** generate data from a given buffer: result[i] = calc(src[i]) */
+    protected static generateFromBase<T extends TypedArray, B extends GpuBaseBuffer<T>>(
+        ctor: new (size: number) => B,
+        src: B,
+        calc: (srcValue: number) => number
+    ): B {
+        const srcData = src.data;
+        const newBuffer = new ctor(srcData.length);
+        newBuffer.bufferOffset = 0;
+        newBuffer.bufferEnd = srcData.length;
+        const newData = newBuffer.buffer;
+        
+        for (let i = 0; i < newData.length; i++) {
+            newData[i] = calc(srcData[i]);
+        }
+    
+        return newBuffer;
+    }
+
+     /** generate buffer with the given number of elements: = calc(i) */
+    protected static generateBase<T extends TypedArray, B extends GpuBaseBuffer<T>>(
+        ctor: new (size: number) => B,
+        length: number,
+        calc: (index: number) => number
+    ): B {
+        const newBuffer = new ctor(length);
+        newBuffer.bufferOffset = 0;
+        newBuffer.bufferEnd = length;
+        const newData = newBuffer.buffer;
+        for (let i = 0; i < length; i++) {
+            newData[i] = calc(i);
+        }
+    
+        return newBuffer;
+    }
+
+    /** replace all buffers-values with a callback  */
+    public generate(calc: (i: number) => number): this {
+        this.bufferOffset = 0;
+        this.bufferEnd = this.buffer.length;
+
+        const data = this.data;
+        for (let i = 0; i < data.length; i++) {
+            data[i] = calc(i);
+        }
+
+        this.updateDataVersion();
+
+        return this;
     }
 }

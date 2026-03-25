@@ -1,5 +1,5 @@
-import type { LayoutNode, Context } from '@tomsoftware/webgl-lib';
-import { Color, Matrix3x3, Vector4, Vector2, GpuShortBuffer, GpuFloatBuffer, GpuBufferView } from '@tomsoftware/webgl-lib';
+import type { LayoutNode, Context, GpuBuffer } from '@tomsoftware/webgl-lib';
+import { Color, Matrix3x3, Vector4, Vector2, GpuUint16Buffer, GpuFloatBuffer, GpuBufferView } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from "./drawable-series";
 import { Scale } from './scales/scale';
 
@@ -7,18 +7,18 @@ export class SeriesArea implements DrawableSeries {
     protected upperColorValue = new Vector4(1, 0, 0, 0.5);
     protected lowerColorValue = new Vector4(1, 0, 0, 0.5);
     protected bbox = new Vector4(0, 0, 1, 1);
-    protected time: GpuFloatBuffer | null = null;
-    protected upperData: GpuFloatBuffer | null = null;
-    protected lowerData: GpuFloatBuffer | null = null;
+    protected time: GpuBuffer;
+    protected upperData: GpuBuffer;
+    protected lowerData: GpuBuffer;
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(6, 1);
+    private indexBuffer = new GpuUint16Buffer(6, 1);
     private vertexOffset = new GpuFloatBuffer(4, 2);
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-series-area';
 
-    constructor(time: GpuFloatBuffer, upper: GpuFloatBuffer | null = null, lower: GpuFloatBuffer | null = null) {
+    constructor(time: GpuBuffer, upper: GpuBuffer, lower: GpuBuffer) {
         this.time = time;
         this.upperData = upper;
         this.lowerData = lower;

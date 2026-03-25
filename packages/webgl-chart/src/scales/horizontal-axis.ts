@@ -3,19 +3,18 @@ import { ScreenPosition, ScreenUnit, Matrix3x3, Alignment,
     GpuLetterText, TextTextureGenerator } from '@tomsoftware/webgl-lib';
 import { AxisBase } from './axis-base';
 
-export enum HorizontalAxisPosition {
+export enum HorizontalAxisOrientation {
     Top,
     Bottom
 }
 
 export class HorizontalAxis extends AxisBase implements IHeightProvider {
-    public position: HorizontalAxisPosition = HorizontalAxisPosition.Bottom;
+    public orientation: HorizontalAxisOrientation = HorizontalAxisOrientation.Bottom;
 
-    public setPosition(position: HorizontalAxisPosition): HorizontalAxis {
-        this.position = position;
+    public setOrientation(orientation: HorizontalAxisOrientation): HorizontalAxis {
+        this.orientation = orientation;
         return this;
     }
-
     /** return the height of the label */
     protected getLabelHeight(context: Context) {
         if (this.label == null) {
@@ -44,7 +43,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
         let align: Alignment;
 
         // draw axis border
-        if (this.position === HorizontalAxisPosition.Bottom) {
+        if (this.orientation === HorizontalAxisOrientation.Bottom) {
             context.drawLine(area.p0, area.p1, this.borderColor);
             align = Alignment.centerBottom;
         }
@@ -76,7 +75,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
             context.drawLine(area.p0.addValues(xOffset, 0), area.p0.addValues(xOffset, tickLength), this.tickColor);
 
             // draw tick text
-            const text = new GpuLetterText(tick.toLocaleString(), this.tickFont)
+            const text = new GpuLetterText(this.formatTickLabel(tick), this.tickFont)
                 .setColor(this.tickColor);
 
             // get the text-width to center align the text to the tick-line

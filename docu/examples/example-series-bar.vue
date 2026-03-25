@@ -7,12 +7,10 @@ import { SeriesBar, Scale, BasicChartLayout } from '@tomsoftware/webgl-chart';
 const numBars = 200;
 
 const xTimeData = GpuFloatBuffer.generate(numBars, (t) => t * 0.1);
+const yData = GpuFloatBuffer.generateFrom(xTimeData, (t) => Math.random() * 20 - 10);
 
 // create series drawer
-const series1 = new SeriesBar(
-    xTimeData,
-     GpuFloatBuffer.generateFrom(xTimeData, (t) => Math.random() * 20 - 10),
-  )
+const series1 = new SeriesBar(xTimeData, yData)
   .setColor(Color.blue.withAlpha(0.6))
   .setBarWidth(0.04)
   .setOffsetX(0)

@@ -6,8 +6,8 @@ import { Chart, Utilities, ChartConfig} from '@tomsoftware/webgl-chart-vue';
 import { Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell, VerticalLayout,
   HorizontalLayout, ScreenPosition, IntersectedLayout, LayoutBorder,
   Color, Font, Alignment, EventDispatcher, EventTypes, RectDrawer } from '@tomsoftware/webgl-lib';
-import {SeriesPoint, VerticalAxis, VerticalAxisPosition,
-  HorizontalAxis, HorizontalAxisPosition, Scale, Annotations,
+import {SeriesPoint, VerticalAxis, VerticalAxisOrientation,
+  HorizontalAxis, HorizontalAxisOrientation, Scale, Annotations,
   VerticalPosition, HorizontalPosition } from '@tomsoftware/webgl-chart';
 import { Generators } from './generators';
 
@@ -59,7 +59,7 @@ annotations.addHorizontalLine(9, Color.red, 10)
 // define axis
 const xAxis = new HorizontalAxis(new GpuText('X Axis'), scaleX)
   .setBorderColor(Color.darkGray)
-  .setPosition(HorizontalAxisPosition.Bottom)
+  .setOrientation(HorizontalAxisOrientation.Bottom)
   .setGridColor(Color.lightGray);
 
 const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1',new Font('Arial', 20)).setColor(Color.purple).setRotation(90));
@@ -67,7 +67,7 @@ const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90), scaleY)
   .setBorderColor(Color.darkGray)
   .setGridColor(Color.lightGray);
 const yAxis3 = new VerticalAxis(new GpuText('Y right').setRotation(90))
-  .setPosition(VerticalAxisPosition.Right);
+  .setOrientation(VerticalAxisOrientation.Right);
 
 
 const headline = new GpuText('My new Chart');
