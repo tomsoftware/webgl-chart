@@ -210,9 +210,9 @@ Creates a new float buffer of the given length, filling it using a callback.
 ---
 
 
-## Usage Examples
+### Usage Examples
 
-### Creating a Buffer
+#### Creating a Buffer
 
 ```ts
 // Create with initial values
@@ -230,7 +230,8 @@ const indices = GpuFloatBuffer.generate(256, i => i);
 
 ---
 
-### Adding Data
+#### Adding Data
+
 
 ```ts
 // Add single values
@@ -243,9 +244,17 @@ buffer.pushRange([4.0, 5.0, 6.0, 7.0]);
 buffer.clear();
 ```
 
+<example-buffer-push />
+<details>
+  <summary>Source</summary>
+
+  @[code](../../examples/example-buffer-push.vue)
+</details>
+
+
 ---
 
-### Reading Data
+#### Reading Data
 
 ```ts
 // Get item at index

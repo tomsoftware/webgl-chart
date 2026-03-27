@@ -5,7 +5,7 @@ import { Matrix3x3 } from '../matrix-3x3';
 import { TextureMap } from './texture-map';
 import { TextureMapItem } from './texture-map-item';
 import { Color } from '../color';
-import { GpuUint16Buffer } from '../buffers/gpu-buffer-short';
+import { GpuUint16Buffer } from '../buffers/gpu-buffer-uint16';
 import { Vector2 } from '../vector-2';
 import { GpuMatrix3x3Buffer } from '../buffers/gpu-buffer-matrix-3x3';
 

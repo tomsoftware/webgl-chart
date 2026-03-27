@@ -28,14 +28,15 @@ const itemCount = 1000 * 60 * 60 / 4;
 const time = new GpuFloatBuffer(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
+const data1 = GpuFloatBuffer.generateFrom(time, (t) => Generators.generateSin(t));
+const data2 = GpuFloatBuffer.generateFrom(time, (t) => Generators.generateEKG(t * 10) * 10);
+
 // generate series data
-const series1 = new SeriesPoint(time, null)
-    .generate((t) => Generators.generateSin(t))
+const series1 = new SeriesPoint(time, data1)
     .setColor(Color.blue)
     .setPointSize(5);
   
-const series2 = new SeriesPoint(time, null)
-    .generate((t) => Generators.generateEKG(t * 10) * 10)
+const series2 = new SeriesPoint(time, data2)
     .setColor(Color.green)
     .setPointSize(4)
 /*
@@ -129,7 +130,7 @@ const rec = new RectDrawer();
 
 
 // set render callback
-const data1 = new ChartConfig()
+const chart1 = new ChartConfig()
     .setRenderCallback((context) => {
 
       if (debugTexture == true) {
@@ -203,7 +204,7 @@ function onBind(element: HTMLElement | null): void {
   eventDispatcher.bind(element)
 }
 
-const data2 = new ChartConfig()
+const chart2 = new ChartConfig()
     .setRenderCallback((context) => {
       context.calculateLayout(baseContainer);
       context.layoutCache.draw(context);
@@ -218,8 +219,8 @@ function onDownloadTexture() {
 </script>
 
 <template>
-  Frame rate: {{ data1.maxFrameRate.value }}
-  <input type="range" min="0" max="100" v-model="data1.maxFrameRate.value" />
+  Frame rate: {{ chart1.maxFrameRate.value }}
+  <input type="range" min="0" max="100" v-model="chart1.maxFrameRate.value" />
 
   <label>
     <input type="checkbox" v-model="showDots" />
@@ -250,14 +251,14 @@ function onDownloadTexture() {
  <div class="grid-container">
   <div class="grid-item">
     <chart
-      :data="data1"
+      :data="chart1"
       @on-bind="onBind"
       class="chart"
     />
   </div>
   <div class="grid-item">
     <chart
-      :data="data2"
+      :data="chart2"
       class="chart"
     />
   </div>

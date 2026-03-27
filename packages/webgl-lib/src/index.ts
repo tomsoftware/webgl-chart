@@ -19,8 +19,8 @@ export * from './buffers/gpu-buffer';
 export * from './buffers/gpu-buffer-byte';
 export * from './buffers/gpu-buffer-float';
 export * from './buffers/gpu-buffer-matrix-3x3';
-export * from './buffers/gpu-buffer-short';
-export * from './buffers/gpu-buffer-int32';
+export * from './buffers/gpu-buffer-uint16';
+export * from './buffers/gpu-buffer-uint32';
 export * from './buffers/gpu-buffer-view';
 
 

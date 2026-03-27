@@ -22,6 +22,7 @@ import ExampleSeriesCandlestick from '../../examples/example-series-candlestick.
 import ExampleAxisGrid from '../../examples/example-axis-grid.vue';
 import ExampleAxisOrientation from '../../examples/example-axis-orientation.vue';
 import ExampleAisTickFormat from '../../examples/example-axis-tick-format.vue';
+import ExampleBufferPush from '../../examples/example-buffer-push.vue';
 
 export default defineClientConfig({
   enhance({ app }) {
@@ -48,6 +49,7 @@ export default defineClientConfig({
     app.component('example-axis-grid', ExampleAxisGrid);
     app.component('example-axis-orientation', ExampleAxisOrientation);
     app.component('example-axis-tick-format', ExampleAisTickFormat);
+    app.component('example-buffer-push', ExampleBufferPush);
   },
   setup() {},
   rootComponents: [],

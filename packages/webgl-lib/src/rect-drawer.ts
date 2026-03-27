@@ -6,7 +6,7 @@ import type { TextureMapItem } from './texture/texture-map-item';
 import { Vector4 } from './vector-4';
 import { Vector2 } from './vector-2';
 import { GpuFloatBuffer } from './buffers/gpu-buffer-float';
-import { GpuUint16Buffer } from './buffers/gpu-buffer-short';
+import { GpuUint16Buffer } from './buffers/gpu-buffer-uint16';
 import { GpuByteBuffer } from './buffers/gpu-buffer-byte';
 import { TextureMap } from './texture/texture-map';
 
