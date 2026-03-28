@@ -1,4 +1,4 @@
-import { ArrayUtilities, TypedArray } from './array-utilities';
+import { ArrayUtilities } from './array-utilities';
 import { GpuBufferView } from './gpu-buffer-view';
 
 export class GpuBaseBuffer<T extends TypedArray> {
@@ -8,7 +8,7 @@ export class GpuBaseBuffer<T extends TypedArray> {
     private activator: { new(size: number): T };
     private typeName: string;
 
-    protected componentsPerInstance: number;
+    public componentsPerInstance: number;
     protected currentDataVersion = -1;
 
     /** return a view of the buffer with the current data */
@@ -17,12 +17,12 @@ export class GpuBaseBuffer<T extends TypedArray> {
     }
 
     /** return a value of a given item */
-    public get(index: number) {
+    public get(index: number): number[] {
         const offset = this.bufferOffset + index * this.componentsPerInstance;
-        return this.buffer.subarray(offset, offset + this.componentsPerInstance);
+        return Array.from(this.buffer.subarray(offset, offset + this.componentsPerInstance));
     }
 
-    protected constructor(activator: { new(size: number): T }, size: number, typeName: string, componentsPerInstance : number) {
+    public constructor(activator: { new(size: number): T }, size: number, typeName: string, componentsPerInstance : number) {
         this.buffer = new activator(size * componentsPerInstance);
         this.typeName = typeName;
         this.bufferEnd = 0;
@@ -60,7 +60,7 @@ export class GpuBaseBuffer<T extends TypedArray> {
     }
 
     /** Makes sure the given number of new items fits into the internal buffer */
-    public increaseCapacity(newItems: number = 1) {
+    public increaseCapacity(newItems: number = 1): this {
         newItems = Math.max(0, newItems);
 
         if (this.buffer.length >= this.bufferEnd + newItems) {
@@ -110,7 +110,7 @@ export class GpuBaseBuffer<T extends TypedArray> {
     }
 
    /** Return the closes index a given value matches in the buffer-values */
-    public findIndex(value: number): number | null {
+    public binarySearch(value: number): number | null {
         var range = ArrayUtilities.guessIndexRange(this.buffer, this.bufferOffset, this.bufferEnd - 1, value);
         if (range == null) {
             // value is outside of the arrays values

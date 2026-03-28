@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { BasicChartLayout, Color, EventDispatcher, GpuFloatBuffer,
-  LayoutCell, Scale, SeriesPoint } from '@tomsoftware/webgl-chart';
+import { Color, EventDispatcher, GpuBuffer,
+  LayoutCell } from '@tomsoftware/webgl-lib';
+import { BasicChartLayout, Scale, SeriesPoint } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from '../lib/chart-config';
 import React from 'react';
 import Chart from '../lib/chart';
@@ -10,15 +11,17 @@ const App: React.FC = () => {
 
   // generate time data
   const itemCount = 1000 * 60 * 60 / 4;
-  const time = new GpuFloatBuffer(itemCount)
+  const time = new GpuBuffer('float32', itemCount)
       .generate((i) => i * 0.001); // in seconds
 
+  // generate y-data
+  const data = new GpuBuffer('float32', itemCount)
+      .generate((t) => Math.sin(t * 0.001));
+
   // generate series data
-  const series1 = new SeriesPoint(time)
-      .generate((t) => Math.sin(t * 0.001))
+  const series1 = new SeriesPoint(time, data)
       .setColor(Color.blue)
       .setPointSize(5);
-
 
   // scales define the range that is shown by the axis
   const scaleX = new Scale(0, 1);

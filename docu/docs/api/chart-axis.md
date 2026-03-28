@@ -130,7 +130,7 @@ For vertical axis:
 <details>
   <summary>Source</summary>
 
-  @[code](../../examples/example-axis-position.vue)
+  @[code](../../examples/example-axis-orientation.vue)
 </details>
 
 

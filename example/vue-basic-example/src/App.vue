@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue'
-import { Color, EventDispatcher, GpuFloatBuffer, LayoutCell, Scale, Series } from '@tomsoftware/webgl-chart'
+import { Color, EventDispatcher, GpuBuffer, LayoutCell, Scale, Series } from '@tomsoftware/webgl-chart'
 
 const eventDispatcher = new EventDispatcher();
 
@@ -11,7 +11,7 @@ const scaleY = new Scale(-30, 30);
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
 
-const time = new GpuFloatBuffer(itemCount)
+const time = new GpuBuffer('float32', itemCount)
     .generate((i) => i * 0.001); // in seconds
 
 // generate series data

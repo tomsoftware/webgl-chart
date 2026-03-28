@@ -108,7 +108,7 @@ Series are responsible for plotted datasets on the chart.
 | Argument | Type | Description |
 | --- | --- | --- |
 | Series | Object | The series object containing data points. |
-| GpuFloatBuffer | Object | The buffer containing data points. |
+| GpuBuffer<'float32'> | Object | The buffer containing data points. |
 | setColor | Function | Sets the color of the series. |
 | draw | Function | Draws the series as lines on the chart. |
 

@@ -2,7 +2,7 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher } from '@tomsoftware/webgl-lib';
+import { GpuBuffer, LayoutCell, Color, EventDispatcher } from '@tomsoftware/webgl-lib';
 import { SeriesPoint, Scale,  BasicChartLayout, TooltipLine, 
   TooltipMarkers, SeriesLine} from '@tomsoftware/webgl-chart';
 
@@ -19,12 +19,12 @@ const tooltipMarkers = new TooltipMarkers()
 
 // generate data
 const itemCount = 10 * 60 * 60 / 4;
-const time = new GpuFloatBuffer(itemCount)
+const time = new GpuBuffer('float32', itemCount)
     .generate((i) => i * 0.001); // in seconds
 
-const data1 = GpuFloatBuffer.generateFrom(time, (t) => Generators.generateSin(t));
-const data2 = GpuFloatBuffer.generateFrom(time, (t) => Generators.generateEKG(t * 10) * 10);
-const data3 = GpuFloatBuffer.generateFrom(time, (t) => Generators.generateIO(t * 10) * 20);
+const data1 = GpuBuffer.generateFrom('float32', time, (t) => Generators.generateSin(t));
+const data2 = GpuBuffer.generateFrom('float32', time, (t) => Generators.generateEKG(t * 10) * 10);
+const data3 = GpuBuffer.generateFrom('float32', time, (t) => Generators.generateIO(t * 10) * 20);
 
 // generate series
 const series1 = new SeriesPoint(time, data1)

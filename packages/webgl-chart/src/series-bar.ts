@@ -1,5 +1,5 @@
 import type { LayoutNode, Context, GpuBuffer } from '@tomsoftware/webgl-lib';
-import { Color, GpuFloatBuffer, GpuUint16Buffer, Matrix3x3, Vector4, Vector2, GpuNumber } from '@tomsoftware/webgl-lib';
+import { Color, GpuBuffer, GpuBuffer,  Matrix3x3, Vector4, Vector2, GpuNumber } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from './drawable-series';
 import { Scale } from './scales/scale';
 
@@ -17,8 +17,8 @@ export class SeriesBar implements DrawableSeries {
     /** x-offset in data-units for multi-series alignment */
     protected offsetX = 0;
 
-    private indexBuffer = new GpuUint16Buffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
+    private indexBuffer = new GpuBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuBuffer('float32', 4, 2);
 
     private static IdBar = 'gpu-series-bar';
 

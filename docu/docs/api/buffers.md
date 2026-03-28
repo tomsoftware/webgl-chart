@@ -7,11 +7,11 @@ Buffers are used to store the data and manage the mapping between JavaScript and
 
 | Name | Type | Info |
 | -----|------|------|
-| `GpuFloatBuffer` | 32 Bit Float |Floating Point Numbers|
-| `GpuByteBuffer` | Unsigned 8 Bit | [0...255] Integer Numbers |
-| `GpuUint16Buffer` | Unsigned 16 Bit | [0...65535] Integer Numbers |
-| `GpuUint32Buffer` |Unsigned 32 Bit | [0...2^23-1] Integer Numbers |
-| `GpuMatrix3x3Buffer` | 9 × 32 Bit Float | 3×3 Floating Point Matrices |
+| `GpuBuffer<'float32'>` | 32 Bit Float |Floating Point Numbers|
+| `GpuBuffer<'uint8'>`   | Unsigned 8 Bit | [0...255] Integer Numbers |
+| `GpuBuffer<'uint16'>`  | Unsigned 16 Bit | [0...65535] Integer Numbers |
+| `GpuBuffer<'uint32'>`  | Unsigned 32 Bit | [0...2^23-1] Integer Numbers |
+| `GpuBuffer<'mat3x3'>`  | 9 × 32 Bit Float | 3×3 Floating Point Matrices |
 
 ## GpuBaseBuffer
 
@@ -153,7 +153,7 @@ Finds the closest matching index for a given value using binary search.
 
 
 
-## GpuFloatBuffer
+## GpuBuffer('float32')
 
 A concrete buffer implementation using 32‑bit floating‑point numbers (`Float32Array`).
 
@@ -180,22 +180,22 @@ constructor(size: number, componentsPerInstance?: number)
 ### Static Methods
 
 ```ts
-static generateFrom(src: GpuFloatBuffer, calc: (srcValue: number) => number): GpuFloatBuffer
+static generateFrom(src: GpuBuffer, calc: (srcValue: number) => number): GpuBuffer<'float32'>
 ```
 
-Creates a new float buffer by transforming values from an existing `GpuFloatBuffer`.
+Creates a new float buffer by transforming values from an existing `GpuBuffer<'float32'>`.
 
 | Parameter | Type                                   | Description                                |
 |---------- |-----------------------------------------|--------------------------------------------|
-| src       | `GpuFloatBuffer`                        | Source buffer                              |
+| src       | `GpuBuffer<'float32'>`                        | Source buffer                              |
 | calc      | `(srcValue: number) => number`          | Mapping function applied to each value     |
 
-**Returns:** `GpuFloatBuffer`
+**Returns:** `GpuBuffer<'float32'>`
 
 ---
 
 ```ts
-static generate(length: number, calc: (index: number) => number): GpuFloatBuffer
+static generate(length: number, calc: (index: number) => number): GpuBuffer<'float32'>
 ```
 
 Creates a new float buffer of the given length, filling it using a callback.
@@ -205,7 +205,7 @@ Creates a new float buffer of the given length, filling it using a callback.
 | length    | number                        | Number of generated values                   |
 | calc      | `(index: number) => number`   | Callback returning the value for each index  |
 
-**Returns:** `GpuFloatBuffer`
+**Returns:** `GpuBuffer<'float32'>`
 
 ---
 
@@ -216,16 +216,16 @@ Creates a new float buffer of the given length, filling it using a callback.
 
 ```ts
 // Create with initial values
-const positions = new GpuFloatBuffer(
+const positions = new GpuBuffer('float32',
     [3, 1.4, 1.5, 9, 2.6],
 );
 
 // Create with size only
-const colors = new GpuFloatBuffer(1000, 4);
+const colors = new GpuBuffer('float32', 1000, 4);
 // 1000 items, 4 components each (RGBA)
 
 // Generate 256 values using callback
-const indices = GpuFloatBuffer.generate(256, i => i);
+const indices = GpuBuffer('float32', numBars).generate(256, i => i);
 ```
 
 ---

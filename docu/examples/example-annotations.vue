@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { Generators } from './generators';
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import {  GpuFloatBuffer, LayoutCell, Color, EventDispatcher, GpuText } from '@tomsoftware/webgl-lib';
+import { GpuBuffer, LayoutCell, Color, EventDispatcher, GpuText } from '@tomsoftware/webgl-lib';
 import { SeriesLine,Scale, BasicChartLayout, Annotations,
   VerticalPosition, HorizontalPosition} from '@tomsoftware/webgl-chart';
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
-const time = new GpuFloatBuffer(itemCount)
+const time = new GpuBuffer('float32', itemCount)
     .generate((i) => i * 0.001); // in seconds
 
-const data1 = GpuFloatBuffer.generateFrom(time, 
+const data1 = GpuBuffer.generateFrom('float32', time, 
   (t) => Generators.generateIO(t * 10) * 20
 );
 

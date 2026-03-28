@@ -1,31 +1,29 @@
 import type { TextureGenerator } from './texture-generator';
 import { Context } from '../context';
-import { GpuFloatBuffer } from '../buffers/gpu-buffer-float';
 import { Matrix3x3 } from '../matrix-3x3';
 import { TextureMap } from './texture-map';
 import { TextureMapItem } from './texture-map-item';
 import { Color } from '../color';
-import { GpuUint16Buffer } from '../buffers/gpu-buffer-uint16';
 import { Vector2 } from '../vector-2';
-import { GpuMatrix3x3Buffer } from '../buffers/gpu-buffer-matrix-3x3';
+import { GpuBuffer } from '../buffers/gpu-buffer';
 
 export class TextureMapDrawer {
     /** position matrix of the rectangle to put texture on */
-    private rectTransformation = new GpuMatrix3x3Buffer(250);
+    private rectTransformation = new GpuBuffer('mat3x3', 250);
     /** width and height of the rectangle to draw the texture at (in pixels) */
-    private rectSize = new GpuFloatBuffer(250, 2);
+    private rectSize = new GpuBuffer('float32', 250, 2);
     /** position of the texture in the texture-buffer */
-    private textureLocation = new GpuFloatBuffer(250, 2);
+    private textureLocation = new GpuBuffer('float32', 250, 2);
     /** size (width/height) of the texture in the texture-buffer  */
-    private textureSize = new GpuFloatBuffer(250, 2);
+    private textureSize = new GpuBuffer('float32', 250, 2);
 
     /** color for coloring the texture */
-    private color = new GpuFloatBuffer(1000, 4);
+    private color = new GpuBuffer('float32', 1000, 4);
     private textureMap: TextureMap;
 
     // base instance data
-    private indexBuffer = new GpuUint16Buffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
+    private indexBuffer = new GpuBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuBuffer('float32', 4, 2);
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-texture-map-drawer';

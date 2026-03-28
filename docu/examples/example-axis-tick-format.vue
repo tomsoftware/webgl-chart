@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue';
-import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher } from '@tomsoftware/webgl-lib';
+import { GpuBuffer, LayoutCell, Color, EventDispatcher } from '@tomsoftware/webgl-lib';
 import { Scale, BasicChartLayout, SeriesBar, AxisBase } from '@tomsoftware/webgl-chart';
 import { ref } from 'vue';
 
 // Sample data
-const xData = new GpuFloatBuffer([1, 2, 3, 4, 5]);
-const yData = new GpuFloatBuffer([10, 25, 40, 60, 80]);
+const xData = new GpuBuffer('float32', [1, 2, 3, 4, 5]);
+const yData = new GpuBuffer('float32', [10, 25, 40, 60, 80]);
 
 // Create series
 const barSeries = new SeriesBar(xData, yData)

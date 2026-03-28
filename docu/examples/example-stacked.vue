@@ -3,7 +3,7 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher,
+import { GpuBuffer, LayoutCell, Color, EventDispatcher,
   VerticalLayout, ScreenPosition, Context } from '@tomsoftware/webgl-lib';
 import { SeriesPoint, Scale,BasicChartLayout, SeriesBar,
   DrawableSeries, SeriesLine } from '@tomsoftware/webgl-chart';
@@ -36,14 +36,14 @@ class ChartInfo {
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
-const time = new GpuFloatBuffer(itemCount)
+const time = new GpuBuffer('float32', itemCount)
     .generate((i) => i * 0.001); // in seconds
 
-const data1 = GpuFloatBuffer.generateFrom(time,
+const data1 = GpuBuffer.generateFrom('float32', time,
   (t) => Generators.generateSin(t)
 );
 
-const data2 = GpuFloatBuffer.generateFrom(time,
+const data2 = GpuBuffer.generateFrom('float32', time,
   (t) =>  Generators.generateIO(t * 10) * 10
 );
 
@@ -58,7 +58,7 @@ const series2 = new SeriesLine(time, data2)
 
 const series3 = new SeriesBar(
   time,
-  GpuFloatBuffer.generateFrom(time, (t) => Generators.generateEKG(t * 10) * 20)
+  GpuBuffer.generateFrom('float32', time, (t) => Generators.generateEKG(t * 10) * 20)
 )
   .setColor(Color.darkGreen)
   .setBarWidth(0.0008)

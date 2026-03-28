@@ -19,12 +19,12 @@ All bars in a series share the same color, width, and optional horizontal offset
 
 A bar series requires two GPU buffers:
 
-- `x: GpuFloatBuffer` — the x‑positions of each bar
-- `y: GpuFloatBuffer` — the heights of each bar
+- `x: GpuBuffer<'float32'>` — the x‑positions of each bar
+- `y: GpuBuffer<'float32'>` — the heights of each bar
 
 ```ts
-const xBuffer = new GpuFloatBuffer([1, 2, 3]);
-const yBuffer = new GpuFloatBuffer([1, 2, 3]);
+const xBuffer = new GpuBuffer('float32', [1, 2, 3]);
+const yBuffer = new GpuBuffer('float32', [1, 2, 3]);
 
 const bar = new SeriesBar(xBuffer, yBuffer)
     .setColor(Color.blue)
@@ -63,8 +63,8 @@ bar.setOffsetX(0.05);
 Example:
 
 ```ts
-const xBuffer = new GpuFloatBuffer([1, 2, 3]);
-const yBuffer = new GpuFloatBuffer([1, 2, 3]);
+const xBuffer = new GpuBuffer('float32', [1, 2, 3]);
+const yBuffer = new GpuBuffer('float32', [1, 2, 3]);
 
 const bar = new SeriesBar(xBuffer, yBuffer, radiusBuffer)
     .setColor(Color.blue)

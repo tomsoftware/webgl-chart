@@ -1,5 +1,5 @@
 import type { LayoutNode, Context, GpuBuffer } from '@tomsoftware/webgl-lib';
-import { Color, GpuFloatBuffer, Matrix3x3, Vector4, GpuUint16Buffer, Vector2 } from '@tomsoftware/webgl-lib';
+import { Color, GpuBuffer, Matrix3x3, Vector4, GpuBuffer,  Vector2 } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from './drawable-series';
 import { Scale } from './scales/scale';
 
@@ -15,9 +15,9 @@ export class SeriesBubble implements DrawableSeries {
     protected radius: GpuBuffer;
 
     // base instance data
-    private indexBuffer = new GpuUint16Buffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
-    private quadTexcoords = new GpuFloatBuffer(4, 2);
+    private indexBuffer = new GpuBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuBuffer('float32', 4, 2);
+    private quadTexcoords = new GpuBuffer('float32', 4, 2);
 
     /** this is a unique id to identifies this shader programs */
     private static IdCircle = 'gpu-series-bubble';

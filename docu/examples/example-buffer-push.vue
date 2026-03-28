@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { Generators } from './generators';
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher, } from '@tomsoftware/webgl-lib';
+import { GpuBuffer, LayoutCell, Color, EventDispatcher, } from '@tomsoftware/webgl-lib';
 import {SeriesPoint, BasicChartLayout, Scale } from '@tomsoftware/webgl-chart';
-import { ref } from 'vue';
 import {PausableTimer} from './pausable-timer';
+import { ref } from 'vue';
 
 let pauseAnimation = ref<boolean>(true);
 let numPoints = ref<number>(0);
 
 // generate time data
-const time = new GpuFloatBuffer(0);
-const data1 = new GpuFloatBuffer(0);
+const time = new GpuBuffer('float32', 0);
+const data1 = new GpuBuffer('float32', 0);
 
 // generate series data
 const series1 = new SeriesPoint(time, data1)

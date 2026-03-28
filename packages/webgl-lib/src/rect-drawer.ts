@@ -5,10 +5,8 @@ import type { LayoutNode } from './layout/layout-node';
 import type { TextureMapItem } from './texture/texture-map-item';
 import { Vector4 } from './vector-4';
 import { Vector2 } from './vector-2';
-import { GpuFloatBuffer } from './buffers/gpu-buffer-float';
-import { GpuUint16Buffer } from './buffers/gpu-buffer-uint16';
-import { GpuByteBuffer } from './buffers/gpu-buffer-byte';
 import { TextureMap } from './texture/texture-map';
+import { GpuBuffer } from './buffers/gpu-buffer';
 
 /** defines how to calculate the vertex position in the shader */
 export enum DimensionTypes {
@@ -27,26 +25,26 @@ export type DimensionsType = [DimensionTypes, DimensionTypes, DimensionTypes, Di
 /** Draw a batch of rectangles */
 export class RectDrawer {
     /** center position (x, y) of the rectangle */
-    private rectPos = new GpuFloatBuffer(0, 2);
+    private rectPos = new GpuBuffer('float32', 0, 2);
     /** width and height of the rectangle */
-    private rectSize = new GpuFloatBuffer(0, 2);
+    private rectSize = new GpuBuffer('float32', 0, 2);
     /** padding / offset in pixel that is added to vertex position */
-    private margin = new GpuFloatBuffer(0, 2);
+    private margin = new GpuBuffer('float32', 0, 2);
     /** flag to show if coordinates or rectSize parameter are absolute or relative values */
-    private dimensionType = new GpuByteBuffer(0, 4);
+    private dimensionType = new GpuBuffer('uint8' ,0, 4);
 
-    private color = new GpuFloatBuffer(0, 4);
-    private stripeWidth = new GpuFloatBuffer(0, 2);
-    private borderRadius = new GpuFloatBuffer(0, 1);
+    private color = new GpuBuffer('float32', 0, 4);
+    private stripeWidth = new GpuBuffer('float32', 0, 2);
+    private borderRadius = new GpuBuffer('float32', 0, 1);
     private bbox = new Vector4(0, 0, 1, 1);
     /** position of the texture in the texture-buffer */
-    private textureLocation = new GpuFloatBuffer(0, 2);
+    private textureLocation = new GpuBuffer('float32', 0, 2);
     /** size (width/height) of the texture in the texture-buffer  */
-    private textureSize = new GpuFloatBuffer(0, 2);
+    private textureSize = new GpuBuffer('float32', 0, 2);
 
     // base instance data
-    private indexBuffer = new GpuUint16Buffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
+    private indexBuffer = new GpuBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuBuffer('float32', 4, 2);
 
     /** texture-map to store textures to map to the rectangles */
     public textureMap = new TextureMap();

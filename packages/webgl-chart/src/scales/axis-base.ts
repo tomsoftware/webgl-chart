@@ -55,7 +55,7 @@ export class AxisBase {
 
     /** default label formation function */
     public static defaultFormatTickLabel(value: number) {
-        // check for "-0" value and make it 0
+        // check for '-0' value and make it 0
         if (Object.is(value, -0)) {
             value = 0;
         }

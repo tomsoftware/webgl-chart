@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue';
-import { GpuFloatBuffer, LayoutCell, Color, EventDispatcher } from '@tomsoftware/webgl-lib';
+import { GpuBuffer, LayoutCell, Color, EventDispatcher } from '@tomsoftware/webgl-lib';
 import { SeriesBar, Scale, BasicChartLayout } from '@tomsoftware/webgl-chart';
 
 // Generate circle data
 const numBars = 200;
 
-const xTimeData = GpuFloatBuffer.generate(numBars, (t) => t * 0.1);
-const yData = GpuFloatBuffer.generateFrom(xTimeData, (t) => Math.random() * 20 - 10);
+const xTimeData = new GpuBuffer('float32', numBars).generate((t) => t * 0.1);
+const yData = GpuBuffer.generateFrom('float32', xTimeData, (t) => Math.random() * 20 - 10);
 
 // create series drawer
 const series1 = new SeriesBar(xTimeData, yData)
@@ -17,7 +17,7 @@ const series1 = new SeriesBar(xTimeData, yData)
 
 const series2 = new SeriesBar(
     xTimeData,
-     GpuFloatBuffer.generateFrom(xTimeData, (t) => Math.sin(t * 1) * 10),
+     GpuBuffer.generateFrom('float32', xTimeData, (t) => Math.sin(t * 1) * 10),
   )
   .setColor(Color.red.withAlpha(0.6))
   .setBarWidth(0.04)

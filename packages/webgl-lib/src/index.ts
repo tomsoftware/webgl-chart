@@ -16,13 +16,8 @@ export * from './vector-4';
 // buffers
 export * from './buffers/gpu-base-buffer';
 export * from './buffers/gpu-buffer';
-export * from './buffers/gpu-buffer-byte';
-export * from './buffers/gpu-buffer-float';
-export * from './buffers/gpu-buffer-matrix-3x3';
-export * from './buffers/gpu-buffer-uint16';
-export * from './buffers/gpu-buffer-uint32';
+export * from './buffers/i-gpu-buffer';
 export * from './buffers/gpu-buffer-view';
-
 
 // event-handler
 export * from './event-handler/event-handler';
