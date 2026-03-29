@@ -251,6 +251,12 @@ buffer.clear();
   @[code](../../examples/example-buffer-push.vue)
 </details>
 
+<example-buffer-rotated />
+<details>
+  <summary>Source</summary>
+
+  @[code](../../examples/example-buffer-rotated.vue)
+</details>
 
 ---
 

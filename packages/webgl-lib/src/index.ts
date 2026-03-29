@@ -14,7 +14,7 @@ export * from './vector-2';
 export * from './vector-4';
 
 // buffers
-export * from './buffers/gpu-base-buffer';
+export * from './buffers/implementations/gpu-growing-buffer';
 export * from './buffers/gpu-buffer';
 export * from './buffers/i-gpu-buffer';
 export * from './buffers/gpu-buffer-view';

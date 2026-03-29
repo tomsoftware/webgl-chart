@@ -1,7 +1,9 @@
-import { ArrayUtilities } from './array-utilities';
-import { GpuBufferView } from './gpu-buffer-view';
+import { ArrayUtilities } from '../array-utilities';
+import { GpuBufferView } from '../gpu-buffer-view';
+import { TypedArray } from '../i-gpu-buffer';
+import { IGpuBufferImpl } from './gpu-buffer-base';
 
-export class GpuBaseBuffer<T extends TypedArray> {
+export class GpuGrowingBuffer<T extends TypedArray> implements IGpuBufferImpl<T> {
     protected buffer: T;
     protected bufferOffset = 0;
     protected bufferEnd = 0;
@@ -9,11 +11,10 @@ export class GpuBaseBuffer<T extends TypedArray> {
     private typeName: string;
 
     public componentsPerInstance: number;
-    protected currentDataVersion = -1;
 
     /** return a view of the buffer with the current data */
     public get data() {
-        return this.buffer.subarray(this.bufferOffset, this.bufferEnd);
+        return this.buffer.subarray(this.bufferOffset, this.bufferEnd) as T;
     }
 
     /** return a value of a given item */
@@ -28,25 +29,17 @@ export class GpuBaseBuffer<T extends TypedArray> {
         this.bufferEnd = 0;
         this.activator = activator;
         this.componentsPerInstance = componentsPerInstance;
-        this.updateDataVersion();
     }
 
-    /** Returns a number that changes when the data changes */
-    public get dataVersion() {
-        return this.currentDataVersion;
-    }
-
-    protected updateDataVersion() {
-        this.currentDataVersion++;
-    }
+    public get capacity() {
+        return this.buffer.length;
+    } 
 
     /** Makes sure the current buffer can handle the given number of items */
-    public ensureCapacity(size: number = 1): this {
-        size = Math.max(0, size);
-
+    public ensureCapacity(size: number) {
         if (this.buffer.length >= this.bufferOffset + size) {
             // the buffer is large enough
-            return this;
+            return;
         }
 
         console.log('GpuBuffer<' + this.typeName + '>: new capacity:', size);
@@ -55,8 +48,6 @@ export class GpuBaseBuffer<T extends TypedArray> {
         const newBuffer = new this.activator(this.bufferOffset + size);
         newBuffer.set(this.buffer);
         this.buffer = newBuffer;
-
-        return this;
     }
 
     /** Makes sure the given number of new items fits into the internal buffer */
@@ -92,21 +83,11 @@ export class GpuBaseBuffer<T extends TypedArray> {
         for (let i = 0; i < values.length; i++) {
             this.pushValue(values[i]);
         }
-
-        this.updateDataVersion();
     }
 
-    /** Adds one or more individual values to the buffer. */
-    public push(...args: number[]) {
-        this.pushRange(args);
-    }
-
-    /** Resets the buffer, clearing all data while preserving allocated capacity.  */
-    public clear(): this {
+    public clear() {
         this.bufferOffset = 0;
         this.bufferEnd = 0;
-        this.updateDataVersion();
-        return this;
     }
 
    /** Return the closes index a given value matches in the buffer-values */
@@ -135,7 +116,7 @@ export class GpuBaseBuffer<T extends TypedArray> {
         return high;
     }
 
-    protected setBasicVertexAttribPointer(
+    public setVertexAttribPointer(
             gl: WebGLRenderingContext,
             variableLoc: number,
             angleExtension: ANGLE_instanced_arrays | null,
@@ -191,8 +172,19 @@ export class GpuBaseBuffer<T extends TypedArray> {
         return this.buffer[this.bufferEnd - 1];
     }
 
+    public generate(calc: (srcValue: number) => number) {
+        this.bufferOffset = 0;
+        this.bufferEnd = this.buffer.length;
+
+        const data = this.data;
+        for (let i = 0; i < data.length; i++) {
+            data[i] = calc(i);
+        }
+
+    }
+
     /** Generate data from a given buffer: result[i] = calc(src[i]) */
-    protected static generateFromBase<T extends TypedArray, B extends GpuBaseBuffer<T>>(
+    protected static generateFromBase<T extends TypedArray, B extends GpuGrowingBuffer<T>>(
         ctor: new (size: number) => B,
         src: B,
         calc: (srcValue: number) => number
@@ -211,7 +203,7 @@ export class GpuBaseBuffer<T extends TypedArray> {
     }
 
      /** Generate buffer with the given number of elements: = calc(i) */
-    protected static generateBase<T extends TypedArray, B extends GpuBaseBuffer<T>>(
+    protected static generateBase<T extends TypedArray, B extends GpuGrowingBuffer<T>>(
         ctor: new (size: number) => B,
         length: number,
         calc: (index: number) => number
@@ -227,18 +219,5 @@ export class GpuBaseBuffer<T extends TypedArray> {
         return newBuffer;
     }
 
-    /** Replace all buffers-values with a callback  */
-    public generate(calc: (i: number) => number): this {
-        this.bufferOffset = 0;
-        this.bufferEnd = this.buffer.length;
 
-        const data = this.data;
-        for (let i = 0; i < data.length; i++) {
-            data[i] = calc(i);
-        }
-
-        this.updateDataVersion();
-
-        return this;
-    }
 }

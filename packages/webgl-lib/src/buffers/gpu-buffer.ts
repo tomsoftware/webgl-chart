@@ -1,7 +1,8 @@
 import { GpuBufferView } from './gpu-buffer-view';
-import { GpuBaseBuffer } from './gpu-base-buffer';
-import { GpuRotatedBuffer } from './gpu-rotated-buffer';
-import { IGpuBuffer } from './i-gpu-buffer';
+import { GpuGrowingBuffer } from './implementations/gpu-growing-buffer';
+import { GpuRingBuffer } from './implementations/gpu-ring-buffer';
+import { TypedArray } from './i-gpu-buffer';
+import { IGpuBufferImpl } from './implementations/gpu-buffer-base';
 
 
 type TypedArrayConstructor<T extends TypedArray> = {
@@ -14,90 +15,152 @@ export type UInt16Buffer  = { kind: 'uint16' };
 export type UInt8Buffer  = { kind: 'uint16' };
 export type Matrix3x3Buffer = { kind: 'mat3x3' };
 
-interface GpuTypeInfo {
+interface GpuBufferTypeInfo {
   arrayType: TypedArrayConstructor<any>;
-  glType: number;
-  bytes: number;
-  setAttribPointer?: (
+  setAttribPointer: (
+    impl: IGpuBufferImpl<any>,
     gl: WebGLRenderingContext,
-    loc: GLint,
+    variableLoc: GLint,
     angle: ANGLE_instanced_arrays | null,
     view: GpuBufferView
   ) => void;
 }
 
-
 export const GPU_TYPE_INFO = {
   float32: {
     arrayType: Float32Array,
-    glType: WebGLRenderingContext.FLOAT,
-    bytes: Float32Array.BYTES_PER_ELEMENT,
-  } satisfies GpuTypeInfo,
+    setAttribPointer(impl: IGpuBufferImpl<any>, gl: WebGLRenderingContext,
+        variableLoc: GLint, angleExtension: ANGLE_instanced_arrays | null,
+        bufferView: GpuBufferView,
+    ) { 
+        impl.setVertexAttribPointer(
+        gl,
+        variableLoc,
+        angleExtension,
+        bufferView,
+        WebGLRenderingContext.FLOAT,
+        Float32Array.BYTES_PER_ELEMENT
+      );
+     }
+  } satisfies GpuBufferTypeInfo,
 
   uint32: {
     arrayType: Uint32Array,
-    glType: WebGLRenderingContext.UNSIGNED_INT,
-    bytes: Uint32Array.BYTES_PER_ELEMENT,
-  } satisfies GpuTypeInfo,
+    setAttribPointer(impl: IGpuBufferImpl<any>, gl: WebGLRenderingContext,
+        variableLoc: GLint, angleExtension: ANGLE_instanced_arrays | null,
+        bufferView: GpuBufferView,
+    ) { 
+        impl.setVertexAttribPointer(
+        gl,
+        variableLoc,
+        angleExtension,
+        bufferView,
+        WebGLRenderingContext.UNSIGNED_INT,
+        Float32Array.BYTES_PER_ELEMENT
+      );
+     }
+
+  } satisfies GpuBufferTypeInfo,
 
   uint16: {
     arrayType: Uint16Array,
-    glType: WebGLRenderingContext.UNSIGNED_SHORT,
-    bytes: Uint16Array.BYTES_PER_ELEMENT,
-  } satisfies GpuTypeInfo,
+    setAttribPointer(impl: IGpuBufferImpl<any>, gl: WebGLRenderingContext,
+        variableLoc: GLint, angleExtension: ANGLE_instanced_arrays | null,
+        bufferView: GpuBufferView,
+    ) { 
+        impl.setVertexAttribPointer(
+        gl,
+        variableLoc,
+        angleExtension,
+        bufferView,
+        WebGLRenderingContext.UNSIGNED_SHORT,
+        Float32Array.BYTES_PER_ELEMENT
+      );
+     }
+  } satisfies GpuBufferTypeInfo,
 
   uint8: {
     arrayType: Uint8Array,
-    glType: WebGLRenderingContext.UNSIGNED_BYTE,
-    bytes: Uint8Array.BYTES_PER_ELEMENT,
-  } satisfies GpuTypeInfo,
+    setAttribPointer(impl: IGpuBufferImpl<any>, gl: WebGLRenderingContext,
+        variableLoc: GLint, angleExtension: ANGLE_instanced_arrays | null,
+        bufferView: GpuBufferView,
+    ) { 
+        impl.setVertexAttribPointer(
+        gl,
+        variableLoc,
+        angleExtension,
+        bufferView,
+        WebGLRenderingContext.UNSIGNED_BYTE,
+        Float32Array.BYTES_PER_ELEMENT
+      );
+     }
+  } satisfies GpuBufferTypeInfo,
 
   mat3x3: {
     arrayType: Float32Array,
-    glType: WebGLRenderingContext.FLOAT,
-    bytes: Float32Array.BYTES_PER_ELEMENT * 9,
+     setAttribPointer(impl: IGpuBufferImpl<any>, gl: WebGLRenderingContext,
+        variableLoc: GLint, angleExtension: ANGLE_instanced_arrays | null,
+        bufferView: GpuBufferView,
+    ) {
+        gl.enableVertexAttribArray(variableLoc + 0);
+        gl.enableVertexAttribArray(variableLoc + 1);
+        gl.enableVertexAttribArray(variableLoc + 2);
 
-    setAttribPointer(gl, loc, angle, view) {
-      const bytesPerMatrix = 4 * 3 * 3;
-      const offset = view.offset * bytesPerMatrix;
-
-      for (let i = 0; i < 3; i++) {
-        gl.enableVertexAttribArray(loc + i);
+        const bytesPerMatrix = 4 * 3 * 3;
+        const offset = bufferView.offset * bytesPerMatrix;
 
         gl.vertexAttribPointer(
-          loc + i,
-          3,
-          gl.FLOAT,
-          false,
-          bytesPerMatrix,
-          offset + i * 4 * 3
+            variableLoc + 0,  // location
+            3,                // size (num values to pull from buffer per iteration)
+            gl.FLOAT,         // type of data in buffer
+            false,            // normalize
+            bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
+            offset,           // offset in buffer
         );
 
-        if (angle) {
-          angle.vertexAttribDivisorANGLE(loc + i, view.vertexAttribDivisor);
+        gl.vertexAttribPointer(
+            variableLoc + 1,  // location
+            3,                // size (num values to pull from buffer per iteration)
+            gl.FLOAT,         // type of data in buffer
+            false,            // normalize
+            bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
+            offset + 4 * 3,   // offset in buffer
+        );
+
+        gl.vertexAttribPointer(
+            variableLoc + 2,  // location
+            3,                // size (num values to pull from buffer per iteration)
+            gl.FLOAT,         // type of data in buffer
+            false,            // normalize
+            bytesPerMatrix,   // stride, num bytes to advance to get to next set of values
+            offset + 4 * 6,   // offset in buffer
+        );
+
+
+        if (angleExtension != null) {
+            angleExtension.vertexAttribDivisorANGLE(variableLoc + 0, bufferView.vertexAttribDivisor);
+            angleExtension.vertexAttribDivisorANGLE(variableLoc + 1, bufferView.vertexAttribDivisor);
+            angleExtension.vertexAttribDivisorANGLE(variableLoc + 2, bufferView.vertexAttribDivisor);
         }
-      }
     }
-  } satisfies GpuTypeInfo
+  } satisfies GpuBufferTypeInfo
 } as const;
 
 
 type GpuTypeKey = keyof typeof GPU_TYPE_INFO;
 
 
-/**
- * Interface for GPU buffer implementations
- */
-interface IGpuBufferImpl<T extends TypedArray> extends IGpuBuffer{
-  data: T | TypedArray;
-}
+type ArrayTypeOf<T extends GpuTypeKey> =
+  InstanceType<(typeof GPU_TYPE_INFO)[T]["arrayType"]>;
+
 
 /**
  * Universal GPU Buffer that can use different implementations
  */
 export class GpuBuffer<T extends GpuTypeKey> {
-  private impl: IGpuBufferImpl<any>;
+  private impl: IGpuBufferImpl<ArrayTypeOf<T>>;
   private info = GPU_TYPE_INFO[this.type];
+  protected currentDataVersion = -1;
 
   constructor(
     private type: T,
@@ -108,106 +171,108 @@ export class GpuBuffer<T extends GpuTypeKey> {
     const arrayType = this.info.arrayType;
 
     if (rotatedBuffer) {
-      this.impl = new GpuRotatedBufferWrapper(
+      this.impl = new GpuRingBuffer(
         arrayType as any,
         size,
         this.type as string,
         componentsPerInstance,
-        this.info
       );
     } else {
-      this.impl = new GpuBaseBufferWrapper(
+      this.impl = new GpuGrowingBuffer(
         arrayType as any,
         size,
         this.type as string,
         componentsPerInstance,
-        this.info
       );
     }
   }
 
   setVertexAttribPointer(
     gl: WebGLRenderingContext,
-    loc: GLint,
-    angle: ANGLE_instanced_arrays | null,
-    view: GpuBufferView
+    variableLoc: GLint,
+    angleExtension: ANGLE_instanced_arrays | null,
+    bufferView: GpuBufferView
   ) {
-    this.impl.setVertexAttribPointer(gl, loc, angle, view);
+    this.info.setAttribPointer(this.impl, gl, variableLoc, angleExtension, bufferView);
   }
 
-  get data() {
+
+  public get data(): ArrayTypeOf<T> {
     return this.impl.data;
   }
 
-  get dataVersion() {
-    return this.impl.dataVersion;
+  /** Returns a number that changes when the data changes */
+  public get dataVersion() {
+    return this.currentDataVersion;
   }
 
-  get length() {
+  protected updateDataVersion() {
+      this.currentDataVersion++;
+  }
+
+  public get length() {
     return this.impl.length;
   }
 
-  get count() {
+  public get count() {
     return this.impl.count;
   }
 
-  get first() {
+  public get first() {
     return this.impl.first;
   }
 
-  get last() {
+  public get last() {
     return this.impl.last;
   }
 
-  binarySearch(value: number) {
+  public binarySearch(value: number) {
     return this.impl.binarySearch(value);
   }
 
-  push(...args: number[]) {
+  /** Adds one or more individual values to the buffer. */
+  push(...args: number[]): void {
     this.impl.pushRange(args);
   }
 
-  pushRange(values: number[] | TypedArray) {
+  pushRange(values: number[] | TypedArray): void {
     this.impl.pushRange(values);
+    this.updateDataVersion();
   }
 
-  clear() {
+   /** Resets the buffer, clearing all data while preserving allocated capacity.  */
+  clear(): this {
     this.impl.clear();
+    this.updateDataVersion();
+    return this;
   }
 
-  get(index: number) {
+  get(index: number): number[] {
     return this.impl.get(index);
   }
 
-  ensureCapacity(size?: number) {
-    if (this.impl instanceof GpuBaseBufferWrapper) {
-      return this.impl.ensureCapacity(size);
-    }
+  /** Makes sure the current buffer can handle the given number of items */
+  public ensureCapacity(size: number): this {
+    size = Math.max(0, size ?? 0);
+
+    this.impl.ensureCapacity(size);
+
     return this;
   }
 
-  increaseCapacity(newItems?: number) {
-    if (this.impl instanceof GpuBaseBufferWrapper) {
-      return this.impl.increaseCapacity(newItems);
-    }
+  /** Makes sure the given number of new items fits into the internal buffer */
+  public increaseCapacity(newItems: number): this {
+    newItems = Math.max(0, newItems ?? 0);
+
+    this.impl.increaseCapacity(newItems);
+
     return this;
   }
 
-  /**
-   * Generate buffer with values from a calculation function
-   * @param calc Function that takes an index and returns a value
-   * @returns This buffer for chaining
-   */
+  /** Replace all buffers-values with a callback  */
   generate(calc: (i: number) => number): this {
-    if (this.impl instanceof GpuBaseBufferWrapper) {
-      this.impl.generate(calc);
-    } else if (this.impl instanceof GpuRotatedBufferWrapper) {
-      // For rotated buffers, generate fills it from start
-      for (let i = 0; i < this.impl.count; i++) {
-        this.impl.push(calc(i));
-      }
-      this.impl.updateDataVersion();
-    }
+    this.impl.generate(calc);
+    this.updateDataVersion();
     return this;
   }
 
@@ -216,18 +281,18 @@ export class GpuBuffer<T extends GpuTypeKey> {
    * @param src Source buffer
    * @param calc Function to transform each value
    */
-
   static generateFrom<T extends GpuTypeKey, K extends GpuTypeKey>(
     type: T,
     src: GpuBuffer<K>,
-    calc: (srcValue: number) => number
+    calc: (srcValue: number) => number,
+    componentsPerInstance: number = 1
   ): GpuBuffer<T> {
     const srcData = src.data as TypedArray;
     const srcBuffer = new GpuBuffer(
       type,
       srcData.length,
-      (src['impl'] as GpuBaseBufferWrapper<any>)?.componentsPerInstance || 1,
-      false
+      componentsPerInstance,
+      (src.impl as GpuRingBuffer<T.type>) == null
     );
 
     for (let i = 0; i < srcData.length; i++) {
@@ -238,87 +303,4 @@ export class GpuBuffer<T extends GpuTypeKey> {
   }
 }
 
-/**
- * Wrapper for GpuBaseBuffer to implement IGpuBufferImpl
- */
-class GpuBaseBufferWrapper<T extends TypedArray> extends GpuBaseBuffer<T> implements IGpuBufferImpl<T> {
-  constructor(
-    activator: { new(size: number): T },
-    size: number,
-    typeName: string,
-    componentsPerInstance: number,
-    private typeInfo: GpuTypeInfo
-  ) {
-    super(activator, size, typeName, componentsPerInstance);
-  }
-
-  setVertexAttribPointer(
-    gl: WebGLRenderingContext,
-    variableLoc: GLint,
-    angleExtension: ANGLE_instanced_arrays | null,
-    bufferView: GpuBufferView
-  ) {
-    if (this.typeInfo.setAttribPointer) {
-      this.typeInfo.setAttribPointer(gl, variableLoc, angleExtension, bufferView);
-    } else {
-      this.setBasicVertexAttribPointer(
-        gl,
-        variableLoc,
-        angleExtension,
-        bufferView,
-        this.typeInfo.glType,
-        this.typeInfo.bytes
-      );
-    }
-  }
-}
-
-/**
- * Wrapper for GpuRotatedBuffer to implement IGpuBufferImpl
- */
-class GpuRotatedBufferWrapper<T extends TypedArray> extends GpuRotatedBuffer<T> implements IGpuBufferImpl<T> {
-  constructor(
-    activator: { new(size: number): T },
-    size: number,
-    typeName: string,
-    componentsPerInstance: number,
-    private typeInfo: GpuTypeInfo
-  ) {
-    super(activator, size, typeName, componentsPerInstance);
-  }
-
-  get first(): number | null {
-    if (this.buffer.length <= 0) {
-      return null;
-    }
-    return this.buffer[0];
-  }
-
-  get last(): number | null {
-    if (this.buffer.length <= 0) {
-      return null;
-    }
-    return this.buffer[this.buffer.length - 1];
-  }
-
-  setVertexAttribPointer(
-    gl: WebGLRenderingContext,
-    variableLoc: GLint,
-    angleExtension: ANGLE_instanced_arrays | null,
-    bufferView: GpuBufferView
-  ) {
-    if (this.typeInfo.setAttribPointer) {
-      this.typeInfo.setAttribPointer(gl, variableLoc, angleExtension, bufferView);
-    } else {
-      this.setBasicVertexAttribPointer(
-        gl,
-        variableLoc,
-        angleExtension,
-        bufferView,
-        this.typeInfo.glType,
-        this.typeInfo.bytes
-      );
-    }
-  }
-}
 

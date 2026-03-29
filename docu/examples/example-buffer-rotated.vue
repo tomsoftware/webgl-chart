@@ -9,9 +9,9 @@ import { ref } from 'vue';
 let pauseAnimation = ref<boolean>(true);
 let numPoints = ref<number>(0);
 
-// generate time data
-const time = new GpuBuffer('float32', 0);
-const data1 = new GpuBuffer('float32', 0);
+// generate time data - 
+const time = new GpuBuffer('float32', 1000, 1, /* rotated: */ true);
+const data1 = new GpuBuffer('float32', 1000, 1, /* rotated: */ true);
 
 // generate series data
 const series1 = new SeriesPoint(time, data1)
@@ -79,6 +79,7 @@ setInterval(() => {
 
   // update scale, having 4% padding on the right
   scaleX.max = Math.max(scaleX.max, t + scaleX.range * 0.04);
+  scaleX.min = Math.min(scaleX.min, time.first ?? 0);
 
   // read number of points in buffer
   numPoints.value = data1.count;

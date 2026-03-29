@@ -1,4 +1,6 @@
-import { GpuBufferView } from './gpu-buffer-view';
+import { GpuBufferView } from '../gpu-buffer-view';
+import { TypedArray } from '../i-gpu-buffer';
+import { IGpuBufferImpl } from './gpu-buffer-base';
 
 /**
  * A circular buffer that reuses fixed allocated memory.
@@ -6,7 +8,7 @@ import { GpuBufferView } from './gpu-buffer-view';
  * This is useful for scenarios like real-time data streaming where old data
  * can be overwritten by new data.
  */
-export class GpuRotatedBuffer<T extends TypedArray> {
+export class GpuRingBuffer<T extends TypedArray> implements IGpuBufferImpl<T> {
     public buffer: T;
     protected writeOffset = 0;
     protected totalWritten = 0;
@@ -43,6 +45,21 @@ export class GpuRotatedBuffer<T extends TypedArray> {
         this.writeOffset = 0;
         this.totalWritten = 0;
         this.updateDataVersion();
+    }
+
+    generate(calc: (i: number) => number): unknown {
+        throw new Error('Method not implemented.');
+    }
+
+    public get capacity() {
+        return this.buffer.length;
+    }
+
+    increaseCapacity(newItems: number | undefined): unknown {
+        throw new Error('Method not implemented.');
+    }
+    ensureCapacity(size: number | undefined): void {
+        throw new Error('Method not implemented.');
     }
 
     /**
@@ -134,7 +151,7 @@ export class GpuRotatedBuffer<T extends TypedArray> {
     /**
      * Set up vertex attribute pointer for WebGL
      */
-    public setBasicVertexAttribPointer(
+    public setVertexAttribPointer(
         gl: WebGLRenderingContext,
         variableLoc: number,
         angleExtension: ANGLE_instanced_arrays | null,
