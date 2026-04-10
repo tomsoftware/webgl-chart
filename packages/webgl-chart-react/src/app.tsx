@@ -11,11 +11,11 @@ const App: React.FC = () => {
 
   // generate time data
   const itemCount = 1000 * 60 * 60 / 4;
-  const time = new GpuBuffer('float32', itemCount)
+  const time = new GpuGrowingBuffer('float32', itemCount)
       .generate((i) => i * 0.001); // in seconds
 
   // generate y-data
-  const data = new GpuBuffer('float32', itemCount)
+  const data = new GpuGrowingBuffer('float32', itemCount)
       .generate((t) => Math.sin(t * 0.001));
 
   // generate series data

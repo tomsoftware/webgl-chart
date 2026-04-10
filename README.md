@@ -44,18 +44,18 @@ That means maximum flexibility for advanced visual controls (custom mark renderi
 
 ```ts
 // (1) prepare data buffers
-const time = new GpuBuffer('float32', [1, 2, 3]);
+const time = new GpuGrowingBuffer('float32', [1, 2, 3]);
 
 // (2) create series objects
-const points = new SeriesPoint(time, new GpuBuffer('float32', [3.1, 4.2, 5.3])
+const points = new SeriesPoint(time, new GpuGrowingBuffer('float32', [3.1, 4.2, 5.3])
   .setColor(Color.blue)
   .setPointSize(4);
 
-const line = new SeriesLine(time, new GpuBuffer('float32', [1.1, 2.2, 3.3])
+const line = new SeriesLine(time, new GpuGrowingBuffer('float32', [1.1, 2.2, 3.3])
   .setColor(Color.darkGreen)
   .setThickness(2);
 
-const bars = new SeriesBar(time, new GpuBuffer('float32', [4, 3, 2])
+const bars = new SeriesBar(time, new GpuGrowingBuffer('float32', [4, 3, 2])
   .setColor(Color.red)
   .setBarWidth(0.02);
 

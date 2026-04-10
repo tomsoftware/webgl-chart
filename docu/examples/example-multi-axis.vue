@@ -2,23 +2,23 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuBuffer, LayoutCell, Color, EventDispatcher} from '@tomsoftware/webgl-lib';
+import { GpuGrowingBuffer, LayoutCell, Color, EventDispatcher} from '@tomsoftware/webgl-lib';
 import { SeriesPoint, Scale,  BasicChartLayout, VerticalAxisOrientation, SeriesLine} from '@tomsoftware/webgl-chart';
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
-const time = new GpuBuffer("float32", itemCount, 1)
+const time = new GpuGrowingBuffer('float32', itemCount, 1)
     .generate((i: number) => i * 0.001); // in seconds
 
-const data1 = GpuBuffer.generateFrom('float32', time,
+const data1 = GpuGrowingBuffer.generateFrom('float32', time,
   (t: number) => Generators.generateSin(t)
 );
 
-const data2 = GpuBuffer.generateFrom('float32', time,
+const data2 = GpuGrowingBuffer.generateFrom('float32', time,
   (t: number) => Generators.generateEKG(t * 10) * 10
 );
 
-const data3 = GpuBuffer.generateFrom('float32', time,
+const data3 = GpuGrowingBuffer.generateFrom('float32', time,
   (t: number) => Generators.generateIO(t * 10) * 20
 );
 

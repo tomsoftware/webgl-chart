@@ -19,9 +19,9 @@ An area series requires three GPU buffers:
 - `lower: GpuBuffer<'float32'>` : the lower boundary values
 
 ```ts
-const time = new GpuBuffer('float32', [0, 1, 2, 3]);
-const upper = new GpuBuffer('float32', [1, 2, 1, 3]);
-const lower = new GpuBuffer('float32', [0, 1, 0, 1]);
+const time = new GpuGrowingBuffer('float32', [0, 1, 2, 3]);
+const upper = new GpuGrowingBuffer('float32', [1, 2, 1, 3]);
+const lower = new GpuGrowingBuffer('float32', [0, 1, 0, 1]);
 
 const area = new SeriesArea(time, upper, lower)
     .setColor(Color.blue, Color.lightGray);

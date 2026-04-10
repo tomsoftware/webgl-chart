@@ -22,9 +22,9 @@ new SeriesBubble(x: GpuBuffer, y: GpuBuffer, radius: GpuBuffer<'float32'>);
 Example:
 
 ```ts
-const xBuffer = new GpuBuffer('float32', [1, 2, 3]);
-const yBuffer = new GpuBuffer('float32', [1, 2, 3]);
-const radiusBuffer = new GpuBuffer('float32', [5, 8, 15]);
+const xBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const yBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const radiusBuffer = new GpuGrowingBuffer('float32', [5, 8, 15]);
 
 const bubble = new SeriesBubble(xBuffer, yBuffer, radiusBuffer)
     .setColor(Color.blue).

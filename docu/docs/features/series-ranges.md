@@ -23,9 +23,9 @@ A range rectangular series requires three GPU buffers:
 - `y2: GpuBuffer<'float32'>` — the upper y-values
 
 ```ts
-const xBuffer = new GpuBuffer('float32', [1, 2, 3]);
-const y1Buffer = new GpuBuffer('float32', [1, 2, 3]);
-const y2Buffer = new GpuBuffer('float32', [2, 3, 4]);
+const xBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const y1Buffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const y2Buffer = new GpuGrowingBuffer('float32', [2, 3, 4]);
 
 const rect = new SeriesRangeRect(xBuffer, y1Buffer, y2Buffer)
     .setColor(Color.lightBlue)
@@ -77,9 +77,9 @@ A range line series requires three GPU buffers:
 - `y2: GpuBuffer<'float32'>` — the upper y-values
 
 ```ts
-const xBuffer = new GpuBuffer('float32', [1, 2, 3]);
-const y1Buffer = new GpuBuffer('float32', [1, 2, 3]);
-const y2Buffer = new GpuBuffer('float32', [2, 3, 4]);
+const xBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const y1Buffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const y2Buffer = new GpuGrowingBuffer('float32', [2, 3, 4]);
 
 const line = new SeriesRangeLine(xBuffer, y1Buffer, y2Buffer)
     .setColor(Color.black)

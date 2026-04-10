@@ -1,5 +1,5 @@
-import type { LayoutNode, Context, IGpuBuffer } from '@tomsoftware/webgl-lib';
-import { Color, Matrix3x3, Vector4, Vector2, GpuNumber, GpuBuffer } from '@tomsoftware/webgl-lib';
+import type { LayoutNode, Context, AttributeBuffer } from '@tomsoftware/webgl-lib';
+import { Color, Matrix3x3, Vector4, Vector2, GpuNumber, GpuFixBuffer } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from './drawable-series';
 import { Scale } from './scales/scale';
 
@@ -9,15 +9,15 @@ export class SeriesRangeRect implements DrawableSeries {
     protected colorValue2 = new Vector4(1, 0.4, 0, 1);
     protected bBox = new Vector4(0, 0, 1, 1);
 
-    protected x: IGpuBuffer;
-    protected y1: IGpuBuffer; // lower value
-    protected y2: IGpuBuffer; // upper value
+    protected x: AttributeBuffer;
+    protected y1: AttributeBuffer; // lower value
+    protected y2: AttributeBuffer; // upper value
 
     /** width of each bar in data-units */
     protected barWidth = 1;
 
-    private indexBuffer = new GpuBuffer('uint16', 6, 1);
-    private vertexOffset = new GpuBuffer('float32', 4, 2);
+    private indexBuffer = new GpuFixBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuFixBuffer('float32', 4, 2);
 
     private static IdBar = 'gpu-series-range-rect';
 
@@ -27,7 +27,7 @@ export class SeriesRangeRect implements DrawableSeries {
      * @param y1 Lower values
      * @param y2 Upper values
      */
-    constructor(x: IGpuBuffer, y1: IGpuBuffer, y2: IGpuBuffer) {
+    constructor(x: AttributeBuffer, y1: AttributeBuffer, y2: AttributeBuffer) {
         this.x = x;
         this.y1 = y1;
         this.y2 = y2;

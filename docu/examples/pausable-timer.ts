@@ -1,42 +1,64 @@
 export class PausableTimer {
-  private start: number;
-  private pauseStart: number;
-  private paused: number;
-  private isPaused: boolean;
+    private callback: (t: number) => void;
+    private interval: number;
 
-  constructor(isPaused: boolean = false) {
-    this.start = performance.now();
-    this.pauseStart = 0;
-    this.paused = 0;
-    this.isPaused = isPaused;
-  }
+    private timerId: any = null;
+    private running = false;
 
-  public pause() {
-    if (!this.isPaused) {
-      this.isPaused = true;
-      this.pauseStart = performance.now();
+    private startTime = 0;       // Timestamp, when the timer was last started or resumed
+    private accumulated = 0;     // Sum of all elapsed time intervals while the timer was running, excluding the current interval if running
+
+    constructor(func: (t: number) => void, interval: number, startEnabled = false) {
+        this.callback = func;
+        this.interval = interval;
+        if (startEnabled) {
+            this.resume();
+        }
     }
-  }
 
-  public resume() {
-    if (this.isPaused) {
-      this.isPaused = false;
-      this.paused += performance.now() - this.pauseStart;
-      this.pauseStart = 0;
+    public enable(enable: boolean) {
+        if (enable && !this.running) {
+            this.resume();
+        } else if (!enable && this.running) {
+            this.pause();
+        }
     }
-  }
 
-  public reset() {
-    this.start = performance.now();
-    this.pauseStart = 0;
-    this.paused = 0;
-  }
+    public resume() {
+        this.running = true;
+        this.startTime = performance.now();
 
-  /** returns time in seconds */
-  public getTime() {
-    if (this.isPaused) {
-      return (this.pauseStart - this.start - this.paused) * 0.001;
+        this.timerId = setInterval(() => {
+            const now = performance.now();
+            const t = this.accumulated + (now - this.startTime);
+            this.callback(t * 0.001);
+        }, this.interval);
     }
-    return (performance.now() - this.start - this.paused) * 0.001;
-  }
+
+    public pause() {
+        if (!this.running) {
+          return;
+        }
+
+        this.running = false;
+
+        const now = performance.now();
+        this.accumulated += now - this.startTime;
+
+        clearInterval(this.timerId);
+        this.timerId = null;
+    }
+
+    public reset() {
+        this.accumulated = 0;
+        this.startTime = performance.now();
+    }
+
+    public dispose() {
+        if (this.timerId !== null) {
+            clearInterval(this.timerId);
+        }
+        this.running = false;
+        this.timerId = null;
+    }
 }

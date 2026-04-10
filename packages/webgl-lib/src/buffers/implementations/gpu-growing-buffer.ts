@@ -1,223 +1,65 @@
-import { ArrayUtilities } from '../array-utilities';
-import { GpuBufferView } from '../gpu-buffer-view';
-import { TypedArray } from '../i-gpu-buffer';
-import { IGpuBufferImpl } from './gpu-buffer-base';
+import { GpuReadableBuffer } from '../gpu-readable-buffer';
+import { TypedArray } from '../gpu-writable-buffer';
+import { GpuBufferBase } from './gpu-buffer-base';
+import { GpuBufferDataType, resolveGpuBufferDataType } from './gpu-buffer-types';
 
-export class GpuGrowingBuffer<T extends TypedArray> implements IGpuBufferImpl<T> {
-    protected buffer: T;
-    protected bufferOffset = 0;
-    protected bufferEnd = 0;
-    private activator: { new(size: number): T };
-    private typeName: string;
-
-    public componentsPerInstance: number;
-
-    /** return a view of the buffer with the current data */
-    public get data() {
-        return this.buffer.subarray(this.bufferOffset, this.bufferEnd) as T;
+export class GpuGrowingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
+    public constructor(type: GpuBufferDataType, size: number, componentsPerInstance?: number);
+    public constructor(type: GpuBufferDataType, values: number[]);
+    public constructor(
+        type: GpuBufferDataType,
+        sizeOrValues: number | number[],
+        componentsPerInstance = 1,
+    ) {
+        const info = resolveGpuBufferDataType(type);
+        super(
+            info.arrayType as unknown as { new(size: number): T },
+            sizeOrValues,
+            type,
+            componentsPerInstance,
+            info.setAttribPointer
+        );
     }
-
-    /** return a value of a given item */
-    public get(index: number): number[] {
-        const offset = this.bufferOffset + index * this.componentsPerInstance;
-        return Array.from(this.buffer.subarray(offset, offset + this.componentsPerInstance));
-    }
-
-    public constructor(activator: { new(size: number): T }, size: number, typeName: string, componentsPerInstance : number) {
-        this.buffer = new activator(size * componentsPerInstance);
-        this.typeName = typeName;
-        this.bufferEnd = 0;
-        this.activator = activator;
-        this.componentsPerInstance = componentsPerInstance;
-    }
-
-    public get capacity() {
-        return this.buffer.length;
-    } 
 
     /** Makes sure the current buffer can handle the given number of items */
-    public ensureCapacity(size: number) {
-        if (this.buffer.length >= this.bufferOffset + size) {
+    protected doEnsureCapacity(size: number): void {
+        if (this.buffer.length >= size) {
             // the buffer is large enough
             return;
         }
 
-        console.log('GpuBuffer<' + this.typeName + '>: new capacity:', size);
+        console.trace('GpuGrowingBuffer<' + this.typeName + '>: new capacity:', size);
 
         // make the buffer larger
-        const newBuffer = new this.activator(this.bufferOffset + size);
+        const newBuffer = new this.activator(size);
         newBuffer.set(this.buffer);
         this.buffer = newBuffer;
     }
 
-    /** Makes sure the given number of new items fits into the internal buffer */
-    public increaseCapacity(newItems: number = 1): this {
-        newItems = Math.max(0, newItems);
-
-        if (this.buffer.length >= this.bufferEnd + newItems) {
-            // the buffer is large enough
-            return this;
-        }
-
-        // do not increase the buffer by less than 32 items
-        newItems = Math.max(Math.max(newItems, 32), (this.buffer.length + 1) >> 1);
-
-        this.ensureCapacity(this.buffer.length + Math.max(32, newItems));
-
-        return this;
-    }
-
-    private pushValue(value: number) {
-        if (this.bufferEnd >= this.buffer.length) {
-            this.increaseCapacity();
-        }
-
-        this.buffer[this.bufferEnd] = value;
-        this.bufferEnd++;
-    }
-
     /** Add a list of values to the buffer */
-    public pushRange(values: number[] | TypedArray) {
-        this.increaseCapacity(values.length);
+    protected doPushRange(values: number[] | TypedArray): void {
+        this.doEnsureCapacity(this.validLength + values.length);
 
         for (let i = 0; i < values.length; i++) {
-            this.pushValue(values[i]);
+            this.buffer[this.validLength] = values[i];
+            this.validLength++;
         }
     }
 
-    public clear() {
-        this.bufferOffset = 0;
-        this.bufferEnd = 0;
+    public get(index: number): number[] {
+        const offset = (index * this.componentsPerInstance);
+        return Array.from(this.buffer.subarray(offset, offset + this.componentsPerInstance));
     }
 
-   /** Return the closes index a given value matches in the buffer-values */
-    public binarySearch(value: number): number | null {
-        var range = ArrayUtilities.guessIndexRange(this.buffer, this.bufferOffset, this.bufferEnd - 1, value);
-        if (range == null) {
-            // value is outside of the arrays values
-            if (value < this.buffer[this.bufferOffset]) {
-                // value is before the first element
-                return this.bufferOffset;
-            }
-            // value is after last element
-            return this.bufferEnd - 1;
+    /** Creates a new buffer from an existing readable buffer, applying a transformation function to each element */
+    static generateFrom(type: GpuBufferDataType, source: GpuReadableBuffer, func: (srcValue: number) => number) {
+        const newBuffer = new GpuGrowingBuffer(type, source.length);
+
+        for (let i = 0; i < source.length; i++) {
+            const srcValue = source.get(i);
+            newBuffer.push(func(srcValue[0]));
         }
 
-        // value is inside the array -> get best index
-        const pos = ArrayUtilities.binarySearch(this.buffer, range[0], range[1], value);
-        const low = pos[0];
-        const high = pos[1];
-
-        // check what is closer low or high to given value
-        if (Math.abs(value - this.buffer[low]) < Math.abs(value - this.buffer[high])) {
-            return low;
-        }
-
-        return high;
-    }
-
-    public setVertexAttribPointer(
-            gl: WebGLRenderingContext,
-            variableLoc: number,
-            angleExtension: ANGLE_instanced_arrays | null,
-            bufferView: GpuBufferView,
-            type: GLenum,
-            bytesPerInstance: number,
-        ) {
-
-        // Turn on the attribute
-        gl.enableVertexAttribArray(variableLoc);
-
-        // Tell the attribute how to get data out of idBuffer (ARRAY_BUFFER)
-        const normalize = false; // don't normalize the data
-        const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-
-        gl.vertexAttribPointer(
-            variableLoc,
-            this.componentsPerInstance,
-            type,
-            normalize,
-            stride,
-            bufferView.offset * bytesPerInstance
-        );
-
-        angleExtension?.vertexAttribDivisorANGLE(variableLoc, bufferView.vertexAttribDivisor);
-   }
-
-    /** Return the size = (count * componentsPerIteration) of the buffer */
-    public get length(): number {
-        return this.bufferEnd - this.bufferOffset;
-    }
-
-    /** Return the number of items in the buffer */
-    public get count(): number {
-        return this.length / this.componentsPerInstance;
-    }
-
-    /** Return the fist element */
-    public get first() {
-        if (this.length <= 0) {
-            return null;
-        }
-
-        return this.buffer[this.bufferOffset];
-    }
-
-    /** Return the last element */
-    public get last() {
-        if (this.length <= 0) {
-            return null;
-        }
-
-        return this.buffer[this.bufferEnd - 1];
-    }
-
-    public generate(calc: (srcValue: number) => number) {
-        this.bufferOffset = 0;
-        this.bufferEnd = this.buffer.length;
-
-        const data = this.data;
-        for (let i = 0; i < data.length; i++) {
-            data[i] = calc(i);
-        }
-
-    }
-
-    /** Generate data from a given buffer: result[i] = calc(src[i]) */
-    protected static generateFromBase<T extends TypedArray, B extends GpuGrowingBuffer<T>>(
-        ctor: new (size: number) => B,
-        src: B,
-        calc: (srcValue: number) => number
-    ): B {
-        const srcData = src.data;
-        const newBuffer = new ctor(srcData.length);
-        newBuffer.bufferOffset = 0;
-        newBuffer.bufferEnd = srcData.length;
-        const newData = newBuffer.buffer;
-        
-        for (let i = 0; i < newData.length; i++) {
-            newData[i] = calc(srcData[i]);
-        }
-    
         return newBuffer;
     }
-
-     /** Generate buffer with the given number of elements: = calc(i) */
-    protected static generateBase<T extends TypedArray, B extends GpuGrowingBuffer<T>>(
-        ctor: new (size: number) => B,
-        length: number,
-        calc: (index: number) => number
-    ): B {
-        const newBuffer = new ctor(length);
-        newBuffer.bufferOffset = 0;
-        newBuffer.bufferEnd = length;
-        const newData = newBuffer.buffer;
-        for (let i = 0; i < length; i++) {
-            newData[i] = calc(i);
-        }
-    
-        return newBuffer;
-    }
-
-
 }

@@ -1,18 +1,17 @@
-import type { Context, IGpuBuffer} from '@tomsoftware/webgl-lib';
-import { Alignment, GpuBuffer, Color, LayoutArea, LayoutNode, 
-    GpuLetterText, Vector2, Vector4, 
-    Matrix3x3} from '@tomsoftware/webgl-lib';
+import type { Context, AttributeBuffer, GpuWritableBuffer, GpuReadableBuffer} from '@tomsoftware/webgl-lib';
+import { Alignment, GpuGrowingBuffer, Color, LayoutArea, LayoutNode, 
+    GpuLetterText, Vector2, Vector4, Matrix3x3} from '@tomsoftware/webgl-lib';
 import { Scale } from './scales/scale';
 
 class SeriesInfo {
-    public valuesX: IGpuBuffer;
-    public valuesY: IGpuBuffer;
+    public valuesX: GpuReadableBuffer;
+    public valuesY: GpuReadableBuffer;
     public scaleX: Scale;
     public scaleY: Scale;
     public color: number[];
     public pointSize: number;
 
-    public constructor(valuesX: IGpuBuffer, valuesY: IGpuBuffer, scaleX: Scale, scaleY: Scale, color: Color, pointSize: number) {
+    public constructor(valuesX: GpuReadableBuffer, valuesY: GpuReadableBuffer, scaleX: Scale, scaleY: Scale, color: Color, pointSize: number) {
         this.valuesX = valuesX;
         this.valuesY = valuesY;
         this.scaleX = scaleX;
@@ -46,7 +45,7 @@ export class TooltipMarkers {
         this.series.length = 0;
     }
 
-    public addSeries(xValues: IGpuBuffer, yValues: IGpuBuffer, scaleX: Scale, scaleY: Scale, color: Color, pointSize = 8) {
+    public addSeries(xValues: GpuReadableBuffer, yValues: GpuReadableBuffer, scaleX: Scale, scaleY: Scale, color: Color, pointSize = 8) {
         this.series.push(new SeriesInfo(xValues, yValues, scaleX, scaleY, color, pointSize));
     }
 
@@ -78,7 +77,7 @@ export class TooltipMarkers {
 
             // get the best fitting value from the time-axis
             const timeValue = series.scaleX.valueAt(chartArea.left, position.x, chartArea.right);
-            const timeIndex = series.valuesX.binarySearch(timeValue);
+            const timeIndex = series.valuesX.findIndex(timeValue);
             if (timeIndex == null) {
                 continue;
             }
@@ -123,10 +122,10 @@ export class TooltipMarkers {
         this.pointsSize.clear();
     }
 
-    private pointsX = new GpuBuffer('float32', 10);
-    private pointsY = new GpuBuffer('float32', 10);
-    private pointsColor = new GpuBuffer('float32', 10, 4);
-    private pointsSize = new GpuBuffer('float32', 10);
+    private pointsX = new GpuGrowingBuffer('float32', 10);
+    private pointsY = new GpuGrowingBuffer('float32', 10);
+    private pointsColor = new GpuGrowingBuffer('float32', 10, 4);
+    private pointsSize = new GpuGrowingBuffer('float32', 10);
     private bbox = new Vector4(0, 0, 1, 1);
 
     private drawPoints(context: Context, chartArea: LayoutArea) {
@@ -180,5 +179,4 @@ export class TooltipMarkers {
             gl_FragColor = vColor;
           }
         `;
-
 }

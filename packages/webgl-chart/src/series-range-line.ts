@@ -1,5 +1,5 @@
-import type { LayoutNode, Context, IGpuBuffer } from '@tomsoftware/webgl-lib';
-import { Color, GpuBuffer, Matrix3x3, Vector4, Vector2 } from '@tomsoftware/webgl-lib';
+import type { LayoutNode, Context, AttributeBuffer } from '@tomsoftware/webgl-lib';
+import { Color, GpuFixBuffer, Matrix3x3, Vector4, Vector2 } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from './drawable-series';
 import { Scale } from './scales/scale';
 
@@ -8,19 +8,19 @@ export class SeriesRangeLine implements DrawableSeries {
     protected colorValue = new Vector4(0, 0.4, 1, 1);
     protected bBox = new Vector4(0, 0, 1, 1);
 
-    protected x: IGpuBuffer;
-    protected y1: IGpuBuffer;
-    protected y2: IGpuBuffer;
+    protected x: AttributeBuffer;
+    protected y1: AttributeBuffer;
+    protected y2: AttributeBuffer;
 
     /** line width in pixels */
     protected lineWidth = 1;
 
-    private indexBuffer = new GpuBuffer('uint16', 2, 1);
-    private vertexOffset = new GpuBuffer('float32', 2, 2);
+    private indexBuffer = new GpuFixBuffer('uint16', 2, 1);
+    private vertexOffset = new GpuFixBuffer('float32', 2, 2);
 
     private static IdLine = 'gpu-series-range-line';
 
-    constructor(x: IGpuBuffer, y1: IGpuBuffer, y2: IGpuBuffer) {
+    constructor(x: AttributeBuffer, y1: AttributeBuffer, y2: AttributeBuffer) {
         this.x = x;
         this.y1 = y1;
         this.y2 = y2;

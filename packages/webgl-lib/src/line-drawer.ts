@@ -2,12 +2,12 @@ import type { Color } from './color';
 import type { Context } from './context';
 import type { Matrix3x3 } from './matrix-3x3';
 import type { Vector2 } from './vector-2';
-import { GpuBuffer } from './buffers/gpu-buffer';
+import { GpuGrowingBuffer } from './buffers/implementations/gpu-growing-buffer';
 
 /** Draw a batch of lines */
 export class LineDrawer {
-    private lines = new GpuBuffer('float32', 250, 2);
-    private colors = new GpuBuffer('float32', 1000, 4);
+    private lines = new GpuGrowingBuffer('float32', 250, 2);
+    private colors = new GpuGrowingBuffer('float32', 1000, 4);
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-line-drawer';

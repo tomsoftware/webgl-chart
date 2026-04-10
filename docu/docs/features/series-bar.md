@@ -23,8 +23,8 @@ A bar series requires two GPU buffers:
 - `y: GpuBuffer<'float32'>` — the heights of each bar
 
 ```ts
-const xBuffer = new GpuBuffer('float32', [1, 2, 3]);
-const yBuffer = new GpuBuffer('float32', [1, 2, 3]);
+const xBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const yBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
 
 const bar = new SeriesBar(xBuffer, yBuffer)
     .setColor(Color.blue)
@@ -63,8 +63,8 @@ bar.setOffsetX(0.05);
 Example:
 
 ```ts
-const xBuffer = new GpuBuffer('float32', [1, 2, 3]);
-const yBuffer = new GpuBuffer('float32', [1, 2, 3]);
+const xBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const yBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
 
 const bar = new SeriesBar(xBuffer, yBuffer, radiusBuffer)
     .setColor(Color.blue)

@@ -1,4 +1,4 @@
-import type { LayoutNode, Context, IGpuBuffer } from '@tomsoftware/webgl-lib';
+import type { LayoutNode, Context, AttributeBuffer } from '@tomsoftware/webgl-lib';
 import { Color ,Matrix3x3, Vector4, GpuNumber, Vector2 } from '@tomsoftware/webgl-lib';
 import type { Scale } from './scales/scale';
 import type { DrawableSeries } from './drawable-series';
@@ -6,15 +6,15 @@ import type { DrawableSeries } from './drawable-series';
 export class SeriesPoint implements DrawableSeries {
     protected colorValue = new Vector4(1, 0, 0, 0.5);
     protected bbox = new Vector4(0, 0, 1, 1);
-    protected time: IGpuBuffer;
-    protected data: IGpuBuffer;
+    protected time: AttributeBuffer;
+    protected data: AttributeBuffer;
     protected pointSize: GpuNumber = new GpuNumber(2);
     private minMaxPointSizeCache: number[] = [];
   
     /** this is a unique id to identifies this shader programs */
     private static IdPoint = 'gpu-series-point';
 
-    constructor(time: IGpuBuffer, data: IGpuBuffer) {
+    constructor(time: AttributeBuffer, data: AttributeBuffer) {
         this.time = time;
         this.data = data;
     }

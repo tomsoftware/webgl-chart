@@ -3,7 +3,7 @@
 import { ref } from 'vue';
 
 import { Chart, Utilities, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Matrix3x3, GpuBuffer, GpuText, LayoutCell, VerticalLayout,
+import { Matrix3x3, GpuGrowingBuffer, GpuText, LayoutCell, VerticalLayout,
   HorizontalLayout, ScreenPosition, IntersectedLayout, LayoutBorder,
   Color, Font, Alignment, EventDispatcher, EventTypes, RectDrawer } from '@tomsoftware/webgl-lib';
 import {SeriesPoint, VerticalAxis, VerticalAxisOrientation,
@@ -25,11 +25,11 @@ const scaleY = new Scale(-10, 10);
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
 
-const time = new GpuBuffer('float32', itemCount)
+const time = new GpuGrowingBuffer('float32', itemCount)
     .generate((i) => i * 0.001); // in seconds
 
-const data1 = GpuBuffer.generateFrom('float32', time, (t) => Generators.generateSin(t));
-const data2 = GpuBuffer.generateFrom('float32', time, (t) => Generators.generateEKG(t * 10) * 10);
+const data1 = GpuGrowingBuffer.generateFrom('float32', time, (t) => Generators.generateSin(t));
+const data2 = GpuGrowingBuffer.generateFrom('float32', time, (t) => Generators.generateEKG(t * 10) * 10);
 
 // generate series data
 const series1 = new SeriesPoint(time, data1)

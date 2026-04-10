@@ -153,7 +153,7 @@ Finds the closest matching index for a given value using binary search.
 
 
 
-## GpuBuffer('float32')
+## GpuGrowingBuffer('float32')
 
 A concrete buffer implementation using 32‑bit floating‑point numbers (`Float32Array`).
 
@@ -216,16 +216,16 @@ Creates a new float buffer of the given length, filling it using a callback.
 
 ```ts
 // Create with initial values
-const positions = new GpuBuffer('float32',
+const positions = new GpuGrowingBuffer('float32',
     [3, 1.4, 1.5, 9, 2.6],
 );
 
 // Create with size only
-const colors = new GpuBuffer('float32', 1000, 4);
+const colors = new GpuGrowingBuffer('float32', 1000, 4);
 // 1000 items, 4 components each (RGBA)
 
 // Generate 256 values using callback
-const indices = GpuBuffer('float32', numBars).generate(256, i => i);
+const indices = GpuGrowingBuffer('float32', numBars).generate(256, i => i);
 ```
 
 ---

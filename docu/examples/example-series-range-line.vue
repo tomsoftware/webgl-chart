@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuBuffer, LayoutCell,Color, EventDispatcher} from '@tomsoftware/webgl-lib';
+import { GpuGrowingBuffer, LayoutCell,Color, EventDispatcher} from '@tomsoftware/webgl-lib';
 import { Scale, BasicChartLayout, SeriesRangeLine} from '@tomsoftware/webgl-chart';
 
 // generate time data
 const itemCount = 300;
-const time = new GpuBuffer('float32', itemCount)
+const time = new GpuGrowingBuffer('float32', itemCount)
     .generate((i) => i * 0.1); // in seconds
 
 // generate data
-const upperData = GpuBuffer.generateFrom('float32', time, (t) => Math.sin(t) + 0.2);
-const lowerData = GpuBuffer.generateFrom('float32', time, (t) => Math.sin(t) - 0.2);
+const upperData = GpuGrowingBuffer.generateFrom('float32', time, (t) => Math.sin(t) + 0.2);
+const lowerData = GpuGrowingBuffer.generateFrom('float32', time, (t) => Math.sin(t) - 0.2);
 
 // create area-series
 const rects = new SeriesRangeLine(time, upperData, lowerData)

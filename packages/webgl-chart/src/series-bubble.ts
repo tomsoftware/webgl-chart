@@ -1,5 +1,5 @@
-import type { LayoutNode, Context, GpuBuffer } from '@tomsoftware/webgl-lib';
-import { Color, GpuBuffer, Matrix3x3, Vector4, GpuBuffer,  Vector2 } from '@tomsoftware/webgl-lib';
+import type { LayoutNode, Context, AttributeBuffer } from '@tomsoftware/webgl-lib';
+import { Color, Matrix3x3, Vector4, GpuFixBuffer, Vector2 } from '@tomsoftware/webgl-lib';
 import type { DrawableSeries } from './drawable-series';
 import { Scale } from './scales/scale';
 
@@ -10,19 +10,19 @@ export class SeriesBubble implements DrawableSeries {
     /** scaling of the circles */
     protected scaling = 1;
     protected bBox = new Vector4(0, 0, 1, 1);
-    protected x: GpuBuffer;
-    protected y: GpuBuffer;
-    protected radius: GpuBuffer;
+    protected x: AttributeBuffer;
+    protected y: AttributeBuffer;
+    protected radius: AttributeBuffer;
 
     // base instance data
-    private indexBuffer = new GpuBuffer('uint16', 6, 1);
-    private vertexOffset = new GpuBuffer('float32', 4, 2);
-    private quadTexcoords = new GpuBuffer('float32', 4, 2);
+    private indexBuffer = new GpuFixBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuFixBuffer('float32', 4, 2);
+    private quadTexcoords = new GpuFixBuffer('float32', 4, 2);
 
     /** this is a unique id to identifies this shader programs */
     private static IdCircle = 'gpu-series-bubble';
 
-    constructor(x: GpuBuffer, y: GpuBuffer, radius: GpuBuffer) {
+    constructor(x: AttributeBuffer, y: AttributeBuffer, radius: AttributeBuffer) {
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -64,14 +64,6 @@ export class SeriesBubble implements DrawableSeries {
     public get bubbleScaling(): number {
         return this.scaling;
     }
-
-    /** dispose data */
-    public clear() {
-        this.x?.clear();
-        this.y?.clear();
-        this.radius?.clear();
-    }
-
 
     // Vertex shader for instanced circle drawing
     private static vertexShaderCircle = `

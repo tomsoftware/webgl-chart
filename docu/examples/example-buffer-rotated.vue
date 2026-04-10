@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { Generators } from './generators';
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuBuffer, LayoutCell, Color, EventDispatcher, } from '@tomsoftware/webgl-lib';
+import { LayoutCell, Color, EventDispatcher, GpuRingBuffer, } from '@tomsoftware/webgl-lib';
 import { SeriesPoint, BasicChartLayout, Scale } from '@tomsoftware/webgl-chart';
 import { PausableTimer} from './pausable-timer';
-import { ref } from 'vue';
+import { Generators } from './generators';
+import { ref, watch } from 'vue';
 
 let pauseAnimation = ref<boolean>(true);
 let numPoints = ref<number>(0);
 
 // generate time data - 
-const time = new GpuBuffer('float32', 1000, 1, /* rotated: */ true);
-const data1 = new GpuBuffer('float32', 1000, 1, /* rotated: */ true);
+const time = new GpuRingBuffer('float32', 1000, 1);
+const data1 = new GpuRingBuffer('float32', 1000, 1);
 
 // generate series data
 const series1 = new SeriesPoint(time, data1)
@@ -57,19 +57,8 @@ function onBind(element: HTMLElement | null): void {
 // manage chart options
 myChart.setMaxFrameRate(12);
 
-const timer = new PausableTimer(false);
-
 // add new data point every 100ms
-setInterval(() => {
-  if (pauseAnimation.value) {
-    timer.pause();
-    return;
-  } else {
-    timer.resume();
-  }
-
-  const t = timer.getTime();
-
+const timer = new PausableTimer((t) => {
   // Add new values to the buffer; it grows automatically as needed.
   for (let i = 0; i < 10; i++) {
     const subTime = t + i * 0.01;
@@ -79,12 +68,12 @@ setInterval(() => {
 
   // update scale, having 4% padding on the right
   scaleX.max = Math.max(scaleX.max, t + scaleX.range * 0.04);
-  scaleX.min = Math.min(scaleX.min, time.first ?? 0);
+  scaleX.min = Math.min(scaleX.min, time.first[0] ?? 0);
 
   // read number of points in buffer
   numPoints.value = data1.count;
 
-}, 100);
+}, 100, !pauseAnimation.value);
 
 /** reset the chart data */
 function clearData() {
@@ -93,6 +82,13 @@ function clearData() {
   timer.reset();
   scaleX.max = 4;
 }
+
+// map pauseAnimation to timer state
+watch(pauseAnimation, (value) => {
+  if (timer) {
+    timer.enable(!value); 
+  }
+});
 
 </script>
 

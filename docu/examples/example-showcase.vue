@@ -2,19 +2,19 @@
 
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Generators } from './generators';
-
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { Matrix3x3, GpuBuffer, GpuText, LayoutCell, VerticalLayout, 
-  ScreenPosition, Color, Alignment, EventDispatcher, Font} from '@tomsoftware/webgl-lib';
+import { Matrix3x3, GpuText, LayoutCell, VerticalLayout, 
+  ScreenPosition, Color, Alignment, EventDispatcher, Font,
+  GpuGrowingBuffer} from '@tomsoftware/webgl-lib';
 import { SeriesPoint, Scale, Annotations, SeriesLine, BasicChartLayout, SeriesBar } from '@tomsoftware/webgl-chart';
 
 let pauseAnimation = ref<boolean>(false);
 
 // generate time data
-const time = new GpuBuffer('float32', 1);
-const lineDate1 = new GpuBuffer('float32', 1);
-const pointData = new GpuBuffer('float32', 1);
-const lineData2 = new GpuBuffer('float32', 1);
+const time = new GpuGrowingBuffer('float32', 1);
+const lineDate1 = new GpuGrowingBuffer('float32', 1);
+const pointData = new GpuGrowingBuffer('float32', 1);
+const lineData2 = new GpuGrowingBuffer('float32', 1);
 
 // generate series data
 const series1 = new SeriesBar(time, lineDate1)
