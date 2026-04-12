@@ -6,7 +6,7 @@ export interface GpuReadableBuffer extends AttributeBuffer {
   readonly data: ArrayBufferView;
   /** returns the index of a given value. -1 if not found */
   findIndex(value: number): number;
-  /** returns one logical item (based on componentsPerInstance) */
+  /** returns one logical item (based on componentsPerAttribute) */
   get(index: number): number[];
   /** returns the values of the first component of the item */
   readonly first: number[];

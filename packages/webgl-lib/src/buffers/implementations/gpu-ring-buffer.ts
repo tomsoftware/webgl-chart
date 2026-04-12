@@ -10,20 +10,23 @@ export class GpuRingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
     /** The current position in the buffer where new data will be written */
     protected writePosition: number = 0;
 
-    public constructor(type: GpuBufferDataType, size: number, componentsPerInstance?: number);
+    public constructor(type: GpuBufferDataType, size: number, attributeSize?: number, componentsPerAttribute?: number);
     public constructor(type: GpuBufferDataType, values: number[]);
     public constructor(
         type: GpuBufferDataType,
         sizeOrValues: number | number[],
-        componentsPerInstance = 1,
+        attributeSize?: number,
+        componentsPerAttribute?: number
     ) {
         const info = resolveGpuBufferDataType(type);
         super(
             info.arrayType as unknown as { new(size: number): T },
             sizeOrValues,
             type,
-            componentsPerInstance,
-            info.setAttribPointer
+            attributeSize ?? info.defaultAttributeSize,
+            componentsPerAttribute ?? info.defaultComponentsPerAttribute,
+            info.glType,
+            info.bytesPerComponent
         );
     }
 
@@ -58,7 +61,7 @@ export class GpuRingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
     }
 
     public get(index: number): number[] {
-        const offset = (index * this.componentsPerInstance) % this.buffer.length;
-        return Array.from(this.buffer.subarray(offset, offset + this.componentsPerInstance));
+        const offset = (index * this.totalComponents) % this.buffer.length;
+        return Array.from(this.buffer.subarray(offset, offset + this.totalComponents));
     }
 }

@@ -4,20 +4,23 @@ import { GpuBufferBase } from './gpu-buffer-base';
 import { GpuBufferDataType, resolveGpuBufferDataType } from './gpu-buffer-types';
 
 export class GpuGrowingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
-    public constructor(type: GpuBufferDataType, size: number, componentsPerInstance?: number);
+    public constructor(type: GpuBufferDataType, size: number, attributeSize?: number, componentsPerAttribute?: number);
     public constructor(type: GpuBufferDataType, values: number[]);
     public constructor(
         type: GpuBufferDataType,
         sizeOrValues: number | number[],
-        componentsPerInstance = 1,
+        attributeSize?: number,
+        componentsPerAttribute?: number
     ) {
         const info = resolveGpuBufferDataType(type);
         super(
             info.arrayType as unknown as { new(size: number): T },
             sizeOrValues,
             type,
-            componentsPerInstance,
-            info.setAttribPointer
+            attributeSize ?? info.defaultAttributeSize,
+            componentsPerAttribute ?? info.defaultComponentsPerAttribute,
+            info.glType,
+            info.bytesPerComponent
         );
     }
 
@@ -47,8 +50,8 @@ export class GpuGrowingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
     }
 
     public get(index: number): number[] {
-        const offset = (index * this.componentsPerInstance);
-        return Array.from(this.buffer.subarray(offset, offset + this.componentsPerInstance));
+        const offset = (index * this.totalComponents);
+        return Array.from(this.buffer.subarray(offset, offset + this.totalComponents));
     }
 
     /** Creates a new buffer from an existing readable buffer, applying a transformation function to each element */

@@ -23,7 +23,7 @@ import ExampleAxisGrid from '../../examples/example-axis-grid.vue';
 import ExampleAxisOrientation from '../../examples/example-axis-orientation.vue';
 import ExampleAisTickFormat from '../../examples/example-axis-tick-format.vue';
 import ExampleBufferPush from '../../examples/example-buffer-push.vue';
-import ExampleBufferRotated from '../../examples/example-buffer-rotated.vue';
+import ExampleBufferRing from '../../examples/example-buffer-ring.vue';
 
 export default defineClientConfig({
   enhance({ app }) {
@@ -51,7 +51,7 @@ export default defineClientConfig({
     app.component('example-axis-orientation', ExampleAxisOrientation);
     app.component('example-axis-tick-format', ExampleAisTickFormat);
     app.component('example-buffer-push', ExampleBufferPush);
-    app.component('example-buffer-rotated', ExampleBufferRotated);
+    app.component('example-buffer-ring', ExampleBufferRing);
   },
   setup() {},
   rootComponents: [],

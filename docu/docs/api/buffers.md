@@ -1,6 +1,6 @@
 # Buffers
 
-Buffers are used to store the data and manage the mapping between JavaScript and WebGL / GPU data. All buffer types inherit from `GpuBaseBuffer`, providing a consistent API across different data types.
+Buffers are used to store the data and manage the mapping between JavaScript and WebGL / GPU data. All buffer implementations conform to the `GpuWritableBuffer` interface, providing a consistent API across different data types and behaviors.
 
 
 ## Buffer Types
@@ -13,9 +13,9 @@ Buffers are used to store the data and manage the mapping between JavaScript and
 | `GpuBuffer<'uint32'>`  | Unsigned 32 Bit | [0...2^23-1] Integer Numbers |
 | `GpuBuffer<'mat3x3'>`  | 9 × 32 Bit Float | 3×3 Floating Point Matrices |
 
-## GpuBaseBuffer
+## GpuWritableBuffer Interface
 
-The base class for all GPU buffer implementations. Provides core functionality for memory management, data access, and WebGL integration.
+The common interface implemented by all GPU buffer types. Provides functionality for memory management, data access, and WebGL integration.
 
 
 ### Read-Only Properties (Getters)
@@ -24,10 +24,10 @@ Property  |  Type | Description
 |---------| ------|------------
 | `data` | TypedArray | Returns a subarray view containing only the valid data
 | `dataVersion` | number | Version counter that increments whenever data changes. Useful for caching optimizations
-| `length` | number | Total size in components: (count * componentsPerInstance)
+| `length` | number | Total size in components: (count * componentsPerAttribute)
 | `count` | number | Number of logical data items in the buffer
-| `first` | number | null | Returns the first element, or null if buffer is empty
-| `last` | number | null | Returns the last element, or null if buffer is empty
+| `first` | number[] | Returns the first element, or empty array if buffer is empty
+| `last` | number[] | Returns the last element, or empty array if buffer is empty
 
 
 ---
@@ -37,40 +37,40 @@ Property  |  Type | Description
 #### Data Access
 
 ```ts
-get(index: number): TypedArray
+get(index: number): number[]
 ```
 
-Returns the subarray representing the item at the given index.
+Returns the array representing the item at the given index.
 
 | Parameter | Type   | Description            |
 |---------- |--------|------------------------|
 | index     | number | Item index to retrieve |
 
-**Returns:** `TypedArray` : Subarray containing the components for that item
+**Returns:** `number[]` : Array containing the components for that item
 
 ---
 
 #### Capacity Management
 
 ```ts
-ensureCapacity(size: number = 1): this
+ensureCapacity(size: number): this
 ```
 
-Ensures the buffer can handle the specified number of additional items.
+Ensures the buffer can handle at least the specified total number of items.
 
 | Parameter | Type   | Description                          |
 |---------- |--------|--------------------------------------|
-| size      | number | Minimum number of items to accommodate |
+| size      | number | Minimum total number of items to accommodate |
 
 **Returns:** `this` : Enables method chaining
 
 ---
 
 ```ts
-increaseCapacity(newItems: number = 1): this
+increaseCapacity(newItems: number): this
 ```
 
-Ensures space for new items. Automatically increases buffer size by at least **32 items** or **50% growth**, whichever is larger.
+Ensures space for additional items. Growth strategy depends on the implementation.
 
 | Parameter | Type   | Description                          |
 |---------- |--------|--------------------------------------|
@@ -83,7 +83,7 @@ Ensures space for new items. Automatically increases buffer size by at least **3
 #### Data Manipulation
 
 ```ts
-push(...values: number[]): this
+push(...values: number[]): void
 ```
 
 Adds one or more individual values to the buffer.
@@ -92,12 +92,10 @@ Adds one or more individual values to the buffer.
 |---------- |-----------|--------------------|
 | values    | number[]  | Values to append   |
 
-**Returns:** `this`
-
 ---
 
 ```ts
-pushRange(values: number[] | TypedArray): this
+pushRange(values: number[] | TypedArray): void
 ```
 
 Adds a range of values to the buffer.
@@ -106,17 +104,13 @@ Adds a range of values to the buffer.
 |---------- |---------------------------|--------------------------|
 | values    | number[] \| TypedArray    | Array of values to append |
 
-**Returns:** `this`
-
 ---
 
 ```ts
-clear(): this
+clear(): void
 ```
 
 Resets the buffer, clearing all data while preserving allocated capacity.
-
-**Returns:** `this`
 
 ---
 
@@ -137,7 +131,7 @@ Replaces all buffer values using a callback function.
 #### Search
 
 ```ts
-findIndex(value: number): number | null
+findIndex(value: number): number
 ```
 
 Finds the closest matching index for a given value using binary search.
@@ -146,103 +140,97 @@ Finds the closest matching index for a given value using binary search.
 |---------- |--------|--------------------|
 | value     | number | Value to search for |
 
-**Returns:** `number | null` : Closest matching index, or `null` if the value is outside the range
+**Returns:** `number` : Closest matching index, or -1 if the value is outside the range
 
 ---
 
+## Buffer Implementations
 
+There are several buffer implementations, each with different capacity management strategies:
 
+- **GpuFixBuffer**: Fixed-size buffer that does not resize. Useful for static data.
+- **GpuGrowingBuffer**: Dynamically growing buffer. Suitable for data that grows over time.
+- **GpuRingBuffer**: Circular buffer that wraps around when full. Ideal for streaming data.
 
-## GpuGrowingBuffer('float32')
+### GpuFixBuffer
 
-A concrete buffer implementation using 32‑bit floating‑point numbers (`Float32Array`).
+A fixed-size buffer that does not resize and does not wrap. When the buffer is full, additional data is ignored or truncated.
 
----
-
-### Constructor
+#### Constructor
 
 ```ts
-// With initial values
-constructor(values: number[], componentsPerInstance?: number)
-
-// With size only
-constructor(size: number, componentsPerInstance?: number)
+constructor(type: GpuBufferDataType, size: number, componentsPerAttribute?: number);
+constructor(type: GpuBufferDataType, values: number[]);
 ```
 
-| Parameter              | Type      | Description                                      |
-|-----------------------|-----------|--------------------------------------------------|
-| values                | number[]  | Initial values (alternative to `size`)           |
-| size                  | number    | Initial buffer size                              |
-| componentsPerInstance | number    | Components per item (default: `1`)               |
+| Parameter              | Type               | Description                                      |
+|-----------------------|--------------------|--------------------------------------------------|
+| type                  | GpuBufferDataType | The data type of the buffer                      |
+| values                | number[]          | Initial values (alternative to `size`)           |
+| size                  | number            | Fixed buffer size                                |
+| componentsPerAttribute | number            | Components per item (default: `1`)               |
 
----
+#### Specific Behavior
 
-### Static Methods
+- Capacity is fixed and cannot be increased.
+- Pushing data beyond capacity results in warnings and data truncation.
+
+### GpuGrowingBuffer
+
+A buffer that grows dynamically as needed. Suitable for data that accumulates over time.
+
+#### Constructor
 
 ```ts
-static generateFrom(src: GpuBuffer, calc: (srcValue: number) => number): GpuBuffer<'float32'>
+constructor(type: GpuBufferDataType, size: number, componentsPerAttribute?: number);
+constructor(type: GpuBufferDataType, values: number[]);
 ```
 
-Creates a new float buffer by transforming values from an existing `GpuBuffer<'float32'>`.
+| Parameter              | Type               | Description                                      |
+|-----------------------|--------------------|--------------------------------------------------|
+| type                  | GpuBufferDataType | The data type of the buffer                      |
+| values                | number[]          | Initial values (alternative to `size`)           |
+| size                  | number            | Initial buffer size                              |
+| componentsPerAttribute | number            | Components per item (default: `1`)               |
+
+#### Specific Behavior
+
+- Automatically increases capacity by at least 32 items or 50% growth, whichever is larger.
+- Suitable for scenarios where data size is not known in advance.
+
+#### Static Methods
+
+```ts
+static generateFrom(type: GpuBufferDataType, src: GpuReadableBuffer, calc: (srcValue: number) => number): GpuGrowingBuffer
+```
+
+Creates a new buffer by transforming values from an existing readable buffer.
 
 | Parameter | Type                                   | Description                                |
 |---------- |-----------------------------------------|--------------------------------------------|
-| src       | `GpuBuffer<'float32'>`                        | Source buffer                              |
+| type      | GpuBufferDataType                      | Data type for the new buffer               |
+| src       | GpuReadableBuffer                      | Source buffer                              |
 | calc      | `(srcValue: number) => number`          | Mapping function applied to each value     |
 
-**Returns:** `GpuBuffer<'float32'>`
+**Returns:** `GpuGrowingBuffer`
 
 ---
 
 ```ts
-static generate(length: number, calc: (index: number) => number): GpuBuffer<'float32'>
+static generate(type: GpuBufferDataType, length: number, calc: (index: number) => number): GpuGrowingBuffer
 ```
 
-Creates a new float buffer of the given length, filling it using a callback.
+Creates a new buffer of the given length, filling it using a callback.
 
 | Parameter | Type                          | Description                                  |
 |---------- |-------------------------------|----------------------------------------------|
+| type      | GpuBufferDataType             | Data type for the new buffer                 |
 | length    | number                        | Number of generated values                   |
 | calc      | `(index: number) => number`   | Callback returning the value for each index  |
 
-**Returns:** `GpuBuffer<'float32'>`
+**Returns:** `GpuGrowingBuffer`
 
----
-
-
-### Usage Examples
-
-#### Creating a Buffer
-
-```ts
-// Create with initial values
-const positions = new GpuGrowingBuffer('float32',
-    [3, 1.4, 1.5, 9, 2.6],
-);
-
-// Create with size only
-const colors = new GpuGrowingBuffer('float32', 1000, 4);
-// 1000 items, 4 components each (RGBA)
-
-// Generate 256 values using callback
-const indices = GpuGrowingBuffer('float32', numBars).generate(256, i => i);
-```
-
----
-
-#### Adding Data
-
-
-```ts
-// Add single values
-buffer.push(1.0, 2.0, 3.0);
-
-// Add range of values
-buffer.pushRange([4.0, 5.0, 6.0, 7.0]);
-
-// Clear buffer (keeps capacity)
-buffer.clear();
-```
+#### Usage Examples
 
 <example-buffer-push />
 <details>
@@ -251,34 +239,52 @@ buffer.clear();
   @[code](../../examples/example-buffer-push.vue)
 </details>
 
-<example-buffer-rotated />
+### GpuRingBuffer
+
+A circular buffer that reuses fixed allocated memory. When the write pointer reaches the end, it wraps back to the beginning.
+
+#### Constructor
+
+```ts
+constructor(type: GpuBufferDataType, size: number, componentsPerAttribute?: number);
+constructor(type: GpuBufferDataType, values: number[]);
+```
+
+| Parameter              | Type               | Description                                      |
+|-----------------------|--------------------|--------------------------------------------------|
+| type                  | GpuBufferDataType | The data type of the buffer                      |
+| values                | number[]          | Initial values (alternative to `size`)           |
+| size                  | number            | Fixed buffer size                                |
+| componentsPerAttribute | number            | Components per item (default: `1`)               |
+
+#### Specific Behavior
+
+- Fixed capacity; data wraps around when full.
+- Older data is overwritten by new data.
+- Useful for sliding windows or real-time data streams.
+
+#### Additional Methods
+
+```ts
+clear(): this
+```
+
+Resets the buffer and write pointer to the beginning.
+
+**Returns:** `this`
+
+#### Usage Examples
+
+<example-buffer-ring />
 <details>
   <summary>Source</summary>
 
-  @[code](../../examples/example-buffer-rotated.vue)
+  @[code](../../examples/example-buffer-ring.vue)
 </details>
-
----
-
-#### Reading Data
-
-```ts
-// Get item at index
-const item = buffer.get(5); // Returns TypedArray
-
-// Access first/last
-const first = buffer.first;
-const last = buffer.last;
-
-// Iterate over data
-for (let i = 0; i < buffer.count; i++) {
-    const value = buffer.get(i);
-}
-```
-
 
 ## Performance Notes
 
 * **Data Versioning**: Use `dataVersion` to detect when buffer contents have changed. This enables efficient caching strategies in rendering pipelines.
-* **Capacity Growth**: Buffers grow automatically when needed. Pre-allocating sufficient capacity with the constructor can improve performance for known data sizes.
+* **Capacity Growth**: For GpuGrowingBuffer, pre-allocating sufficient capacity with the constructor can improve performance for known data sizes.
 * **Zero-Copy Views**: The data property returns a subarray view without copying, making it efficient for read operations.
+* **Choose the Right Implementation**: Use GpuFixBuffer for static data, GpuGrowingBuffer for growing datasets, and GpuRingBuffer for streaming data with fixed history.

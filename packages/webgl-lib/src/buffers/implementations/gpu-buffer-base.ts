@@ -1,37 +1,60 @@
 import { ArrayUtilities } from '../array-utilities';
 import { GpuBufferView } from '../gpu-buffer-view';
 import { GpuWritableBuffer, TypedArray } from '../gpu-writable-buffer';
-import { SetAttribPointer, TypedArrayConstructor } from './gpu-buffer-types';
+import { TypedArrayConstructor } from './gpu-buffer-types';
 
 /**
  * Shared typed-buffer implementation for growing and ring buffers.
  */
-export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritableBuffer{
+export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritableBuffer {
   public buffer: T;
   protected validLength = 0;
   protected readonly activator: TypedArrayConstructor<T>;
   protected readonly typeName: string;
-  protected readonly setAttribPointer: SetAttribPointer;
-  public readonly componentsPerInstance: number;
+
+  // General naming:
+  //   Attribute: one attribute variable in the shader
+  //   Component: one numeric value inside the attribute
+
+  /** number of components per attribute slot (e.g. 3 for vec3, 3 for each column of mat3) */
+  public readonly attributeSize: number;
+
+  /** number of attribute slots used by this GLSL attribute (e.g. 1 for vec3, 3 for mat3) */
+  public readonly componentsPerAttribute: number;
+
+  /** total number of components (attributeSize * componentsPerAttribute) */
+  public readonly totalComponents: number;
+
+  /** number of bytes per component element (e.g. 4 for float32) */
+  public readonly bytesPerComponent: number;
+
+  public readonly glType: number;
+
   protected currentDataVersion = -1;
 
   public constructor(
     activator: TypedArrayConstructor<T>,
     sizeOrValues: number | number[],
     typeName: string,
-    componentsPerInstance: number,
-    setAttribPointer: SetAttribPointer
+    attributeSize: number,
+    componentsPerAttribute: number,
+    glType: number,
+    bytesPerComponent: number
   ) {
     const size = typeof sizeOrValues === 'number' ? sizeOrValues : (sizeOrValues as number[]).length;
 
     const safeSize = Math.max(0, size ?? 0);
-    const safeComponents = Math.max(1, componentsPerInstance ?? 1);
+    const safeComponentsPerAttribute = Math.max(1, componentsPerAttribute ?? 1);
+    const safeBytesPerComponent = Math.max(1, bytesPerComponent ?? 1)
 
-    this.buffer = new activator(safeSize * safeComponents);
+    this.buffer = new activator(safeSize * safeComponentsPerAttribute);
     this.activator = activator;
     this.typeName = typeName;
-    this.componentsPerInstance = safeComponents;
-    this.setAttribPointer = setAttribPointer;
+    this.attributeSize = attributeSize;
+    this.componentsPerAttribute = safeComponentsPerAttribute;
+    this.glType = glType;
+    this.bytesPerComponent = safeBytesPerComponent;
+    this.totalComponents = attributeSize * safeComponentsPerAttribute;
 
     if (Array.isArray(sizeOrValues)) {
       this.pushRange(sizeOrValues);
@@ -55,7 +78,7 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
   }
 
   public get count(): number {
-    return Math.floor(this.validLength / this.componentsPerInstance);
+    return Math.floor(this.validLength / this.componentsPerAttribute);
   }
   
   public get first(): number[] {
@@ -147,8 +170,34 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
     angleExtension: ANGLE_instanced_arrays | null,
     bufferView: GpuBufferView
   ): void {
-    this.setAttribPointer(gl, variableLoc, angleExtension, bufferView, this.componentsPerInstance);
+
+    const bytesPerComponent = this.bytesPerComponent;
+    let stride = this.componentsPerAttribute * this.attributeSize * bytesPerComponent;
+    let offset = bufferView.offset * stride;
+  
+    if (this.componentsPerAttribute === 1) {
+      stride = 0;
+      offset = bufferView.offset * bytesPerComponent;
+    }
+
+    for (let i = 0; i < this.componentsPerAttribute; i++) {
+      const loc = variableLoc + i;
+
+      gl.enableVertexAttribArray(loc);
+
+      gl.vertexAttribPointer(
+        loc,
+        this.attributeSize,
+        this.glType,
+        false,
+        stride,
+        offset + i * this.attributeSize * bytesPerComponent
+      );
+
+      angleExtension?.vertexAttribDivisorANGLE(loc, bufferView.vertexAttribDivisor);
+    }
   }
+
 
   protected abstract doEnsureCapacity(size: number): void;
   protected abstract doPushRange(values: TypedArray | number[]): void;
