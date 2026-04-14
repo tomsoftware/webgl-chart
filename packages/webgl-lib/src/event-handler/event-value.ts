@@ -3,7 +3,8 @@ import type { Vector2 } from '../vector-2';
 export const enum EventTypes {
     Unknown,
     Wheel,
-    Pan
+    Pan,
+    MouseMove
 }
 
 export class EventValue {

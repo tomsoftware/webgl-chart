@@ -81,13 +81,13 @@ export class RectDrawer {
 
     /** returns the rectangle position for a given index */
     public getRectPos(index: number) {
-        const v = this.rectPos.get(index);
+        const v = this.rectPos.getAttributeAt(index);
         return new Vector2(v[0], v[1]);
     }
 
     /** returns the rectangle size for a given index */
     public getRectSize(index: number) {
-        const v = this.rectSize.get(index);
+        const v = this.rectSize.getAttributeAt(index);
         return new Vector2(v[0], v[1]);
     }
 

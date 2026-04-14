@@ -49,9 +49,8 @@ export class GpuGrowingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
         }
     }
 
-    public get(index: number): number[] {
-        const offset = (index * this.totalComponents);
-        return Array.from(this.buffer.subarray(offset, offset + this.totalComponents));
+    protected resolvePhysicalIndex(logicalIndex: number): number {
+        return logicalIndex * this.totalComponents;
     }
 
     /** Creates a new buffer from an existing readable buffer, applying a transformation function to each element */
@@ -59,7 +58,7 @@ export class GpuGrowingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
         const newBuffer = new GpuGrowingBuffer(type, source.length);
 
         for (let i = 0; i < source.length; i++) {
-            const srcValue = source.get(i);
+            const srcValue = source.getAttributeAt(i);
             newBuffer.push(func(srcValue[0]));
         }
 

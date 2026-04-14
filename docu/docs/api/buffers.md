@@ -26,8 +26,8 @@ Property  |  Type | Description
 | `dataVersion` | number | Version counter that increments whenever data changes. Useful for caching optimizations
 | `length` | number | Total size in components: (count * componentsPerAttribute)
 | `count` | number | Number of logical data items in the buffer
-| `first` | number[] | Returns the first element, or empty array if buffer is empty
-| `last` | number[] | Returns the last element, or empty array if buffer is empty
+| `firstAttribute` | number[] | Returns the first element, or empty array if buffer is empty
+| `lastAttribute` | number[] | Returns the last element, or empty array if buffer is empty
 
 
 ---
@@ -37,16 +37,20 @@ Property  |  Type | Description
 #### Data Access
 
 ```ts
-get(index: number): number[]
+getAttributeAt(index: number): number[]
 ```
 
-Returns the array representing the item at the given index.
+Retrieves the attribute at the given *logical* index.   
+Index `0` corresponds to the **oldest** stored attribute,   
+index `validLength - 1` to the **most recently** written one.   
+
+Each returned array contains exactly `componentsPerAttribute` numeric components.
 
 | Parameter | Type   | Description            |
 |---------- |--------|------------------------|
 | index     | number | Item index to retrieve |
 
-**Returns:** `number[]` : Array containing the components for that item
+**Returns:** `number[]` : Array containing the components for that attribute or an empty array `[]` for out of bounce.
 
 ---
 
@@ -174,6 +178,20 @@ constructor(type: GpuBufferDataType, values: number[]);
 
 - Capacity is fixed and cannot be increased.
 - Pushing data beyond capacity results in warnings and data truncation.
+
+####  Example
+
+Fix size buffer example where y-values getting updated by moving position of mouse courser. No new data-points are added.
+
+<example-buffer-write />
+<details>
+  <summary>Source</summary>
+
+  @[code](../../examples/example-buffer-write.vue)
+</details>
+
+
+
 
 ### GpuGrowingBuffer
 

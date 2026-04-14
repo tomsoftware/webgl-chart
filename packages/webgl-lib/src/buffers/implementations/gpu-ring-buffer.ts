@@ -60,8 +60,16 @@ export class GpuRingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
         return this;
     }
 
-    public get(index: number): number[] {
-        const offset = (index * this.totalComponents) % this.buffer.length;
-        return Array.from(this.buffer.subarray(offset, offset + this.totalComponents));
+    /** Converts a logical attribute index into the physical buffer index */
+    protected resolvePhysicalIndex(logicalIndex: number): number {
+        if (logicalIndex < 0 || logicalIndex >= this.validLength) {
+            throw new RangeError(`Index ${logicalIndex} out of range (0..${this.validLength - 1})`);
+        }
+
+        const oldest = (this.writePosition - this.validLength + this.buffer.length) % this.buffer.length;
+        const offset =  (oldest + logicalIndex) % this.buffer.length;
+        return offset * this.totalComponents;
     }
+
+
 }

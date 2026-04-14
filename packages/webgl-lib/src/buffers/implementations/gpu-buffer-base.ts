@@ -46,15 +46,16 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
     const safeSize = Math.max(0, size ?? 0);
     const safeComponentsPerAttribute = Math.max(1, componentsPerAttribute ?? 1);
     const safeBytesPerComponent = Math.max(1, bytesPerComponent ?? 1)
+    const totalComponents = attributeSize * safeComponentsPerAttribute;
 
-    this.buffer = new activator(safeSize * safeComponentsPerAttribute);
+    this.buffer = new activator(safeSize * totalComponents);
     this.activator = activator;
     this.typeName = typeName;
     this.attributeSize = attributeSize;
     this.componentsPerAttribute = safeComponentsPerAttribute;
     this.glType = glType;
     this.bytesPerComponent = safeBytesPerComponent;
-    this.totalComponents = attributeSize * safeComponentsPerAttribute;
+    this.totalComponents = totalComponents;
 
     if (Array.isArray(sizeOrValues)) {
       this.pushRange(sizeOrValues);
@@ -78,15 +79,15 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
   }
 
   public get count(): number {
-    return Math.floor(this.validLength / this.componentsPerAttribute);
+    return Math.floor(this.validLength / this.totalComponents);
   }
   
-  public get first(): number[] {
-    return this.get(0);
+  public get firstAttribute(): number[] {
+    return this.getAttributeAt(0);
   }
 
-  public get last(): number[] {
-    return this.get(this.count - 1);
+  public get lastAttribute(): number[] {
+    return this.getAttributeAt(this.count - 1);
   }
 
   public findIndex(value: number): number {
@@ -97,21 +98,21 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
 
     const minIndex = 0;
     const range = ArrayUtilities.guessIndexRange(
-      (index) => this.get(index)[0],
+      (index) => this.getAttributeAt(index)[0],
       minIndex,
       maxIndex,
       value,
     );
 
     if (range == null) {
-      if (value < this.get(minIndex)[0]) {
+      if (value < this.getAttributeAt(minIndex)[0]) {
         return minIndex;
       }
       return maxIndex;
     }
 
     const pos = ArrayUtilities.binarySearch(
-      (index) => this.get(index)[0],
+      (index) => this.getAttributeAt(index)[0],
       range[0],
       range[1],
       value,
@@ -120,8 +121,8 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
     const low = Math.max(minIndex, Math.min(maxIndex, pos[0]));
     const high = Math.max(minIndex, Math.min(maxIndex, pos[1]));
 
-    const lowDelta = Math.abs(value - this.get(low)[0]);
-    const highDelta = Math.abs(value - this.get(high)[0]);
+    const lowDelta = Math.abs(value - this.getAttributeAt(low)[0]);
+    const highDelta = Math.abs(value - this.getAttributeAt(high)[0]);
     return lowDelta <= highDelta ? low : high;
   }
 
@@ -164,6 +165,46 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
     return this;
   }
 
+  /**
+   * Returns a single component value of an attribute at the given logical index.
+   */
+  public getComponentAt(attributeIndex: number, componentIndex: number = 0): number {
+      const physical = this.resolvePhysicalIndex(attributeIndex);
+      const offset = physical + componentIndex;
+      return this.buffer[offset];
+  }
+
+  /**
+   * Returns the full attribute at the given logical index.
+  */
+  public getAttributeAt(attributeIndex: number): number[] {
+      const start = this.resolvePhysicalIndex(attributeIndex);
+      const end = start + this.componentsPerAttribute;
+
+      return Array.from(this.buffer.subarray(start, end));
+  }
+
+  /**
+   * Writes all components of an attribute at the given logical index.
+   */
+  public setAttributeAt(attributeIndex: number, values: number[]): void {
+      const start = this.resolvePhysicalIndex(attributeIndex);
+      for (let i = 0; i < this.componentsPerAttribute; i++) {
+          this.buffer[start + i] = values[i];
+      }
+      this.currentDataVersion++;
+  }
+
+  /**
+   * Writes a single component of an attribute at the given logical index.
+   */
+  public setComponentAt(attributeIndex: number, componentIndex: number, value: number): void {
+      const start = this.resolvePhysicalIndex(attributeIndex);
+      this.buffer[start + componentIndex] = value;
+      this.currentDataVersion++;
+  }
+
+
   public setVertexAttribPointer(
     gl: WebGLRenderingContext,
     variableLoc: number,
@@ -172,13 +213,9 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
   ): void {
 
     const bytesPerComponent = this.bytesPerComponent;
-    let stride = this.componentsPerAttribute * this.attributeSize * bytesPerComponent;
-    let offset = bufferView.offset * stride;
-  
-    if (this.componentsPerAttribute === 1) {
-      stride = 0;
-      offset = bufferView.offset * bytesPerComponent;
-    }
+
+    const stride = this.componentsPerAttribute * this.attributeSize * bytesPerComponent;
+    const offset = bufferView.offset * stride;
 
     for (let i = 0; i < this.componentsPerAttribute; i++) {
       const loc = variableLoc + i;
@@ -198,8 +235,9 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
     }
   }
 
-
   protected abstract doEnsureCapacity(size: number): void;
   protected abstract doPushRange(values: TypedArray | number[]): void;
-  public abstract get(index: number): number[];
+
+  /** Converts a logical attribute index into the physical buffer index */
+  protected abstract resolvePhysicalIndex(logicalIndex: number): number;
 }

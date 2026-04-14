@@ -24,6 +24,7 @@ import ExampleAxisOrientation from '../../examples/example-axis-orientation.vue'
 import ExampleAisTickFormat from '../../examples/example-axis-tick-format.vue';
 import ExampleBufferPush from '../../examples/example-buffer-push.vue';
 import ExampleBufferRing from '../../examples/example-buffer-ring.vue';
+import ExampleBufferWrite from '../../examples/example-buffer-write.vue';
 
 export default defineClientConfig({
   enhance({ app }) {
@@ -52,6 +53,7 @@ export default defineClientConfig({
     app.component('example-axis-tick-format', ExampleAisTickFormat);
     app.component('example-buffer-push', ExampleBufferPush);
     app.component('example-buffer-ring', ExampleBufferRing);
+    app.component('example-buffer-write', ExampleBufferWrite);
   },
   setup() {},
   rootComponents: [],

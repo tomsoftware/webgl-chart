@@ -32,9 +32,8 @@ export class GpuFixBuffer<T extends TypedArray> extends GpuBufferBase<T> {
         }
     }
 
-    public get(index: number): number[] {
-        const offset = (index * this.totalComponents);
-        return Array.from(this.buffer.subarray(offset, offset + this.totalComponents));
+    protected resolvePhysicalIndex(logicalIndex: number): number {
+        return logicalIndex * this.totalComponents;
     }
 
     protected doPushRange(values: number[] | TypedArray): void {

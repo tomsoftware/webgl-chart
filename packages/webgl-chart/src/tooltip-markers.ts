@@ -1,5 +1,5 @@
-import type { Context, AttributeBuffer, GpuWritableBuffer, GpuReadableBuffer} from '@tomsoftware/webgl-lib';
-import { Alignment, GpuGrowingBuffer, Color, LayoutArea, LayoutNode, 
+import type { Context, GpuReadableBuffer} from '@tomsoftware/webgl-lib';
+import { Alignment, GpuGrowingBuffer, Color, LayoutArea, LayoutNode,
     GpuLetterText, Vector2, Vector4, Matrix3x3} from '@tomsoftware/webgl-lib';
 import { Scale } from './scales/scale';
 
@@ -82,8 +82,8 @@ export class TooltipMarkers {
                 continue;
             }
 
-            const dataTimeValue = series.valuesX.get(timeIndex)[0];
-            const dataDataValue = series.valuesY.get(timeIndex)[0];
+            const dataTimeValue = series.valuesX.getComponentAt(timeIndex, 0);
+            const dataDataValue = series.valuesY.getComponentAt(timeIndex, 0);
 
             const pos = new Vector2(dataTimeValue, dataDataValue);
             const screePos = pos.transform(m);
@@ -105,7 +105,6 @@ export class TooltipMarkers {
         }
 
         this.drawPoints(context, chartArea);
-
     }
 
     private addPoint(x: number, y: number, color: number[], pointSize: number) {
@@ -124,7 +123,7 @@ export class TooltipMarkers {
 
     private pointsX = new GpuGrowingBuffer('float32', 10);
     private pointsY = new GpuGrowingBuffer('float32', 10);
-    private pointsColor = new GpuGrowingBuffer('float32', 10, 4);
+    private pointsColor = new GpuGrowingBuffer('vec4', 10);
     private pointsSize = new GpuGrowingBuffer('float32', 10);
     private bbox = new Vector4(0, 0, 1, 1);
 
