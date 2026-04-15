@@ -40,7 +40,9 @@ export default defineUserConfig({
         children: [
           'introduction',
           'renderer',
+          'buffers',
           'layout',
+          'chart-axis',
           'draw-text',
           'event-handling'
         ]
@@ -53,7 +55,7 @@ export default defineUserConfig({
             'basic',
             'stacked',
             'annotations',
-            'axis',
+            'multi-axis',
             'series-bar',
             'series-area',
             'series-bubble',

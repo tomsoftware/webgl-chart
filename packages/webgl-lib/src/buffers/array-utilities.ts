@@ -1,27 +1,16 @@
-export type TypedArray =
-  | Float32Array
-  | Float64Array
-  | Int8Array
-  | Int16Array
-  | Int32Array
-  | Uint8Array
-  | Uint8ClampedArray
-  | Uint16Array
-  | Uint32Array;
-
 export class ArrayUtilities {
     /**
      *  guesses a index-range a given value lays in
      *  Returns null if value is outside of array
      */
-    public static guessIndexRange(array: TypedArray, minIndex: number, maxIndex: number, value: number) {
+    public static guessIndexRange(getFunc: (index: number) => number, minIndex: number, maxIndex: number, value: number) {
         const len = maxIndex - minIndex;
         if (len <= 0) {
             return null;
         }
 
-        const start = array[minIndex];
-        const end = array[maxIndex];
+        const start = getFunc(minIndex);
+        const end = getFunc(maxIndex);
         if (value < start || value > end) {
             return null;
         }
@@ -38,8 +27,8 @@ export class ArrayUtilities {
         // enlarge the range so value is in (inverse Binary)
         let step = 1;
         // Determine direction
-        if (array[guess] < value) {
-            while (array[high] < value) {
+        if (getFunc(guess) < value) {
+            while (getFunc(high) < value) {
                 low = high;
                 high = high + step;
                 if (high >= maxIndex) {
@@ -48,7 +37,7 @@ export class ArrayUtilities {
                 step *= 2;
             }
         } else {
-            while (array[low] > value) {
+            while (getFunc(low) > value) {
                 high = low;
                 low = low - step;
                 if (low <= minIndex) {
@@ -62,13 +51,13 @@ export class ArrayUtilities {
     }
 
     /** returns the index that is closes to a given value  */
-    public static binarySearch(array: TypedArray, minIndex: number, maxIndex: number, value: number) {
+    public static binarySearch(getFunc: (index: number) => number, minIndex: number, maxIndex: number, value: number) {
         let low = minIndex;
         let high = maxIndex;
 
         while (low <= high) {
             const mid = Math.floor((low + high) / 2);
-            const midVal = array[mid];
+            const midVal = getFunc(mid);
 
             if (midVal < value) {
                 low = mid + 1;

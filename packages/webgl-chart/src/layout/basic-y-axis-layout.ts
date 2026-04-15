@@ -1,8 +1,9 @@
 import { Color , Context , EventDispatcher, EventTypes, EventValue,
-   GpuText , BasicChartLayout , HorizontalLayout, IntersectedLayout,
+   GpuText, HorizontalLayout, IntersectedLayout,
    LayoutArea , LayoutCell, LayoutNode, TableRowLayout } from '@tomsoftware/webgl-lib';
 import { Scale } from '../scales/scale';
 import { VerticalAxis } from '../scales/vertical-axis';
+import { BasicChartLayout } from './basic-chart-layout';
 
 export class BasicYAxisLayout {
     public readonly axis: VerticalAxis;

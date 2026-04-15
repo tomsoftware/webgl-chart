@@ -14,14 +14,14 @@ Area Charts / Series can be rendered using the `SeriesArea` class. Each area is 
 
 An area series requires three GPU buffers:
 
-- `time: GpuFloatBuffer` : the time positions along the x-axis
-- `upper: GpuFloatBuffer` : the upper boundary values
-- `lower: GpuFloatBuffer` : the lower boundary values
+- `time: GpuBuffer<'float32'>` : the time positions along the x-axis
+- `upper: GpuBuffer<'float32'>` : the upper boundary values
+- `lower: GpuBuffer<'float32'>` : the lower boundary values
 
 ```ts
-const time = new GpuFloatBuffer([0, 1, 2, 3]);
-const upper = new GpuFloatBuffer([1, 2, 1, 3]);
-const lower = new GpuFloatBuffer([0, 1, 0, 1]);
+const time = new GpuGrowingBuffer('float32', [0, 1, 2, 3]);
+const upper = new GpuGrowingBuffer('float32', [1, 2, 1, 3]);
+const lower = new GpuGrowingBuffer('float32', [0, 1, 0, 1]);
 
 const area = new SeriesArea(time, upper, lower)
     .setColor(Color.blue, Color.lightGray);

@@ -2,7 +2,6 @@ import type { Color } from './color';
 import type { TextureGenerator } from './texture/texture-generator';
 import type { IUniformValue } from './uniform';
 import type { LayoutNode } from './layout/layout-node';
-import type { GpuBuffer } from './buffers/gpu-buffer';
 import { Vector2 } from './vector-2';
 import { Canvas2d } from './canvas-2d';
 import { GlBufferTypes, GpuBufferState } from './buffers/gpu-buffer-state';
@@ -15,12 +14,13 @@ import { Matrix3x3 } from './matrix-3x3';
 import { TextureMap } from './texture/texture-map';
 import { TextureMapItem } from './texture/texture-map-item';
 import { GpuBufferView } from './buffers/gpu-buffer-view';
+import { AttributeBuffer } from './buffers/attribute-buffer';
 
 /** The context provides functions and data used for one draw iteration */
 export class Context {
     public gl!: WebGLRenderingContext;
     public programs = new Map<string, GpuProgram>();
-    public buffers = new Map<GpuBuffer, GpuBufferState>();
+    public buffers = new Map<AttributeBuffer, GpuBufferState>();
     private textureDrawer = new TextureMapDrawer(new TextureMap());
     private lineDrawer = new LineDrawer();
     /** width of the canvas we draw to */
@@ -95,11 +95,11 @@ export class Context {
         this.buffers.clear();
     }
 
-    public setInstanceBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null, bufferView = GpuBufferView.InstanceBuffer) {
+    public setInstanceBuffer(program: GpuProgram, name: string, buffer: AttributeBuffer | null, bufferView = GpuBufferView.InstanceBuffer) {
         this.setArrayBuffer(program, name, buffer, bufferView);
     }
 
-    public setArrayBuffer(program: GpuProgram, name: string, buffer: GpuBuffer | null, bufferView = GpuBufferView.Default) {
+    public setArrayBuffer(program: GpuProgram, name: string, buffer: AttributeBuffer | null, bufferView = GpuBufferView.Default) {
         if (buffer == null) {
             return null;
         }
@@ -128,7 +128,7 @@ export class Context {
         return variableLoc;
     }
 
-    public setElementBuffer(buffer: GpuBuffer | null) {
+    public setElementBuffer(buffer: AttributeBuffer | null) {
         if (buffer == null) {
             return;
         }

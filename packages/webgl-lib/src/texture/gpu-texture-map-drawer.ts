@@ -1,31 +1,30 @@
 import type { TextureGenerator } from './texture-generator';
 import { Context } from '../context';
-import { GpuFloatBuffer } from '../buffers/gpu-buffer-float';
 import { Matrix3x3 } from '../matrix-3x3';
 import { TextureMap } from './texture-map';
 import { TextureMapItem } from './texture-map-item';
 import { Color } from '../color';
-import { GpuShortBuffer } from '../buffers/gpu-buffer-short';
 import { Vector2 } from '../vector-2';
-import { GpuBufferMatrix3x3 } from '../buffers/gpu-buffer-matrix-3x3';
+import { GpuFixBuffer } from '../buffers/implementations/gpu-fix-buffer';
+import { GpuGrowingBuffer } from '../buffers/implementations/gpu-growing-buffer';
 
 export class TextureMapDrawer {
     /** position matrix of the rectangle to put texture on */
-    private rectTransformation = new GpuBufferMatrix3x3(250);
+    private rectTransformation = new GpuGrowingBuffer('mat3x3', 250);
     /** width and height of the rectangle to draw the texture at (in pixels) */
-    private rectSize = new GpuFloatBuffer(250, 2);
+    private rectSize = new GpuGrowingBuffer('float32', 250, 2);
     /** position of the texture in the texture-buffer */
-    private textureLocation = new GpuFloatBuffer(250, 2);
+    private textureLocation = new GpuGrowingBuffer('float32', 250, 2);
     /** size (width/height) of the texture in the texture-buffer  */
-    private textureSize = new GpuFloatBuffer(250, 2);
+    private textureSize = new GpuGrowingBuffer('float32', 250, 2);
 
     /** color for coloring the texture */
-    private color = new GpuFloatBuffer(1000, 4);
+    private color = new GpuGrowingBuffer('float32', 1000, 4);
     private textureMap: TextureMap;
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
+    private indexBuffer = new GpuFixBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuFixBuffer('float32', 4, 2);
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-texture-map-drawer';

@@ -78,7 +78,7 @@ export class GpuChart {
         }
 
         if (this.previousRenderTimestamp !== 0) {
-            console.log('drawScene: '+ Math.round(time - this.previousRenderTimestamp) +' ms');
+            console.trace('drawScene: '+ Math.round(time - this.previousRenderTimestamp) +' ms');
             this.previousRenderTimestamp = 0;
         }
 

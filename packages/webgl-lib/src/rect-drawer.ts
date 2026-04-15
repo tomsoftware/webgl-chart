@@ -5,10 +5,9 @@ import type { LayoutNode } from './layout/layout-node';
 import type { TextureMapItem } from './texture/texture-map-item';
 import { Vector4 } from './vector-4';
 import { Vector2 } from './vector-2';
-import { GpuFloatBuffer } from './buffers/gpu-buffer-float';
-import { GpuShortBuffer } from './buffers/gpu-buffer-short';
-import { GpuByteBuffer } from './buffers/gpu-buffer-byte';
 import { TextureMap } from './texture/texture-map';
+import { GpuFixBuffer } from './buffers/implementations/gpu-fix-buffer';
+import { GpuGrowingBuffer } from './buffers/implementations/gpu-growing-buffer';
 
 /** defines how to calculate the vertex position in the shader */
 export enum DimensionTypes {
@@ -27,26 +26,26 @@ export type DimensionsType = [DimensionTypes, DimensionTypes, DimensionTypes, Di
 /** Draw a batch of rectangles */
 export class RectDrawer {
     /** center position (x, y) of the rectangle */
-    private rectPos = new GpuFloatBuffer(0, 2);
+    private rectPos = new GpuGrowingBuffer('float32', 0, 2);
     /** width and height of the rectangle */
-    private rectSize = new GpuFloatBuffer(0, 2);
+    private rectSize = new GpuGrowingBuffer('float32', 0, 2);
     /** padding / offset in pixel that is added to vertex position */
-    private margin = new GpuFloatBuffer(0, 2);
+    private margin = new GpuGrowingBuffer('float32', 0, 2);
     /** flag to show if coordinates or rectSize parameter are absolute or relative values */
-    private dimensionType = new GpuByteBuffer(0, 4);
+    private dimensionType = new GpuGrowingBuffer('uint8' ,0, 4);
 
-    private color = new GpuFloatBuffer(0, 4);
-    private stripeWidth = new GpuFloatBuffer(0, 2);
-    private borderRadius = new GpuFloatBuffer(0, 1);
+    private color = new GpuGrowingBuffer('float32', 0, 4);
+    private stripeWidth = new GpuGrowingBuffer('float32', 0, 2);
+    private borderRadius = new GpuGrowingBuffer('float32', 0, 1);
     private bbox = new Vector4(0, 0, 1, 1);
     /** position of the texture in the texture-buffer */
-    private textureLocation = new GpuFloatBuffer(0, 2);
+    private textureLocation = new GpuGrowingBuffer('float32', 0, 2);
     /** size (width/height) of the texture in the texture-buffer  */
-    private textureSize = new GpuFloatBuffer(0, 2);
+    private textureSize = new GpuGrowingBuffer('float32', 0, 2);
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
+    private indexBuffer = new GpuFixBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuFixBuffer('float32', 4, 2);
 
     /** texture-map to store textures to map to the rectangles */
     public textureMap = new TextureMap();
@@ -82,13 +81,13 @@ export class RectDrawer {
 
     /** returns the rectangle position for a given index */
     public getRectPos(index: number) {
-        const v = this.rectPos.get(index);
+        const v = this.rectPos.getAttributeAt(index);
         return new Vector2(v[0], v[1]);
     }
 
     /** returns the rectangle size for a given index */
     public getRectSize(index: number) {
-        const v = this.rectSize.get(index);
+        const v = this.rectSize.getAttributeAt(index);
         return new Vector2(v[0], v[1]);
     }
 

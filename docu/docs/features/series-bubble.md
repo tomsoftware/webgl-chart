@@ -16,15 +16,15 @@ Bubble Charts / Series can be rendered using the `SeriesBubble` class. Each circ
 Creating a new bubble series:
 
 ```ts
-new SeriesBubble(x: GpuFloatBuffer, y: GpuFloatBuffer, radius: GpuFloatBuffer);
+new SeriesBubble(x: GpuBuffer, y: GpuBuffer, radius: GpuBuffer<'float32'>);
 ```
 
 Example:
 
 ```ts
-const xBuffer = new GpuFloatBuffer([1, 2, 3]);
-const yBuffer = new GpuFloatBuffer([1, 2, 3]);
-const radiusBuffer = new GpuFloatBuffer([5, 8, 15]);
+const xBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const yBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const radiusBuffer = new GpuGrowingBuffer('float32', [5, 8, 15]);
 
 const bubble = new SeriesBubble(xBuffer, yBuffer, radiusBuffer)
     .setColor(Color.blue).

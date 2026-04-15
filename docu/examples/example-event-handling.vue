@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue';
 import { GpuText, LayoutCell, Alignment, Color, EventDispatcher, 
-  EventTypes, Matrix3x3, LayoutBorder } from '@tomsoftware/webgl-lib';
+  EventTypes, LayoutBorder, 
+  Matrix3x3} from '@tomsoftware/webgl-lib';
 
 const text = new GpuText('x', undefined, Color.red);
 

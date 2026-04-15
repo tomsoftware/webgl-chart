@@ -1,5 +1,5 @@
 import { GpuBufferView } from './gpu-buffer-view';
-import type { GpuBuffer } from './gpu-buffer';
+import type { AttributeBuffer } from './attribute-buffer';
 
 const isBrowser = typeof WebGLRenderingContext !== 'undefined';
 
@@ -9,11 +9,11 @@ export enum GlBufferTypes {
 }
 
 export class GpuBufferState {
-    private data: GpuBuffer;
+    private data: AttributeBuffer;
     private buffer: WebGLBuffer | null = null;
     private lastDataVersion = -1;
 
-    constructor(data: GpuBuffer) {
+    constructor(data: AttributeBuffer) {
         this.data = data;
     }
 

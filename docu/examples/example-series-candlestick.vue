@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuFloatBuffer, LayoutCell,Color, EventDispatcher} from '@tomsoftware/webgl-lib';
+import { GpuGrowingBuffer, LayoutCell,Color, EventDispatcher} from '@tomsoftware/webgl-lib';
 import { Scale, BasicChartLayout, SeriesRangeRect, SeriesRangeLine} from '@tomsoftware/webgl-chart';
 import { Generators } from './generators';
 
 // generate time data
 const itemCount = 300;
-const time = new GpuFloatBuffer(itemCount);
-const bodyUpperData = new GpuFloatBuffer(itemCount);
-const bodyLowerData = new GpuFloatBuffer(itemCount);
+const time = new GpuGrowingBuffer('float32', itemCount);
+const bodyUpperData = new GpuGrowingBuffer('float32', itemCount);
+const bodyLowerData = new GpuGrowingBuffer('float32', itemCount);
 
-const wickUpperData = new GpuFloatBuffer(itemCount);
-const wickLowerData = new GpuFloatBuffer(itemCount);
+const wickUpperData = new GpuGrowingBuffer('float32', itemCount);
+const wickLowerData = new GpuGrowingBuffer('float32', itemCount);
 
 // generate data
 let minY = 1000;

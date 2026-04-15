@@ -2,7 +2,6 @@
 export * from './alignment';
 export * from './color';
 export * from './context';
-export * from './gpu-chart';
 export * from './gpu-number';
 export * from './gpu-program';
 export * from './layout-border';
@@ -14,14 +13,13 @@ export * from './vector-2';
 export * from './vector-4';
 
 // buffers
-export * from './buffers/gpu-base-buffer';
-export * from './buffers/gpu-buffer';
-export * from './buffers/gpu-buffer-byte';
-export * from './buffers/gpu-buffer-float';
-export * from './buffers/gpu-buffer-matrix-3x3';
-export * from './buffers/gpu-buffer-short';
+export * from './buffers/implementations/gpu-fix-buffer';
+export * from './buffers/implementations/gpu-growing-buffer';
+export * from './buffers/implementations/gpu-ring-buffer';
+export * from './buffers/gpu-writable-buffer';
 export * from './buffers/gpu-buffer-view';
-
+export * from './buffers/attribute-buffer';
+export * from './buffers/gpu-readable-buffer';
 
 // event-handler
 export * from './event-handler/event-handler';

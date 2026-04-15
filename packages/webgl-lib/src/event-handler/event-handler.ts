@@ -179,6 +179,18 @@ export class EventDispatcher {
         this.lastMousePanningPosition = pos;
     }
 
+    private handleMouseMove(event: MouseEvent) {
+        if (this.listeners.size === 0) {
+            return;
+        }
+
+        const pos = this.calcScreenPosition(event);
+
+        this.eventQueue.push(
+            new EventValue(EventTypes.MouseMove, pos)
+        );
+    }
+
     /** raise the panning event */
     private handlePanning(event: MouseEvent | Touch) {
         if (this.listeners.size === 0) {
@@ -288,6 +300,7 @@ export class EventDispatcher {
         this.lastMouseButtons = event.buttons;
 
         if (!event.buttons) {
+            this.handleMouseMove(event);
             return;
         }
 

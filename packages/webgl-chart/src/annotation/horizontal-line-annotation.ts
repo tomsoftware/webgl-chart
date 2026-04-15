@@ -1,6 +1,6 @@
 import type { Color, Context, GpuText, RectDrawer } from '@tomsoftware/webgl-lib';
 import { DimensionTypes, Vector2 } from '@tomsoftware/webgl-lib';
-import type { CallbackHandler } from "./callback-handler";
+import type { CallbackHandler } from './callback-handler';
 
 export enum HorizontalPosition {
     Left,

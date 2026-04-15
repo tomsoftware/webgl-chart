@@ -18,14 +18,14 @@ Draws a rectangle between the lower and upper y-values at each x-position.
 
 A range rectangular series requires three GPU buffers:
 
-- `x: GpuFloatBuffer` — the x-positions of each rectangle
-- `y1: GpuFloatBuffer` — the lower y-values
-- `y2: GpuFloatBuffer` — the upper y-values
+- `x: GpuBuffer<'float32'>` — the x-positions of each rectangle
+- `y1: GpuBuffer<'float32'>` — the lower y-values
+- `y2: GpuBuffer<'float32'>` — the upper y-values
 
 ```ts
-const xBuffer = new GpuFloatBuffer([1, 2, 3]);
-const y1Buffer = new GpuFloatBuffer([1, 2, 3]);
-const y2Buffer = new GpuFloatBuffer([2, 3, 4]);
+const xBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const y1Buffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const y2Buffer = new GpuGrowingBuffer('float32', [2, 3, 4]);
 
 const rect = new SeriesRangeRect(xBuffer, y1Buffer, y2Buffer)
     .setColor(Color.lightBlue)
@@ -72,14 +72,14 @@ Draws a vertical line between the lower and upper y-values at each x-position.
 
 A range line series requires three GPU buffers:
 
-- `x: GpuFloatBuffer` — the x-positions of each line
-- `y1: GpuFloatBuffer` — the lower y-values
-- `y2: GpuFloatBuffer` — the upper y-values
+- `x: GpuBuffer<'float32'>` — the x-positions of each line
+- `y1: GpuBuffer<'float32'>` — the lower y-values
+- `y2: GpuBuffer<'float32'>` — the upper y-values
 
 ```ts
-const xBuffer = new GpuFloatBuffer([1, 2, 3]);
-const y1Buffer = new GpuFloatBuffer([1, 2, 3]);
-const y2Buffer = new GpuFloatBuffer([2, 3, 4]);
+const xBuffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const y1Buffer = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const y2Buffer = new GpuGrowingBuffer('float32', [2, 3, 4]);
 
 const line = new SeriesRangeLine(xBuffer, y1Buffer, y2Buffer)
     .setColor(Color.black)
