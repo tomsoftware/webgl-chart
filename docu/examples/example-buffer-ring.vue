@@ -81,15 +81,18 @@ function clearData() {
   time.clear();
   data1.clear();
   timer.reset();
+  scaleX.min = 0;
   scaleX.max = 4;
 }
 
 // map pauseAnimation to timer state
 watch(pauseAnimation, (value) => {
   if (timer) {
-    timer.enable(!value); 
+    timer.enable(!value);
   }
 });
+
+timer.trigger(50);
 
 </script>
 

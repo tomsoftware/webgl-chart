@@ -4,18 +4,18 @@ import { GpuBufferBase } from './gpu-buffer-base';
 import { GpuBufferDataType, resolveGpuBufferDataType } from './gpu-buffer-types';
 
 export class GpuGrowingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
-    public constructor(type: GpuBufferDataType, size: number, attributeSize?: number, componentsPerAttribute?: number);
+    public constructor(type: GpuBufferDataType, size?: number, attributeSize?: number, componentsPerAttribute?: number);
     public constructor(type: GpuBufferDataType, values: number[]);
     public constructor(
         type: GpuBufferDataType,
-        sizeOrValues: number | number[],
+        sizeOrValues?: number | number[],
         attributeSize?: number,
         componentsPerAttribute?: number
     ) {
         const info = resolveGpuBufferDataType(type);
         super(
             info.arrayType as unknown as { new(size: number): T },
-            sizeOrValues,
+            sizeOrValues ?? 1024,
             type,
             attributeSize ?? info.defaultAttributeSize,
             componentsPerAttribute ?? info.defaultComponentsPerAttribute,
@@ -31,10 +31,20 @@ export class GpuGrowingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
             return;
         }
 
-        console.trace('GpuGrowingBuffer<' + this.typeName + '>: new capacity:', size);
+        function alignTo(value: number, alignment: number): number {
+            return Math.ceil(value / alignment) * alignment;
+        }
+
+        // estimate new size
+        let newSize = Math.max(this.buffer.length * 2, size);
+
+        // align to 256-byte boundary (Float32 = 4 bytes -> 64 elements)
+        newSize = alignTo(newSize, 64);
+
+        console.trace('GpuGrowingBuffer<' + this.typeName + '>: new capacity:', newSize);
 
         // make the buffer larger
-        const newBuffer = new this.activator(size);
+        const newBuffer = new this.activator(newSize);
         newBuffer.set(this.buffer);
         this.buffer = newBuffer;
     }

@@ -8,7 +8,7 @@ export default defineUserConfig({
   lang: 'en-US',
 
   title: 'WebGl-Chart Documentation',
-  description: 'High performance web chart library to plot line-charts, area-charts, bubble-charts, bar-chart and annotations using WebGL',
+  description: 'High performance web chart library to plot line-charts, area-charts, bubble-charts, bar-chart, rolling charts and annotations using WebGL',
 
   head: [
     ['link', { rel: "icon", type: "image/x-icon", href: "/favicon.ico"}]
@@ -60,6 +60,7 @@ export default defineUserConfig({
             'series-area',
             'series-bubble',
             'series-ranges',
+            'rolling-chart',
             'tooltip',
           ]
       }]

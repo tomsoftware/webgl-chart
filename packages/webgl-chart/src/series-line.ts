@@ -9,6 +9,7 @@ export class SeriesLine implements DrawableSeries {
     protected thickness: number = 1;
     protected time: AttributeBuffer;
     protected data: AttributeBuffer;
+    protected lineType: number = WebGLRenderingContext.LINE_STRIP;
   
     /** this is a unique id to identifies this shader programs */
     private static IdLine = 'gpu-series-line';
@@ -17,6 +18,20 @@ export class SeriesLine implements DrawableSeries {
         this.time = time;
         this.data = data;
     }
+
+    /** enable connecting the last datapoint back to the first. */
+    public setLineLoop(useLoopLine: boolean): SeriesLine {
+        this.lineType = useLoopLine 
+          ? WebGLRenderingContext.LINE_LOOP : WebGLRenderingContext.LINE_STRIP;
+
+        return this;
+    }
+
+    /** get if lineLoop is enabled */
+    public get lineLoop(): boolean {
+      return this.lineType == WebGLRenderingContext.LINE_LOOP;
+    }
+
 
     /** set the color of the series */
     public setColor(color: Color): SeriesLine {
@@ -114,8 +129,8 @@ export class SeriesLine implements DrawableSeries {
 
           const m = p.multiply(l.values).multiply(lineThicknessShift.values).multiply(s.values);
           context.setUniform(program, 'uniformCamTransformation', m);
-          context.gl.drawArrays(WebGLRenderingContext.LINE_STRIP, offset, count);
-          
+
+          context.gl.drawArrays(this.lineType, offset, count);
         }
 
     }

@@ -8,16 +8,43 @@ Free high performance web Chart Library to plot line-, bar-, area-, bubble-chart
 
 ![showcase](images/showcase.png) 
 
-| Bubble Chart | Bar Chart |
-| --------- | ----- |
-| ![showcase](images/showcase_bubble_chart.png) | ![showcase](images/showcase_bar_chart.png) |
-| Area Charts | Candlestick Chart |
-| ![showcase](images/showcase_area.png) | ![showcase](images/showcase_candlestick_chart.png) |
-| Annotations |
-| ![showcase](images/showcase_annotations.png) |
-| Stacked | Multi axis |
-| ![showcase](images/showcase_stacked.png) | ![showcase](images/shaowcase_multi_axis.png) |
+<table>
+  <tr>
+    <th>Bubble Chart</th>
+    <th>Bar Chart</th>
+  </tr>
+  <tr>
+    <td><img src="images/showcase_bubble_chart.png" height="150"></td>
+    <td><img src="images/showcase_bar_chart.png" height="150"></td>
+  </tr>
 
+  <tr>
+    <th>Area Charts</th>
+    <th>Candlestick Chart</th>
+  </tr>
+  <tr>
+    <td><img src="images/showcase_area.png" height="150"></td>
+    <td><img src="images/showcase_candlestick_chart.png" height="150"></td>
+  </tr>
+
+  <tr>
+    <th>Annotations</th>
+    <th>Rolling &amp; Sliding Window</th>
+  </tr>
+  <tr>
+    <td><img src="images/showcase_annotations.png" height="150"></td>
+    <td><img src="images/showcase_rolling_chart.png" height="150"></td>
+  </tr>
+
+  <tr>
+    <th>Stacked</th>
+    <th>Multi axis</th>
+  </tr>
+  <tr>
+    <td><img src="images/showcase_stacked.png" height="150"></td>
+    <td><img src="images/shaowcase_multi_axis.png" height="150"></td>
+  </tr>
+</table>
 
 
 ## Install

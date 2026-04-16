@@ -81,13 +81,21 @@ export abstract class GpuBufferBase<T extends TypedArray> implements GpuWritable
   public get count(): number {
     return Math.floor(this.validLength / this.totalComponents);
   }
-  
+
   public get firstAttribute(): number[] {
     return this.getAttributeAt(0);
   }
 
   public get lastAttribute(): number[] {
     return this.getAttributeAt(this.count - 1);
+  }
+
+  public firstComponent(componentIndex: number = 0): number {
+    return this.getComponentAt(0, componentIndex);
+  }
+
+  public lastComponent(componentIndex: number = 0): number {
+    return this.getComponentAt(this.count - 1, componentIndex);
   }
 
   public findIndex(value: number): number {

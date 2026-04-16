@@ -54,6 +54,21 @@ export class PausableTimer {
         this.startTime = performance.now();
     }
 
+    /** simulate the timer */
+    public trigger(count: number) {
+        if (count <= 0) {
+            return;
+        }
+
+        const dt = this.interval;
+
+        for (let i = 0; i < count; i++) {
+            this.accumulated += dt;
+            const t = this.accumulated * 0.001;
+            this.callback(t);
+        }
+    }
+
     public dispose() {
         if (this.timerId !== null) {
             clearInterval(this.timerId);

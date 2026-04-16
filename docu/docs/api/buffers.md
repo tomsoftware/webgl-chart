@@ -2,16 +2,30 @@
 
 Buffers are used to store the data and manage the mapping between JavaScript and WebGL / GPU data. All buffer implementations conform to the `GpuWritableBuffer` interface, providing a consistent API across different data types and behaviors.
 
+## Key Terms
+
+| Term | Meaning |
+|------|---------|
+| `attribute` | A linked group of numbers stored in a buffer. This can represent a single color, an x‑ or y‑value, or a complete data record. |
+| `component` | A single numeric value within a group, such as `x`, `y`, `r`, `g`, `b` or `a`. |
+| `attributeSize` | The number of numeric values that make up one attribute entry — for example, 2 for a 2D point or 4 for a color. |
+| `componentsPerAttribute` | The number of attributes that form one logical unit. For simple numeric series this is usually `1`, but for matrices or more complex structures it can be higher. |
 
 ## Buffer Types
 
 | Name | Type | Info |
 | -----|------|------|
-| `GpuBuffer<'float32'>` | 32 Bit Float |Floating Point Numbers|
-| `GpuBuffer<'uint8'>`   | Unsigned 8 Bit | [0...255] Integer Numbers |
-| `GpuBuffer<'uint16'>`  | Unsigned 16 Bit | [0...65535] Integer Numbers |
-| `GpuBuffer<'uint32'>`  | Unsigned 32 Bit | [0...2^23-1] Integer Numbers |
-| `GpuBuffer<'mat3x3'>`  | 9 × 32 Bit Float | 3×3 Floating Point Matrices |
+| `GpuBuffer<'float32'>` | 32 Bit Float | Floating point numbers |
+| `GpuBuffer<'uint8'>` | Unsigned 8 Bit | [0...255] Integer numbers |
+| `GpuBuffer<'uint16'>` | Unsigned 16 Bit | [0...65535] Integer numbers |
+| `GpuBuffer<'uint32'>` | Unsigned 32 Bit | [0...2^23-1] Integer numbers |
+| `GpuBuffer<'int8'>` | Signed 8 Bit | [-128...127] Integer numbers |
+| `GpuBuffer<'int16'>` | Signed 16 Bit | [-32768...32767] Integer numbers |
+| `GpuBuffer<'int32'>` | Signed 32 Bit | Full signed integer range |
+| `GpuBuffer<'vec2'>` | vec2 | 2-component floating point vector |
+| `GpuBuffer<'vec3'>` | vec3 | 3-component floating point vector |
+| `GpuBuffer<'vec4'>` | vec4 | 4-component floating point vector |
+| `GpuBuffer<'mat3x3'>` | mat3x3 | 3×3 floating point matrix |
 
 ## GpuWritableBuffer Interface
 
@@ -22,7 +36,7 @@ The common interface implemented by all GPU buffer types. Provides functionality
 
 Property  |  Type | Description
 |---------| ------|------------
-| `data` | TypedArray | Returns a subarray view containing only the valid data
+| `data` | ArrayBufferView | Returns a view containing only the valid data
 | `dataVersion` | number | Version counter that increments whenever data changes. Useful for caching optimizations
 | `length` | number | Total size in components: (count * componentsPerAttribute)
 | `count` | number | Number of logical data items in the buffer
@@ -51,6 +65,74 @@ Each returned array contains exactly `componentsPerAttribute` numeric components
 | index     | number | Item index to retrieve |
 
 **Returns:** `number[]` : Array containing the components for that attribute or an empty array `[]` for out of bounce.
+
+---
+
+#### Component Access
+
+```ts
+getComponentAt(attributeIndex: number, componentIndex?: number): number
+```
+
+Returns a single component value from the specified attribute.
+
+| Parameter        | Type   | Description                                  |
+|------------------|--------|----------------------------------------------|
+| attributeIndex   | number | Logical attribute index                      |
+| componentIndex   | number | Component index within the attribute (default `0`) |
+
+**Returns:** `number` : The requested component value.
+
+---
+
+#### Data Mutation
+
+```ts
+setAttributeAt(attributeIndex: number, values: number[]): void
+```
+
+Writes all components of an attribute at the given logical index.
+
+| Parameter        | Type        | Description                            |
+|------------------|-------------|----------------------------------------|
+| attributeIndex   | number      | Logical attribute index                |
+| values           | number[]    | Component values for the attribute     |
+
+---
+
+```ts
+setComponentAt(attributeIndex: number, componentIndex: number, value: number): void
+```
+
+Writes a single component of an attribute at the given logical index.
+
+| Parameter        | Type   | Description                                  |
+|------------------|--------|----------------------------------------------|
+| attributeIndex   | number | Logical attribute index                      |
+| componentIndex   | number | Component index within the attribute         |
+| value            | number | New component value                          |
+
+---
+
+```ts
+setVertexAttribPointer(
+  gl: WebGLRenderingContext,
+  variableLoc: number,
+  angleExtension: ANGLE_instanced_arrays | null,
+  bufferView: GpuBufferView
+): void
+```
+
+Configures WebGL vertex attribute pointers for this buffer.
+
+> Note: This method is mainly relevant when writing custom shaders or advanced WebGL buffer bindings. For normal chart usage you usually do not need to call it directly.
+
+| Parameter        | Type | Description |
+|------------------|------|-------------|
+| gl               | WebGLRenderingContext | WebGL context |
+| variableLoc      | number | Base attribute location |
+| angleExtension   | ANGLE_instanced_arrays \| null | Optional instancing extension |
+| bufferView       | GpuBufferView | Buffer layout information |
 
 ---
 
@@ -163,7 +245,7 @@ A fixed-size buffer that does not resize and does not wrap. When the buffer is f
 #### Constructor
 
 ```ts
-constructor(type: GpuBufferDataType, size: number, componentsPerAttribute?: number);
+constructor(type: GpuBufferDataType, size: number, attributeSize?: number, componentsPerAttribute?: number);
 constructor(type: GpuBufferDataType, values: number[]);
 ```
 
@@ -172,6 +254,7 @@ constructor(type: GpuBufferDataType, values: number[]);
 | type                  | GpuBufferDataType | The data type of the buffer                      |
 | values                | number[]          | Initial values (alternative to `size`)           |
 | size                  | number            | Fixed buffer size                                |
+| attributeSize         | number            | Number of components per vertex attribute slot (default from type info) |
 | componentsPerAttribute | number            | Components per item (default: `1`)               |
 
 #### Specific Behavior
@@ -200,7 +283,7 @@ A buffer that grows dynamically as needed. Suitable for data that accumulates ov
 #### Constructor
 
 ```ts
-constructor(type: GpuBufferDataType, size: number, componentsPerAttribute?: number);
+constructor(type: GpuBufferDataType, size: number, attributeSize?: number, componentsPerAttribute?: number);
 constructor(type: GpuBufferDataType, values: number[]);
 ```
 
@@ -209,17 +292,18 @@ constructor(type: GpuBufferDataType, values: number[]);
 | type                  | GpuBufferDataType | The data type of the buffer                      |
 | values                | number[]          | Initial values (alternative to `size`)           |
 | size                  | number            | Initial buffer size                              |
+| attributeSize         | number            | Number of components per vertex attribute slot (default from type info) |
 | componentsPerAttribute | number            | Components per item (default: `1`)               |
 
 #### Specific Behavior
 
-- Automatically increases capacity by at least 32 items or 50% growth, whichever is larger.
+- Automatically grows by at least doubling the current capacity and aligning the new buffer to a 256-byte boundary.
 - Suitable for scenarios where data size is not known in advance.
 
 #### Static Methods
 
 ```ts
-static generateFrom(type: GpuBufferDataType, src: GpuReadableBuffer, calc: (srcValue: number) => number): GpuGrowingBuffer
+static generateFrom(type: GpuBufferDataType, source: GpuReadableBuffer, func: (srcValue: number) => number): GpuGrowingBuffer
 ```
 
 Creates a new buffer by transforming values from an existing readable buffer.
@@ -227,24 +311,8 @@ Creates a new buffer by transforming values from an existing readable buffer.
 | Parameter | Type                                   | Description                                |
 |---------- |-----------------------------------------|--------------------------------------------|
 | type      | GpuBufferDataType                      | Data type for the new buffer               |
-| src       | GpuReadableBuffer                      | Source buffer                              |
-| calc      | `(srcValue: number) => number`          | Mapping function applied to each value     |
-
-**Returns:** `GpuGrowingBuffer`
-
----
-
-```ts
-static generate(type: GpuBufferDataType, length: number, calc: (index: number) => number): GpuGrowingBuffer
-```
-
-Creates a new buffer of the given length, filling it using a callback.
-
-| Parameter | Type                          | Description                                  |
-|---------- |-------------------------------|----------------------------------------------|
-| type      | GpuBufferDataType             | Data type for the new buffer                 |
-| length    | number                        | Number of generated values                   |
-| calc      | `(index: number) => number`   | Callback returning the value for each index  |
+| source    | GpuReadableBuffer                      | Source buffer                              |
+| func      | `(srcValue: number) => number`          | Mapping function applied to each value     |
 
 **Returns:** `GpuGrowingBuffer`
 
@@ -264,7 +332,7 @@ A circular buffer that reuses fixed allocated memory. When the write pointer rea
 #### Constructor
 
 ```ts
-constructor(type: GpuBufferDataType, size: number, componentsPerAttribute?: number);
+constructor(type: GpuBufferDataType, size: number, attributeSize?: number, componentsPerAttribute?: number);
 constructor(type: GpuBufferDataType, values: number[]);
 ```
 
@@ -273,6 +341,7 @@ constructor(type: GpuBufferDataType, values: number[]);
 | type                  | GpuBufferDataType | The data type of the buffer                      |
 | values                | number[]          | Initial values (alternative to `size`)           |
 | size                  | number            | Fixed buffer size                                |
+| attributeSize         | number            | Number of components per vertex attribute slot (default from type info) |
 | componentsPerAttribute | number            | Components per item (default: `1`)               |
 
 #### Specific Behavior
