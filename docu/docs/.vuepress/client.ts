@@ -30,6 +30,17 @@ import ExampleBufferRingWrapping from '../../examples/example-buffer-ring-wrappi
 
 export default defineClientConfig({
   enhance({ app }) {
+    if (process.env.NODE_ENV === 'production') {
+      // disable trace output when building doc
+      console.trace = () => {}
+
+      if (typeof global !== 'undefined') {
+        // suppress errors when building doc by mocking WebGLRenderingContext
+        // @ts-ignore
+        global.WebGLRenderingContext = function () {}
+      } 
+    }
+
     app.component('example-full', ExampleFull);
     app.component('example-showcase', ExampleTitle);
     app.component('example-basic', ExampleBasic);

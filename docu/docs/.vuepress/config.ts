@@ -18,7 +18,7 @@ export default defineUserConfig({
     logo: '/webgl-chart-logo.svg',
     navbar: [
       '/',
-      '/get-started',
+      '/get-started/',
       {
         text: 'API',
         link: '/api/introduction',
@@ -33,6 +33,7 @@ export default defineUserConfig({
       }
     ],
     sidebar: {
+      '/get-started/': false,
       '/api/': [{
         text: 'API',
         collapsible: false,
@@ -69,6 +70,9 @@ export default defineUserConfig({
 
   bundler: viteBundler({
     viteOptions: {
+      ssr: {
+        
+      },
       resolve: {
         alias: {
           '@tomsoftware/webgl-chart-vue': path.resolve(__dirname, '../../../packages/webgl-chart-vue/lib/index.ts'),

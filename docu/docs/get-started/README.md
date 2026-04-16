@@ -50,5 +50,5 @@ npm i @tomsoftware/webgl-chart-react --save
 ## vue Example
 This is the example displayed on the home screen:
 
-@[code](../examples/example-showcase.vue)
+@[code](../../examples/example-showcase.vue)
 
