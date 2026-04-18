@@ -3,5 +3,13 @@
   "workspaces": [
     "packages/*",
     "docu"
-  ]
+  ],
+  "scripts": {
+    "build": "tsc -b packages/*",
+    "dev": "pnpm -r dev",
+    "docs:build": "pnpm --filter docu run docs:build"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
 }

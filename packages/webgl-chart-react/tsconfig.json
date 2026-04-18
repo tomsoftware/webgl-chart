@@ -3,15 +3,17 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@tomsoftware/webgl-chart": ["../webgl-chart/src"],
+      "@tomsoftware/webgl-lib": ["../webgl-lib/src"]
+    }
   },
   "include": ["src", "lib"],
   "references": [
+    { "path": "../webgl-lib" },
     { "path": "../webgl-chart" }
-  ],
+  ]
 }
