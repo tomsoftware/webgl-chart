@@ -27,18 +27,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 1) TypeScript Build für alle Pakete
+      # 1) TypeScript Build
       - name: Build TypeScript packages
         run: pnpm exec tsc -b packages/*
 
-      # 2) Vite-Build für React & Vue
+      # 2) Vite-Build for React & Vue
       - name: Build React package
         run: pnpm --filter webgl-chart-react build
 
       - name: Build Vue package
         run: pnpm --filter webgl-chart-vue build
 
-      # 3) Dokumentation
+      # 3) Documentation
       - name: Build documentation
         run: |
           cd docu
@@ -46,7 +46,7 @@ jobs:
 
       - name: Zip documentation
         run: |
-          cd docs/.vuepress/dist
+          cd docu/docs/.vuepress/dist
           zip -r ../../docs.zip .
 
       - name: Upload documentation artifact
