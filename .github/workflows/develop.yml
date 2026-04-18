@@ -27,9 +27,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build all packages
-        run: pnpm -r build
+      # 1) TypeScript Build für alle Pakete
+      - name: Build TypeScript packages
+        run: pnpm exec tsc -b packages/*
 
+      # 2) Vite-Build für React & Vue
+      - name: Build React package
+        run: pnpm --filter webgl-chart-react build
+
+      - name: Build Vue package
+        run: pnpm --filter webgl-chart-vue build
+
+      # 3) Dokumentation
       - name: Build documentation
         run: |
           cd docu
@@ -46,6 +55,7 @@ jobs:
           name: documentation-next
           path: docu/docs.zip
 
+      # 4) Publish
       - name: Publish packages (next)
         run: |
           for pkg in webgl-lib webgl-chart webgl-chart-react webgl-chart-vue; do
