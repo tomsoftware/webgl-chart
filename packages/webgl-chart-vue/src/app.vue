@@ -4,14 +4,15 @@ import { BasicChartLayout, Scale, SeriesPoint } from '@tomsoftware/webgl-chart';
 import { Color, EventDispatcher, GpuGrowingBuffer, LayoutCell } from '@tomsoftware/webgl-lib';
 import { ChartConfig } from '../lib/chart-config';
 
- // generate time data
- const itemCount = 1000 * 60 * 60 / 4;
+  // generate data
+  const itemCount = 1000 * 60 * 60 / 4;
   const time = new GpuGrowingBuffer('float32', itemCount)
       .generate((i) => i * 0.001); // in seconds
 
-  // generate series data
-  const series1 = new SeriesPoint(time)
-      .generate((t) => Math.sin(t * 0.001))
+  const data = GpuGrowingBuffer.generateFrom('float32',time, (t) => Math.sin(t * 0.001));
+  
+  // generate series
+  const series1 = new SeriesPoint(time, data)
       .setColor(Color.blue)
       .setPointSize(5);
 

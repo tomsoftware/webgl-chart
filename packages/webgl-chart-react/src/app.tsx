@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Color, EventDispatcher, GpuBuffer,
-  LayoutCell } from '@tomsoftware/webgl-lib';
+import { Color, EventDispatcher, GpuGrowingBuffer, LayoutCell } from '@tomsoftware/webgl-lib';
 import { BasicChartLayout, Scale, SeriesPoint } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from '../lib/chart-config';
 import React from 'react';
