@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           registry-url: https://registry.npmjs.org
 
       - name: Setup pnpm
@@ -34,6 +34,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # 1) TypeScript Build für alle Pakete
+      - name: Build TypeScript packages
+        run: pnpm exec tsc -b packages/*
+
+      # 2) Vite-Build für React & Vue
+      - name: Build React package
+        run: pnpm --filter webgl-chart-react build
+
+      - name: Build Vue package
+        run: pnpm --filter webgl-chart-vue build
+
+      # 3) Dokumentation
       - name: Build documentation
         run: |
           cd docu
@@ -50,9 +62,7 @@ jobs:
           name: documentation-latest
           path: docu/docs.zip
 
-      - name: Build all packages
-        run: pnpm -r build
-
+      # 4) Publish
       - name: Publish packages (latest)
         if: ${{ github.event.inputs.publish == 'yes' }}
         run: |
