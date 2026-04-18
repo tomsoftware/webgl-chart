@@ -27,35 +27,62 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # 1) TypeScript Build
+      # TypeScript Build
       - name: Build TypeScript packages
         run: pnpm exec tsc -b packages/*
 
-      # 2) Vite-Build for React & Vue
+
+      # webgl-lib
+      - name: Upload webgl-lib artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-lib-dist
+          path: packages/webgl-lib/dist
+
+
+      # webgl-chart
+      - name: Upload webgl-chart artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-chart-dist
+          path: packages/webgl-chart/dist
+
+
+      # webgl-chart-react
       - name: Build React package
         run: pnpm --filter webgl-chart-react build
 
+      - name: Upload webgl-chart-react artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-chart-react-dist
+          path: packages/webgl-chart-react/dist
+
+
+      # webgl-chart-vue
       - name: Build Vue package
         run: pnpm --filter webgl-chart-vue build
 
-      # 3) Documentation
+      - name: Upload webgl-chart-vue artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-chart-vue-dist
+          path: packages/webgl-chart-vue/dist
+
+
+      # Documentation
       - name: Build documentation
         run: |
           cd docu
           pnpm run docs:build
 
-      - name: Zip documentation
-        run: |
-          cd docu/docs/.vuepress/dist
-          zip -r ../../../docs.zip .
-
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
         with:
           name: documentation-next
-          path: docu/docs.zip
+          path: docu/docs/.vuepress/dist
 
-      # 4) Publish
+      # Publish
       - name: Publish packages (next)
         run: |
           for pkg in webgl-lib webgl-chart webgl-chart-react webgl-chart-vue; do
