@@ -30,16 +30,6 @@ jobs:
       - name: Build all packages
         run: pnpm -r build
 
-      - name: Publish packages (next)
-        run: |
-          for pkg in webgl-lib webgl-chart webgl-chart-react webgl-chart-vue; do
-            cd packages/$pkg
-            npm publish --tag next --access public
-            cd ../..
-          done
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Build documentation
         run: |
           cd docu
@@ -55,3 +45,13 @@ jobs:
         with:
           name: documentation-next
           path: docu/docs.zip
+
+      - name: Publish packages (next)
+        run: |
+          for pkg in webgl-lib webgl-chart webgl-chart-react webgl-chart-vue; do
+            cd packages/$pkg
+            npm publish --tag next --access public
+            cd ../..
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

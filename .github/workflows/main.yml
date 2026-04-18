@@ -34,20 +34,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build all packages
-        run: pnpm -r build
-
-      - name: Publish packages (latest)
-        if: ${{ github.event.inputs.publish == 'yes' }}
-        run: |
-          for pkg in webgl-lib webgl-chart webgl-chart-react webgl-chart-vue; do
-            cd packages/$pkg
-            npm publish --tag latest --access public
-            cd ../..
-          done
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Build documentation
         run: |
           cd docu
@@ -63,3 +49,17 @@ jobs:
         with:
           name: documentation-latest
           path: docu/docs.zip
+
+      - name: Build all packages
+        run: pnpm -r build
+
+      - name: Publish packages (latest)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        run: |
+          for pkg in webgl-lib webgl-chart webgl-chart-react webgl-chart-vue; do
+            cd packages/$pkg
+            npm publish --tag latest --access public
+            cd ../..
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
