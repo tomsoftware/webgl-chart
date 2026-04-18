@@ -26,7 +26,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: ./webgl-chart
 
       - name: Build all packages
         run: pnpm -r build
