@@ -47,7 +47,7 @@ jobs:
       - name: Zip documentation
         run: |
           cd docu/docs/.vuepress/dist
-          zip -r ../../docs.zip .
+          zip -r ../../../docs.zip .
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4

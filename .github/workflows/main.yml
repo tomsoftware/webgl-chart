@@ -45,7 +45,7 @@ jobs:
       - name: Build Vue package
         run: pnpm --filter webgl-chart-vue build
 
-      # 3) Dokumentation
+      # 3) Documentation
       - name: Build documentation
         run: |
           cd docu
@@ -53,8 +53,8 @@ jobs:
 
       - name: Zip documentation
         run: |
-          cd docu/.vuepress/dist
-          zip -r ../../docs.zip .
+          cd docu/docs/.vuepress/dist
+          zip -r ../../../docs.zip .
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
