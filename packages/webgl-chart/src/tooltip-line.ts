@@ -1,7 +1,5 @@
-import { Color } from "./color";
-import { Context } from "./context";
-import { LayoutNode } from "./layout/layout-node";
-import { Vector2 } from "./vector-2";
+import type { Context, LayoutNode } from '@tomsoftware/webgl-lib';
+import { Color, Vector2 } from '@tomsoftware/webgl-lib';
 
 export class TooltipLine {
     private color: Color = Color.black;

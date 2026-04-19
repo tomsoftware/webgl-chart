@@ -1,4 +1,4 @@
-import type { RenderCallback } from "@tomsoftware/webgl-chart";
+import type { RenderCallback } from '@tomsoftware/webgl-lib';
 
 export class ChartConfig {
     public onRender: RenderCallback | null = null;

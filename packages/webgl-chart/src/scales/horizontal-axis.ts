@@ -1,26 +1,20 @@
-import type { Context } from "../context";
-import type { LayoutNode } from "../layout/layout-node";
-import { ScreenPosition, ScreenUnit } from "../layout/screen-position";
-import { AxisBase } from "./axis-base";
-import { Matrix3x3 } from "../matrix-3x3";
-import { Alignment } from "../alignment";
-import { GpuLetterText } from "../texture/gpu-letter-text";
-import { IHeightProvider } from "../layout/size-provider";
-import { TextTextureGenerator } from "../texture/text-texture-generator";
+import type { Context, LayoutNode, IHeightProvider } from '@tomsoftware/webgl-lib';
+import { ScreenPosition, ScreenUnit, Matrix3x3, Alignment, 
+    GpuLetterText, TextTextureGenerator } from '@tomsoftware/webgl-lib';
+import { AxisBase } from './axis-base';
 
-export enum HorizontalAxisPosition {
+export enum HorizontalAxisOrientation {
     Top,
     Bottom
 }
 
 export class HorizontalAxis extends AxisBase implements IHeightProvider {
-    public position: HorizontalAxisPosition = HorizontalAxisPosition.Bottom;
+    public orientation: HorizontalAxisOrientation = HorizontalAxisOrientation.Bottom;
 
-    public setPosition(position: HorizontalAxisPosition): HorizontalAxis {
-        this.position = position;
+    public setOrientation(orientation: HorizontalAxisOrientation): HorizontalAxis {
+        this.orientation = orientation;
         return this;
     }
-
     /** return the height of the label */
     protected getLabelHeight(context: Context) {
         if (this.label == null) {
@@ -49,7 +43,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
         let align: Alignment;
 
         // draw axis border
-        if (this.position === HorizontalAxisPosition.Bottom) {
+        if (this.orientation === HorizontalAxisOrientation.Bottom) {
             context.drawLine(area.p0, area.p1, this.borderColor);
             align = Alignment.centerBottom;
         }
@@ -81,8 +75,9 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
             context.drawLine(area.p0.addValues(xOffset, 0), area.p0.addValues(xOffset, tickLength), this.tickColor);
 
             // draw tick text
-            const text = new GpuLetterText(tick.toLocaleString(), this.tickFont)
+            const text = new GpuLetterText(this.formatTickLabel(tick), this.tickFont)
                 .setColor(this.tickColor);
+
             // get the text-width to center align the text to the tick-line
             const tickLetterWidthHalf = context.pixelToScreenY(text.getAxisAlignedBoundingBox(context).width * 0.5);
             text.draw(context, axisLayout, Alignment.leftTop, Matrix3x3.translate(xOffset - tickLetterWidthHalf, tickTextSpacing));

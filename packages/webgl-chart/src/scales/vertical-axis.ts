@@ -1,23 +1,18 @@
-import type { LayoutNode } from "../layout/layout-node";
-import type { Context } from "../context";
-import { Alignment } from "../alignment";
-import { ScreenUnit, ScreenPosition } from "../layout/screen-position";
-import { Matrix3x3 } from "../matrix-3x3";
-import { AxisBase } from "./axis-base";
-import { GpuLetterText } from "../texture/gpu-letter-text";
-import { IWidthProvider } from "../layout/size-provider";
-import { TextTextureGenerator } from "../texture/text-texture-generator";
+import type { LayoutNode, Context } from '@tomsoftware/webgl-lib';
+import { Alignment, ScreenUnit, ScreenPosition, Matrix3x3, GpuLetterText,
+    IWidthProvider, TextTextureGenerator } from '@tomsoftware/webgl-lib';
+import { AxisBase } from './axis-base';
 
-export enum VerticalAxisPosition {
+export enum VerticalAxisOrientation {
     Left,
     Right
 }
 
 export class VerticalAxis extends AxisBase implements IWidthProvider {
-    public position: VerticalAxisPosition = VerticalAxisPosition.Left;
+    public orientation: VerticalAxisOrientation = VerticalAxisOrientation.Left;
 
-    public setPosition(position: VerticalAxisPosition): VerticalAxis {
-        this.position = position;
+    public setOrientation(position: VerticalAxisOrientation): VerticalAxis {
+        this.orientation = position;
         return this;
     }
 
@@ -38,8 +33,8 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         const ticks = this.scale.calculateTicks(m.height, 0.5 * context.width, true);
 
         // get some samples to measure
-        const tick1 = ticks[0].toLocaleString();
-        const tick2 = ticks[ticks.length - 1].toLocaleString();
+        const tick1 = this.formatTickLabel(ticks[0]);
+        const tick2 = this.formatTickLabel(ticks[ticks.length - 1]);
 
         // find the tick-text with the most chars
         const maxTickText = (tick1.length > tick2.length) ? tick1: tick2;
@@ -69,7 +64,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         let labelPadding: number;
 
         // draw axis border
-        if (this.position === VerticalAxisPosition.Right) {
+        if (this.orientation === VerticalAxisOrientation.Right) {
             context.drawLine(area.p0, area.p3, this.borderColor);
             labelAlign = Alignment.rightCenter;
             tickTextAlign = Alignment.leftTop;
@@ -104,7 +99,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         for (const tick of ticks) {
             const yOffset = (this.scale.max - tick) * positionScaling;
 
-            if (this.position === VerticalAxisPosition.Right) {
+            if (this.orientation === VerticalAxisOrientation.Right) {
                 context.drawLine(area.p0.addValues(tickLength, yOffset), area.p0.addValues(0, yOffset), this.tickColor);
             }
             else {
@@ -112,7 +107,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
             }
 
             // draw tick text
-            new GpuLetterText(tick.toLocaleString())
+            new GpuLetterText(this.formatTickLabel(tick))
                 .setColor(this.tickColor)
                 .draw(context, axisLayout, tickTextAlign, Matrix3x3.translate(tickTextSpacing, yOffset - tickLetterHightHalf));
         

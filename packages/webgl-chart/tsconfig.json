@@ -1,12 +1,12 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist",
-        "rootDir": "./src",
-        "module": "commonjs",
-        "target": "es6",
-        "declaration": true,
-        "strict": true
-    },
-    "include": ["src/**/*.ts"],
-    "exclude": ["node_modules"]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "baseUrl": "../..",
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

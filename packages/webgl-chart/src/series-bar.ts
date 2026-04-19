@@ -1,34 +1,28 @@
-import type { LayoutNode } from './layout/layout-node';
-import type { Scale } from './scales/scale';
-import { Color } from './color';
-import { Context } from './context';
-import { GpuFloatBuffer } from './buffers/gpu-buffer-float';
-import { GpuShortBuffer } from './buffers/gpu-buffer-short';
-import { Matrix3x3 } from './matrix-3x3';
-import { Vector4 } from './vector-4';
-import { Vector2 } from './vector-2';
-import { DrawableSeries } from './drawable-series';
+import type { LayoutNode, Context, AttributeBuffer } from '@tomsoftware/webgl-lib';
+import { Color,  Matrix3x3, Vector4, Vector2, GpuNumber, GpuFixBuffer } from '@tomsoftware/webgl-lib';
+import type { DrawableSeries } from './drawable-series';
+import { Scale } from './scales/scale';
 
 /** Renders a vertical bar chart series defined by x- and y-values */
 export class SeriesBar implements DrawableSeries {
     protected colorValue = new Vector4(0, 0.4, 1, 1);
     protected bBox = new Vector4(0, 0, 1, 1);
 
-    protected x: GpuFloatBuffer | null = null;
-    protected y: GpuFloatBuffer | null = null;
+    protected x: AttributeBuffer;
+    protected y: AttributeBuffer;
 
     /** width of each bar in data-units */
-    protected barWidth = 1;
+    protected barWidth = 0.5;
 
     /** x-offset in data-units for multi-series alignment */
     protected offsetX = 0;
 
-    private indexBuffer = new GpuShortBuffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
+    private indexBuffer = new GpuFixBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuFixBuffer('float32', 4, 2);
 
     private static IdBar = 'gpu-series-bar';
 
-    constructor(x: GpuFloatBuffer, y: GpuFloatBuffer) {
+    constructor(x: AttributeBuffer, y: AttributeBuffer) {
         this.x = x;
         this.y = y;
 
@@ -65,8 +59,8 @@ export class SeriesBar implements DrawableSeries {
         attribute float x;           // bar x-position (data)
         attribute float y;           // bar height (data)
 
-        uniform vec2 barWidth;      // width in relative world coordinates
-        uniform vec2 barOffset;     // x-offset in relative world coordinates
+        uniform float barWidth;      // width in relative world coordinates
+        uniform float barOffset;     // x-offset in relative world coordinates
 
         uniform mat3 uniformCamTransformation;
 
@@ -76,7 +70,7 @@ export class SeriesBar implements DrawableSeries {
             // transform into world coords
             vec3 worldPos = uniformCamTransformation * vec3(
                 // dataX + offsetX + barWidth
-                x + barOffset.x + (vertexOffset.x * barWidth.x),
+                x + barOffset + (vertexOffset.x * barWidth),
                 // set y to 0 for bottom vertexes
                 y * vertexOffset.y,
                 1.0
@@ -138,14 +132,9 @@ export class SeriesBar implements DrawableSeries {
         context.setUniform(program, 'uniformCamTransformation', m);
         context.setUniform(program, 'uniformColor', this.colorValue);
 
-        context.setUniform(program, 'barWidth', new Vector2(
-            this.barWidth * 0.5, // width is drawn in positive and negative direction
-            0 // height is defined by y
-        ));
-        context.setUniform(program, 'barOffset', new Vector2(
-            this.offsetX,
-            0 // no offset in y
-        ));
+        // width is drawn in positive and negative direction
+        context.setUniform(program, 'barWidth', new GpuNumber(this.barWidth * 0.5));
+        context.setUniform(program, 'barOffset', new GpuNumber(this.offsetX));
 
         // Set clipping bounds
         const p1 = new Vector2(layoutArea.left, layoutArea.top).transform(p);

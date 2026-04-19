@@ -1,18 +1,11 @@
-import type { Context } from "../context";
-import type { EventDispatcher } from "../event-handler/event-handler";
-import type { LayoutArea } from "./layout-area";
-import type { LayoutNode } from "./layout-node";
-import type { Scale } from "../scales/scale";
-import { EventTypes, EventValue } from "../event-handler/event-value";
-import { IntersectedLayout } from "./intersected-layout";
-import { LayoutCell } from "./layout-cell";
-import { VerticalLayout } from "./vertical-layout";
-import { HorizontalAxis, HorizontalAxisPosition } from "../scales/horizontal-axis";
-import { VerticalAxisPosition } from "../scales/vertical-axis";
-import { GpuText } from "../texture/gpu-text";
-import { TableRowLayout } from "./horizontal-table-layout";
-import { Color } from "../color";
-import { BasicYAxisLayout } from "./basic-y-axis-layout";
+import type { Context, EventDispatcher, LayoutArea, LayoutNode,
+    EventValue } from '@tomsoftware/webgl-lib';
+import { LayoutCell, GpuText, Color, VerticalLayout, EventTypes,
+    IntersectedLayout, TableRowLayout } from '@tomsoftware/webgl-lib';
+import type { Scale } from '../scales/scale';
+import { HorizontalAxis, HorizontalAxisOrientation } from '../scales/horizontal-axis';
+import { VerticalAxisOrientation } from '../scales/vertical-axis';
+import { BasicYAxisLayout } from './basic-y-axis-layout';
 
 
 /** Build up the layout for a chart with x and multiple y axes */
@@ -50,15 +43,15 @@ export class BasicChartLayout {
         this.xAxis = new HorizontalAxis(new GpuText('X Axis'), xScale)
             .setBorderColor(Color.platinum)
             .setGridColor(Color.platinum)
-            .setPosition(HorizontalAxisPosition.Bottom);
+            .setOrientation(HorizontalAxisOrientation.Bottom);
 
         this.updateLayout();
     }
 
-    public addYScale(scale: Scale, title: string, position?: VerticalAxisPosition): BasicYAxisLayout {
+    public addYScale(scale: Scale, title: string, position?: VerticalAxisOrientation): BasicYAxisLayout {
         const newYAxis = new BasicYAxisLayout(this, scale, title);
         if (position != null) {
-            newYAxis.axis.setPosition(position)
+            newYAxis.axis.setOrientation(position)
         }
 
         this.yAxis.push(newYAxis);
@@ -103,7 +96,7 @@ export class BasicChartLayout {
 
         // add axis on the left
         for (const yAxis of this.yAxis) {
-            if (yAxis.axis.position !== VerticalAxisPosition.Left) {
+            if (yAxis.axis.orientation !== VerticalAxisOrientation.Left) {
                 continue;
             }
             // add all y-axis
@@ -115,7 +108,7 @@ export class BasicChartLayout {
 
         // add axis on the left
         for (const yAxis of this.yAxis) {
-            if (yAxis.axis.position !== VerticalAxisPosition.Right) {
+            if (yAxis.axis.orientation !== VerticalAxisOrientation.Right) {
                 continue;
             }
             // add all y-axis

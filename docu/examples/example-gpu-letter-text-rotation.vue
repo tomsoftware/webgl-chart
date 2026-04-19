@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { LayoutCell, Alignment, LayoutBorder, Color, GpuLetterText } from '@tomsoftware/webgl-chart';
+import { LayoutCell, Alignment, LayoutBorder, Color, GpuLetterText } from '@tomsoftware/webgl-lib';
 import { ref } from 'vue';
 
 const deg = ref<number>(45);

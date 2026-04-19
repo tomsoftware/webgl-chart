@@ -24,9 +24,9 @@ export default defineUserConfig({
         link: '/api/introduction',
         activeMatch: "^/api/"
       }, {
-        text: 'Examples',
-        link: '/examples/basic',
-        activeMatch: "^/examples/"
+        text: 'Features',
+        link: '/features/basic',
+        activeMatch: "^/features/"
       },{
         text: 'Source',
         link: 'https://github.com/tomsoftware/webgl-chart',
@@ -40,23 +40,26 @@ export default defineUserConfig({
         children: [
           'introduction',
           'renderer',
+          'buffers',
           'layout',
+          'chart-axis',
           'draw-text',
           'event-handling'
         ]
       }],
-      '/examples/': [{
-          text: 'Examples',
+      '/features/': [{
+          text: 'Features',
           collapsible: false,
-          prefix: '/examples/',
+          prefix: '/features/',
           children: [
             'basic',
             'stacked',
             'annotations',
-            'axis',
+            'multi-axis',
             'series-bar',
-            'series-envelope',
+            'series-area',
             'series-bubble',
+            'series-ranges',
             'tooltip',
           ]
       }]
@@ -69,6 +72,7 @@ export default defineUserConfig({
         alias: {
           '@tomsoftware/webgl-chart-vue': path.resolve(__dirname, '../../../packages/webgl-chart-vue/lib/index.ts'),
           '@tomsoftware/webgl-chart': path.resolve(__dirname, '../../../packages/webgl-chart/src/index.ts'),
+          '@tomsoftware/webgl-lib': path.resolve(__dirname, '../../../packages/webgl-lib/src/index.ts'),
         }
       },
     }

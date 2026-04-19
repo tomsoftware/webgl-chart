@@ -1,5 +1,4 @@
-import { Context } from "./context";
-import { Matrix3x3 } from "./matrix-3x3";
+import { Matrix3x3, Context } from '@tomsoftware/webgl-lib';
 
 export type RenderCallback = (context: Context) => void;
 
@@ -79,7 +78,7 @@ export class GpuChart {
         }
 
         if (this.previousRenderTimestamp !== 0) {
-            console.log('drawScene: '+ Math.round(time - this.previousRenderTimestamp) +' ms');
+            console.trace('drawScene: '+ Math.round(time - this.previousRenderTimestamp) +' ms');
             this.previousRenderTimestamp = 0;
         }
 

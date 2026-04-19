@@ -1,6 +1,6 @@
 {
   "name": "webgl-chart-help",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Developer documentation for WebGl-Chart",
   "license": "MIT",
   "type": "module",
@@ -9,6 +9,11 @@
     "docs:clean-dev": "vuepress dev docs --clean-cache",
     "dev": "vuepress dev docs",
     "docs:update-package": "pnpm dlx vp-update"
+  },
+  "dependencies": {
+    "@tomsoftware/webgl-chart": "workspace:*",
+    "@tomsoftware/webgl-lib": "workspace:*",
+    "@tomsoftware/webgl-chart-vue": "workspace:*"
   },
   "devDependencies": {
     "@types/webgl2": "^0.0.11",

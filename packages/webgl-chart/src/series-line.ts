@@ -1,24 +1,19 @@
-import type { LayoutNode } from "./layout/layout-node";
-import type { Scale } from "./scales/scale";
-import { Color } from "./color";
-import { Context } from "./context";
-import { GpuFloatBuffer } from "./buffers/gpu-buffer-float";
-import { Matrix3x3 } from "./matrix-3x3";
-import { Vector4 } from "./vector-4";
-import { Vector2 } from "./vector-2";
-import { DrawableSeries } from "./drawable-series";
+import type { LayoutNode, Context, AttributeBuffer } from '@tomsoftware/webgl-lib';
+import { Color, Vector4, Vector2, Matrix3x3 } from '@tomsoftware/webgl-lib';
+import type { Scale } from './scales/scale';
+import type { DrawableSeries } from './drawable-series';
 
 export class SeriesLine implements DrawableSeries {
     protected colorValue = new Vector4(1, 0, 0, 0.5);
     protected bbox = new Vector4(0, 0, 1, 1);
     protected thickness: number = 1;
-    protected time: GpuFloatBuffer | null = null;
-    protected data: GpuFloatBuffer | null = null;
+    protected time: AttributeBuffer;
+    protected data: AttributeBuffer;
   
     /** this is a unique id to identifies this shader programs */
     private static IdLine = 'gpu-series-line';
 
-    constructor(time: GpuFloatBuffer, data: GpuFloatBuffer | null = null) {
+    constructor(time: AttributeBuffer, data: AttributeBuffer) {
         this.time = time;
         this.data = data;
     }
@@ -38,16 +33,6 @@ export class SeriesLine implements DrawableSeries {
     public setThickness(thickness: number) {
       this.thickness = Math.max(0, +thickness);
       return this;
-    }
-
-    public generate(calc: (t: number) => number): SeriesLine {
-        if (this.time == null) {
-            return this;
-        }
-
-        this.data = GpuFloatBuffer.generateFrom(this.time, calc);
-
-        return this;
     }
 
     private static vertexShaderLine = `

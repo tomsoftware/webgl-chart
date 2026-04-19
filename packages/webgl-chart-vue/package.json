@@ -28,7 +28,8 @@
     "build": "vite build"
   },
   "peerDependencies": {
-    "@tomsoftware/webgl-chart": ">=0.0.3",
+    "@tomsoftware/webgl-chart": "workspace:*",
+    "@tomsoftware/webgl-lib": "workspace:*",
     "vue": ">=3.0.0"
   },
   "devDependencies": {

@@ -3,11 +3,10 @@
 import { Generators } from './generators';
 
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, GpuFloatBuffer, LayoutCell,
-  Color, Scale, EventDispatcher, BasicChartLayout,
-  VerticalLayout, ScreenPosition, Context,
-  SeriesBar, DrawableSeries,
-  SeriesLine} from '@tomsoftware/webgl-chart';
+import { GpuGrowingBuffer, LayoutCell, Color, EventDispatcher,
+  VerticalLayout, ScreenPosition, Context } from '@tomsoftware/webgl-lib';
+import { SeriesPoint, Scale,BasicChartLayout, SeriesBar,
+  DrawableSeries, SeriesLine } from '@tomsoftware/webgl-chart';
 
 class ChartInfo {
   public series: DrawableSeries;
@@ -37,23 +36,29 @@ class ChartInfo {
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
-const time = new GpuFloatBuffer(itemCount)
+const time = new GpuGrowingBuffer('float32', itemCount)
     .generate((i) => i * 0.001); // in seconds
 
+const data1 = GpuGrowingBuffer.generateFrom('float32', time,
+  (t) => Generators.generateSin(t)
+);
+
+const data2 = GpuGrowingBuffer.generateFrom('float32', time,
+  (t) =>  Generators.generateIO(t * 10) * 10
+);
+
 // generate series data
-const series1 = new SeriesPoint(time)
-    .generate((t) => Generators.generateSin(t))
+const series1 = new SeriesPoint(time, data1)
     .setColor(Color.blue)
     .setPointSize(4)
 
-const series2 = new SeriesLine(time)
-    .generate((t) => Generators.generateIO(t * 10) * 10)
+const series2 = new SeriesLine(time, data2)
     .setColor(Color.red)
     .setThickness(1);
 
 const series3 = new SeriesBar(
   time,
-  GpuFloatBuffer.generateFrom(time, (t) => Generators.generateEKG(t * 10) * 20)
+  GpuGrowingBuffer.generateFrom('float32', time, (t) => Generators.generateEKG(t * 10) * 20)
 )
   .setColor(Color.darkGreen)
   .setBarWidth(0.0008)

@@ -1,33 +1,25 @@
 <script setup lang="ts">
 import { Generators } from './generators';
-
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, GpuFloatBuffer, LayoutCell,
-  Color, Scale, EventDispatcher, BasicChartLayout,
-  SeriesLine,
-  SeriesBar} from '@tomsoftware/webgl-chart';
+import { GpuGrowingBuffer, LayoutCell, Color, EventDispatcher, } from '@tomsoftware/webgl-lib';
+import {SeriesPoint, BasicChartLayout, SeriesLine, Scale,
+  } from '@tomsoftware/webgl-chart';
 
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
-const time = new GpuFloatBuffer(itemCount)
+const time = new GpuGrowingBuffer('float32', itemCount)
     .generate((i) => i * 0.001); // in seconds
 
+const data1 = GpuGrowingBuffer.generateFrom('float32', time, (t) => Generators.generateSin(t));
+const data2 = GpuGrowingBuffer.generateFrom('float32', time, (t) => Generators.generateIO(t * 10) * 20);
+
 // generate series data
-const series1 = new SeriesPoint(time)
-    .generate((t) => Generators.generateSin(t))
+const series1 = new SeriesPoint(time, data1)
     .setColor(Color.blue)
     .setPointSize(5);
 
-const series2 = new SeriesBar(
-  time,
-  GpuFloatBuffer.generateFrom(time, (t) => Generators.generateEKG(t * 10) * 10)
-)
+const series2 = new SeriesLine(time, data2)
     .setColor(Color.red)
-    .setBarWidth(0.0008)
-
-const series3 = new SeriesLine(time)
-    .generate((t) => Generators.generateIO(t * 10) * 20)
-    .setColor(Color.darkGreen)
     .setThickness(2)
 
 // scales define the range that is shown by the axis
@@ -39,7 +31,6 @@ const eventDispatcher = new EventDispatcher();
 
 // define layout
 const baseContainer = new LayoutCell();
-
 
 // use a basic chart layout for arranging the chart-elements
 const basicLayout = new BasicChartLayout(eventDispatcher, baseContainer, scaleX);
@@ -61,7 +52,6 @@ const myChart = new ChartConfig()
 
       // draw the series
       series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
-      series3.draw(context, scaleX, scaleY, basicLayout.chartCell);
       series2.draw(context, scaleX, scaleY, basicLayout.chartCell);
   });
 

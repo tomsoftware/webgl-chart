@@ -12,7 +12,7 @@ pnpm i
 To run the documentation in developing
 
 ``` bash
-pnpm run docs:dev
+pnpm run dev
 ```
 
 ## Build documentations

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { GpuText, LayoutCell, Alignment, LayoutBorder, Color } from '@tomsoftware/webgl-chart';
+import { GpuText, LayoutCell, Alignment, LayoutBorder, Color } from '@tomsoftware/webgl-lib';
 
 const leftTop = new GpuText('top left', undefined, Color.red);
 const leftCenter = new GpuText('center left', undefined, Color.red);

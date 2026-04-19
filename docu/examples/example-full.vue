@@ -3,13 +3,12 @@
 import { ref } from 'vue';
 
 import { Chart, Utilities, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, Matrix3x3, GpuFloatBuffer,
-  GpuText, LayoutCell, VerticalAxis, VerticalAxisPosition,
-  HorizontalAxis, HorizontalAxisPosition , VerticalLayout,
-  HorizontalLayout, ScreenPosition, IntersectedLayout,
-  LayoutBorder, Color, Font, Alignment, Scale,
-  EventDispatcher, EventTypes, RectDrawer, Annotations,
-  VerticalPosition, HorizontalPosition} from '@tomsoftware/webgl-chart';
+import { Matrix3x3, GpuGrowingBuffer, GpuText, LayoutCell, VerticalLayout,
+  HorizontalLayout, ScreenPosition, IntersectedLayout, LayoutBorder,
+  Color, Font, Alignment, EventDispatcher, EventTypes, RectDrawer } from '@tomsoftware/webgl-lib';
+import {SeriesPoint, VerticalAxis, VerticalAxisOrientation,
+  HorizontalAxis, HorizontalAxisOrientation, Scale, Annotations,
+  VerticalPosition, HorizontalPosition } from '@tomsoftware/webgl-chart';
 import { Generators } from './generators';
 
 
@@ -26,17 +25,18 @@ const scaleY = new Scale(-10, 10);
 // generate time data
 const itemCount = 1000 * 60 * 60 / 4;
 
-const time = new GpuFloatBuffer(itemCount)
+const time = new GpuGrowingBuffer('float32', itemCount)
     .generate((i) => i * 0.001); // in seconds
 
+const data1 = GpuGrowingBuffer.generateFrom('float32', time, (t) => Generators.generateSin(t));
+const data2 = GpuGrowingBuffer.generateFrom('float32', time, (t) => Generators.generateEKG(t * 10) * 10);
+
 // generate series data
-const series1 = new SeriesPoint(time, null)
-    .generate((t) => Generators.generateSin(t))
+const series1 = new SeriesPoint(time, data1)
     .setColor(Color.blue)
     .setPointSize(5);
   
-const series2 = new SeriesPoint(time, null)
-    .generate((t) => Generators.generateEKG(t * 10) * 10)
+const series2 = new SeriesPoint(time, data2)
     .setColor(Color.green)
     .setPointSize(4)
 /*
@@ -60,7 +60,7 @@ annotations.addHorizontalLine(9, Color.red, 10)
 // define axis
 const xAxis = new HorizontalAxis(new GpuText('X Axis'), scaleX)
   .setBorderColor(Color.darkGray)
-  .setPosition(HorizontalAxisPosition.Bottom)
+  .setOrientation(HorizontalAxisOrientation.Bottom)
   .setGridColor(Color.lightGray);
 
 const yAxis1 = new VerticalAxis(new GpuText('Y Axis 1',new Font('Arial', 20)).setColor(Color.purple).setRotation(90));
@@ -68,7 +68,7 @@ const yAxis2 = new VerticalAxis(new GpuText('Y Axis 2').setRotation(90), scaleY)
   .setBorderColor(Color.darkGray)
   .setGridColor(Color.lightGray);
 const yAxis3 = new VerticalAxis(new GpuText('Y right').setRotation(90))
-  .setPosition(VerticalAxisPosition.Right);
+  .setOrientation(VerticalAxisOrientation.Right);
 
 
 const headline = new GpuText('My new Chart');
@@ -130,7 +130,7 @@ const rec = new RectDrawer();
 
 
 // set render callback
-const data1 = new ChartConfig()
+const chart1 = new ChartConfig()
     .setRenderCallback((context) => {
 
       if (debugTexture == true) {
@@ -204,7 +204,7 @@ function onBind(element: HTMLElement | null): void {
   eventDispatcher.bind(element)
 }
 
-const data2 = new ChartConfig()
+const chart2 = new ChartConfig()
     .setRenderCallback((context) => {
       context.calculateLayout(baseContainer);
       context.layoutCache.draw(context);
@@ -219,8 +219,8 @@ function onDownloadTexture() {
 </script>
 
 <template>
-  Frame rate: {{ data1.maxFrameRate.value }}
-  <input type="range" min="0" max="100" v-model="data1.maxFrameRate.value" />
+  Frame rate: {{ chart1.maxFrameRate.value }}
+  <input type="range" min="0" max="100" v-model="chart1.maxFrameRate.value" />
 
   <label>
     <input type="checkbox" v-model="showDots" />
@@ -251,14 +251,14 @@ function onDownloadTexture() {
  <div class="grid-container">
   <div class="grid-item">
     <chart
-      :data="data1"
+      :data="chart1"
       @on-bind="onBind"
       class="chart"
     />
   </div>
   <div class="grid-item">
     <chart
-      :data="data2"
+      :data="chart2"
       class="chart"
     />
   </div>

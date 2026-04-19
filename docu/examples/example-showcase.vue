@@ -2,23 +2,32 @@
 
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Generators } from './generators';
-
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { SeriesPoint, Matrix3x3, GpuFloatBuffer, GpuText, LayoutCell,
-  VerticalLayout, ScreenPosition, Color, Alignment,  Scale,
-  EventDispatcher, Font, BasicChartLayout,
-  Annotations,
-  SeriesLine} from '@tomsoftware/webgl-chart';
+import { Matrix3x3, GpuText, LayoutCell, VerticalLayout, 
+  ScreenPosition, Color, Alignment, EventDispatcher, Font,
+  GpuGrowingBuffer} from '@tomsoftware/webgl-lib';
+import { SeriesPoint, Scale, Annotations, SeriesLine, BasicChartLayout, SeriesBar } from '@tomsoftware/webgl-chart';
 
 let pauseAnimation = ref<boolean>(false);
 
 // generate time data
-const time = new GpuFloatBuffer(1);
+const time = new GpuGrowingBuffer('float32', 1);
+const lineDate1 = new GpuGrowingBuffer('float32', 1);
+const pointData = new GpuGrowingBuffer('float32', 1);
+const lineData2 = new GpuGrowingBuffer('float32', 1);
 
 // generate series data
-const series1 = new SeriesLine(time);
-const series2 = new SeriesPoint(time);
-const series3 = new SeriesLine(time);
+const series1 = new SeriesBar(time, lineDate1)
+    .setColor(Color.byIndex(0))
+    .setBarWidth(0.0007)
+
+const series2 = new SeriesPoint(time, pointData)
+    .setColor(Color.byIndex(1))
+    .setPointSize(3);
+
+const series3 = new SeriesLine(time, lineData2)
+    .setColor(Color.byIndex(2))
+    .setThickness(3);
 
 // generate annotations
 const annotations = new Annotations();
@@ -102,24 +111,23 @@ function populate(timeLengthInMinutes: number) {
   const itemCount = timeLengthInMinutes * 60 * 60 / 4;
 
   // update time values
-  time.increaseCapacity(itemCount)
+  time
+    .increaseCapacity(itemCount)
     .generate((i) => i * 0.001); // in seconds
 
   // generate series data
-  series1
-    .generate((t) => Generators.generateSin(t))
-    .setColor(Color.byIndex(0))
-    .setThickness(3);
+  lineDate1
+    .increaseCapacity(itemCount)
+    .generate((t) => Generators.generateEKG(t * 0.01) * 10 - 5)
 
-  series2
-    .generate((t) => Generators.generateEKG(t * 10) * 10)
-    .setColor(Color.byIndex(1))
-    .setPointSize(3);
+  pointData
+    .increaseCapacity(itemCount)
+    .generate((t) => Generators.generateSin(t * 0.003) + 2);
 
-  series3
-    .generate((t) => Generators.generateIO(t * 10) * 20)
-    .setColor(Color.byIndex(2))
-    .setThickness(3);
+  lineData2
+    .increaseCapacity(itemCount)
+    .generate((t) => Generators.generateIO(t * 0.01) * 15 + 5)
+
 
   // update the annotations
   const numberOfAnnotations = Math.floor(itemCount * 0.003);

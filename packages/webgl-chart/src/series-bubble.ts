@@ -1,13 +1,7 @@
-import type { LayoutNode } from './layout/layout-node';
-import type { Scale } from './scales/scale';
-import { Color } from './color';
-import { Context } from './context';
-import { GpuFloatBuffer } from './buffers/gpu-buffer-float';
-import { Matrix3x3 } from './matrix-3x3';
-import { Vector4 } from './vector-4';
-import { GpuShortBuffer } from './buffers/gpu-buffer-short';
-import { Vector2 } from './vector-2';
-import { DrawableSeries } from './drawable-series';
+import type { LayoutNode, Context, AttributeBuffer } from '@tomsoftware/webgl-lib';
+import { Color, Matrix3x3, Vector4, GpuFixBuffer, Vector2 } from '@tomsoftware/webgl-lib';
+import type { DrawableSeries } from './drawable-series';
+import { Scale } from './scales/scale';
 
 /** Renders a bubble chart series defined by x‑, y‑ and radius‑values */
 export class SeriesBubble implements DrawableSeries {
@@ -16,19 +10,19 @@ export class SeriesBubble implements DrawableSeries {
     /** scaling of the circles */
     protected scaling = 1;
     protected bBox = new Vector4(0, 0, 1, 1);
-    protected x: GpuFloatBuffer | null = null;
-    protected y: GpuFloatBuffer | null = null;
-    protected radius: GpuFloatBuffer | null = null;
+    protected x: AttributeBuffer;
+    protected y: AttributeBuffer;
+    protected radius: AttributeBuffer;
 
     // base instance data
-    private indexBuffer = new GpuShortBuffer(6, 1);
-    private vertexOffset = new GpuFloatBuffer(4, 2);
-    private quadTexcoords = new GpuFloatBuffer(4, 2);
+    private indexBuffer = new GpuFixBuffer('uint16', 6, 1);
+    private vertexOffset = new GpuFixBuffer('float32', 4, 2);
+    private quadTexcoords = new GpuFixBuffer('float32', 4, 2);
 
     /** this is a unique id to identifies this shader programs */
     private static IdCircle = 'gpu-series-bubble';
 
-    constructor(x: GpuFloatBuffer, y: GpuFloatBuffer, radius: GpuFloatBuffer) {
+    constructor(x: AttributeBuffer, y: AttributeBuffer, radius: AttributeBuffer) {
         this.x = x;
         this.y = y;
         this.radius = radius;
@@ -70,14 +64,6 @@ export class SeriesBubble implements DrawableSeries {
     public get bubbleScaling(): number {
         return this.scaling;
     }
-
-    /** dispose data */
-    public clear() {
-        this.x?.clear();
-        this.y?.clear();
-        this.radius?.clear();
-    }
-
 
     // Vertex shader for instanced circle drawing
     private static vertexShaderCircle = `

@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue';
-import { SeriesBubble, GpuFloatBuffer, LayoutCell, Scale, Color, BasicChartLayout, EventDispatcher } from '@tomsoftware/webgl-chart';
+import { GpuGrowingBuffer, LayoutCell, Color, EventDispatcher  } from '@tomsoftware/webgl-lib';
+import { SeriesBubble, Scale, BasicChartLayout } from '@tomsoftware/webgl-chart';
 
 // Generate circle data
 const numCircles = 200;
 
-const xTimeData = GpuFloatBuffer.generate(numCircles, (t) => t * 0.1);
+const xTimeData = new GpuGrowingBuffer('float32', numCircles).generate((t) => t * 0.1);
 
 // create series drawer
 const series1 = new SeriesBubble(
     xTimeData,
-     GpuFloatBuffer.generateFrom(xTimeData, (t) => Math.random() * 10),
-     GpuFloatBuffer.generateFrom(xTimeData, (t) => Math.random() * 25 + 5)
+     GpuGrowingBuffer.generateFrom('float32', xTimeData, (t) => Math.random() * 10),
+     GpuGrowingBuffer.generateFrom('float32', xTimeData, (t) => Math.random() * 25 + 5)
   )
   .setColor(Color.blue.withAlpha(0.6));
 
 const series2 = new SeriesBubble(
     xTimeData,
-     GpuFloatBuffer.generateFrom(xTimeData, (t) => Math.random() * 10),
-     GpuFloatBuffer.generateFrom(xTimeData, (t) => Math.random() * 25 + 5)
+     GpuGrowingBuffer.generateFrom('float32', xTimeData, (t) => Math.random() * 10),
+     GpuGrowingBuffer.generateFrom('float32', xTimeData, (t) => Math.random() * 25 + 5)
   )
   .setColor(Color.red.withAlpha(0.6));
 
