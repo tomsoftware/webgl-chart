@@ -63,6 +63,7 @@ See https://chart.hmilch.net/ for examples and documentation.
 # Examples
 Explore the [example](./example) folder for basic examples to get you started.
 
+
 ## Basic usage (simplified)
 
 This library is not a config-only chart kit. It exposes a low-level rendering loop where you draw axes, series data and annotations yourself inside WebGL frame callbacks.
@@ -70,19 +71,26 @@ This library is not a config-only chart kit. It exposes a low-level rendering lo
 That means maximum flexibility for advanced visual controls (custom mark rendering, animated transitions, pixel-perfect overlays), instead of a limited declarative chart config API.
 
 ```ts
+import { GpuGrowingBuffer, LayoutCell, Color, EventDispatcher } from '@tomsoftware/webgl-lib';
+import { SeriesPoint, SeriesBar, SeriesLine, Scale, BasicChartLayout } from '@tomsoftware/webgl-chart';
+import { Chart, ChartConfig } from '@tomsoftware/webgl-chart-vue';
+
 // (1) prepare data buffers
 const time = new GpuGrowingBuffer('float32', [1, 2, 3]);
+const data1 = new GpuGrowingBuffer('float32', [3.1, 4.2, 5.3]);
+const data2 = new GpuGrowingBuffer('float32', [1.1, 2.2, 3.3]);
+const data3 = new GpuGrowingBuffer('float32', [4, 3, 2]);
 
 // (2) create series objects
-const points = new SeriesPoint(time, new GpuGrowingBuffer('float32', [3.1, 4.2, 5.3])
+const points = new SeriesPoint(time, data1)
   .setColor(Color.blue)
   .setPointSize(4);
 
-const line = new SeriesLine(time, new GpuGrowingBuffer('float32', [1.1, 2.2, 3.3])
+const line = new SeriesLine(time, data2)
   .setColor(Color.darkGreen)
   .setThickness(2);
 
-const bars = new SeriesBar(time, new GpuGrowingBuffer('float32', [4, 3, 2])
+const bars = new SeriesBar(time, data3)
   .setColor(Color.red)
   .setBarWidth(0.02);
 
