@@ -144,7 +144,7 @@ jobs:
       - name: (webgl-lib) Publish
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-lib
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -157,7 +157,7 @@ jobs:
       - name: (webgl-chart) Publish
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -183,7 +183,7 @@ jobs:
       - name: (webgl-chart-vue) Publish
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-vue
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
