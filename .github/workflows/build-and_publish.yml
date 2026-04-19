@@ -1,21 +1,63 @@
-name: Release Build & Publish (latest)
+name: Build & Publish
 
 on:
+  push:
+    branches:
+      - develop
+
   workflow_dispatch:
     inputs:
-      publish:
-        description: "Publish to npm?"
+      tag:
+        description: "Which npm tag should be used?"
         required: true
-        default: "no"
+        default: "none"
         type: choice
         options:
-          - "no"
-          - "yes"
+          - "none"
+          - "next"
+          - "latest"
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine tag (push vs manual)
+        id: set_tag
+        run: |
+          # Default: none
+          TAG="none"
+
+          # If workflow_dispatch -> use user input
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          fi
+
+          # If push on develop -> force next
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG="next"
+          fi
+
+          echo "Final tag: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+
+      - name: Validate tag usage
+        run: |
+          TAG="${{ steps.set_tag.outputs.tag }}"
+          BRANCH="${{ github.ref }}"
+
+          echo "Branch: $BRANCH"
+          echo "Tag: $TAG"
+
+          # allow 'last' only on 'main'
+          if [ "$TAG" = "latest" ] && [ "$BRANCH" != "refs/heads/main" ]; then
+            echo "::error::You can only publish 'latest' from the main branch."
+            exit 1
+          fi
+
+
   build-and-publish:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,7 +119,7 @@ jobs:
           path: packages/webgl-chart-vue/dist
 
 
-      # 3) Documentation
+      # Documentation
       - name: Build documentation
         run: |
           cd docu
@@ -91,34 +133,34 @@ jobs:
 
 
       # Publish @tomsoftware/webgl-lib
-      - name: Publish webgl-lib (last)
-        if: ${{ github.event.inputs.publish == 'yes' }}
+      - name: Publish webgl-lib 
+        if: ${{ github.event.inputs.tag != 'none' }}
         working-directory: packages/webgl-lib
-        run: npm publish --tag last --access public
+        run: npm publish --tag ${{ github.event.inputs.tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart
-      - name: Publish webgl-chart (last)
-        if: ${{ github.event.inputs.publish == 'yes' }}
+      - name: Publish webgl-chart
+        if: ${{ github.event.inputs.tag != 'none' }}
         working-directory: packages/webgl-chart
-        run: npm publish --tag last --access public
+        run: npm publish --tag ${{ github.event.inputs.tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart-react
-      - name: Publish webgl-chart-react (last)
-        if: ${{ github.event.inputs.publish == 'yes' }}
+      - name: Publish webgl-chart-react
+        if: ${{ github.event.inputs.tag != 'none' }}
         working-directory: packages/webgl-chart-react
-        run: npm publish --tag last --access public
+        run: npm publish --tag ${{ github.event.inputs.tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart-vue
-      - name: Publish webgl-chart-vue (last)
-        if: ${{ github.event.inputs.publish == 'yes' }}
+      - name: Publish webgl-chart-vue
+        if: ${{ github.event.inputs.tag != 'none' }}
         working-directory: packages/webgl-chart-vue
-        run: npm publish --tag last --access public
+        run: npm publish --tag ${{ github.event.inputs.tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
