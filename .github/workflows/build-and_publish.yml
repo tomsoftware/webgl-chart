@@ -136,7 +136,12 @@ jobs:
 
 
       # Publish @tomsoftware/webgl-lib
-      - name: Publish webgl-lib 
+      - name: Bump prerelease version (develop only)
+        if: ${{ needs.validate.outputs.tag == 'next' }}
+        working-directory: packages/webgl-lib
+        run: npm version prerelease --preid=next --no-git-tag-version
+
+      - name: Publish webgl-lib
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-lib
         run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
@@ -144,6 +149,11 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart
+      - name: Bump prerelease version (develop only)
+        if: ${{ needs.validate.outputs.tag == 'next' }}
+        working-directory: packages/webgl-chart
+        run: npm version prerelease --preid=next --no-git-tag-version
+
       - name: Publish webgl-chart
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart
@@ -152,6 +162,11 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart-react
+      - name: Bump prerelease version (develop only)
+        if: ${{ needs.validate.outputs.tag == 'next' }}
+        working-directory: packages/webgl-chart-react
+        run: npm version prerelease --preid=next --no-git-tag-version
+
       - name: Publish webgl-chart-react
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-react
@@ -160,6 +175,11 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart-vue
+      - name: Bump prerelease version (develop only)
+        if: ${{ needs.validate.outputs.tag == 'next' }}
+        working-directory: packages/webgl-chart-vue
+        run: npm version prerelease --preid=next --no-git-tag-version
+
       - name: Publish webgl-chart-vue
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-vue
