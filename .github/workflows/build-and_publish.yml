@@ -139,7 +139,7 @@ jobs:
       - name: Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-lib
-        run: npm version prerelease --preid=next --no-git-tag-version
+        run: pnpm version prerelease --preid=next --no-git-tag-version
 
       - name: Publish webgl-lib
         if: ${{ needs.validate.outputs.tag != 'none' }}
@@ -152,7 +152,7 @@ jobs:
       - name: Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart
-        run: npm version prerelease --preid=next --no-git-tag-version
+        run: pnpm version prerelease --preid=next --no-git-tag-version
 
       - name: Publish webgl-chart
         if: ${{ needs.validate.outputs.tag != 'none' }}
@@ -165,7 +165,7 @@ jobs:
       - name: Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart-react
-        run: npm version prerelease --preid=next --no-git-tag-version
+        run: pnpm version prerelease --preid=next --no-git-tag-version
 
       - name: Publish webgl-chart-react
         if: ${{ needs.validate.outputs.tag != 'none' }}
@@ -178,7 +178,7 @@ jobs:
       - name: Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart-vue
-        run: npm version prerelease --preid=next --no-git-tag-version
+        run: pnpm version prerelease --preid=next --no-git-tag-version
 
       - name: Publish webgl-chart-vue
         if: ${{ needs.validate.outputs.tag != 'none' }}
