@@ -20,6 +20,8 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.set_tag.outputs.tag }}
     steps:
       - name: Determine tag (push vs manual)
         id: set_tag
@@ -57,6 +59,7 @@ jobs:
 
 
   build-and-publish:
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
