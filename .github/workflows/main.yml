@@ -86,18 +86,39 @@ jobs:
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
         with:
-          name: documentation-next
+          name: documentation
           path: docu/docs/.vuepress/dist
 
 
-      # 4) Publish
-      - name: Publish packages (latest)
+      # Publish @tomsoftware/webgl-lib
+      - name: Publish webgl-lib (last)
         if: ${{ github.event.inputs.publish == 'yes' }}
-        run: |
-          for pkg in webgl-lib webgl-chart webgl-chart-react webgl-chart-vue; do
-            cd packages/$pkg
-            npm publish --tag latest --access public
-            cd ../..
-          done
+        working-directory: packages/webgl-lib
+        run: npm publish --tag last --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart
+      - name: Publish webgl-chart (last)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart
+        run: npm publish --tag last --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart-react
+      - name: Publish webgl-chart-react (last)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart-react
+        run: npm publish --tag last --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart-vue
+      - name: Publish webgl-chart-vue (last)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart-vue
+        run: npm publish --tag last --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+

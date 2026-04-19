@@ -4,6 +4,15 @@ on:
   push:
     branches:
       - develop
+    inputs:
+      publish:
+        description: "Publish to npm?"
+        required: true
+        default: "no"
+        type: choice
+        options:
+          - "no"
+          - "yes"
 
 jobs:
   build-and-publish:
@@ -82,13 +91,36 @@ jobs:
           name: documentation-next
           path: docu/docs/.vuepress/dist
 
-      # Publish
-      - name: Publish packages (next)
-        run: |
-          for pkg in webgl-lib webgl-chart webgl-chart-react webgl-chart-vue; do
-            cd packages/$pkg
-            npm publish --tag next --access public
-            cd ../..
-          done
+
+      # Publish @tomsoftware/webgl-lib
+      - name: Publish webgl-lib (next)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-lib
+        run: npm publish --tag next --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart
+      - name: Publish webgl-chart (next)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart
+        run: npm publish --tag next --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart-react
+      - name: Publish webgl-chart-react (next)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart-react
+        run: npm publish --tag next --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart-vue
+      - name: Publish webgl-chart-vue (next)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart-vue
+        run: npm publish --tag next --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
