@@ -134,33 +134,33 @@ jobs:
 
       # Publish @tomsoftware/webgl-lib
       - name: Publish webgl-lib 
-        if: ${{ github.event.inputs.tag != 'none' }}
+        if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-lib
-        run: npm publish --tag ${{ github.event.inputs.tag }} --access public
+        run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart
       - name: Publish webgl-chart
-        if: ${{ github.event.inputs.tag != 'none' }}
+        if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart
-        run: npm publish --tag ${{ github.event.inputs.tag }} --access public
+        run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart-react
       - name: Publish webgl-chart-react
-        if: ${{ github.event.inputs.tag != 'none' }}
+        if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-react
-        run: npm publish --tag ${{ github.event.inputs.tag }} --access public
+        run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart-vue
       - name: Publish webgl-chart-vue
-        if: ${{ github.event.inputs.tag != 'none' }}
+        if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-vue
-        run: npm publish --tag ${{ github.event.inputs.tag }} --access public
+        run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
