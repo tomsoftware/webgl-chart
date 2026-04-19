@@ -94,6 +94,8 @@ watch(pauseAnimation, (value) => {
   }
 });
 
+timer.trigger(50);
+
 </script>
 
 <template>

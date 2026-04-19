@@ -3,5 +3,15 @@
   "workspaces": [
     "packages/*",
     "docu"
-  ]
+  ],
+  "scripts": {
+    "build": "tsc -b packages/*",
+    "build:react": "pnpm --filter webgl-chart-react build",
+    "build:vue": "pnpm --filter webgl-chart-vue build",
+    "build:all": "pnpm build && pnpm build:react && pnpm build:vue",
+    "docs:build": "pnpm --filter docu run docs:build"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
+  }
 }

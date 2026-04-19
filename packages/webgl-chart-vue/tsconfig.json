@@ -1,17 +1,19 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "composite": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "moduleResolution": "node",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
-        "baseUrl": "../..",
-    },
-    "include": ["src", "lib"],
-    "references": [
-       { "path": "../webgl-chart" }
-    ],
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "paths": {
+      "@tomsoftware/webgl-chart": ["../webgl-chart/src"],
+      "@tomsoftware/webgl-lib": ["../webgl-lib/src"]
+    }
+  },
+  "include": ["src", "lib"],
+  "references": [
+    { "path": "../webgl-lib" },
+    { "path": "../webgl-chart" }
+  ]
 }

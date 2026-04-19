@@ -10,6 +10,9 @@ export class GpuRingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
     /** The current position in the buffer where new data will be written */
     protected writePosition: number = 0;
 
+    private copyLastValueToBeginning: boolean = false;
+    private breakAfterWritePosition: boolean = false;
+
     public constructor(type: GpuBufferDataType, size: number, attributeSize?: number, componentsPerAttribute?: number);
     public constructor(type: GpuBufferDataType, values: number[]);
     public constructor(
@@ -37,18 +40,89 @@ export class GpuRingBuffer<T extends TypedArray> extends GpuBufferBase<T> {
     }
 
     /**
-     * Add a list of values to the buffer
+     *  Enables / disables value coping on buffer wrapping so
+     *    buffer[0] = buffer[buffer.length - 1]
+     * This is useful for line series so line is not breaking on end 
+     *   of physical buffer. E.g.
+     * Values to write:
+     *   [5, 6, 7, 8, 9]
+     * This will cause the resulting buffer to be (when writePosition = buffer.length - 3):
+     *   [7, 8, 9 ..... 5, 6, 7]
+     * So value 7 is repeated and the line is drawn:
+     *   7->8, 8->9 ... 5->7, 6->7
+    */
+    public setCopyLastValueToBeginning(value: boolean): this {
+        this.copyLastValueToBeginning = value;
+        return this;
+    }
+
+    /**
+     * Enables / disables adding of NaN value after write position. This breaks
+     *   rendering of lines when the buffer is wrapped. So no line from 
+     *   newest-datapoint to oldest-datapoint
+     * Do not use this for buffers used for time-values cause it breaks .findIndex()
+     */
+    public setBreakAfterWritePosition(value: boolean): this {
+        this.breakAfterWritePosition = value;
+        return this;
+    }
+
+    private doPushRangeInternal(values: number[] | TypedArray) {
+        for (let i = 0; i < values.length; i++) {
+            this.buffer[this.writePosition] = values[i];
+            this.writePosition = (this.writePosition + 1) % this.buffer.length;
+        }
+
+        if (this.breakAfterWritePosition) {
+            // add NaN at the end
+            this.buffer[this.writePosition] = NaN;
+        }
+
+        if (this.validLength < this.buffer.length) {
+            // buffer is not filled yet
+            if (this.writePosition === 0) {
+                // because of "mod buffer.length" the full length will never be set with out this case
+                this.validLength = this.buffer.length;
+            } else if (this.breakAfterWritePosition) {
+                // add also the NaN to the valid length
+                this.validLength = Math.max(this.writePosition + 1, this.validLength);
+            }
+            else {
+                this.validLength = Math.max(this.writePosition, this.validLength);
+            }
+
+        }
+    }
+
+    /**
+     * Add a list of values to the circular buffer.
      */
     protected doPushRange(values: number[] | TypedArray): void {
         if (this.buffer.length === 0) {
             return;
         }
 
-        for (let i = 0; i < values.length; i++) {
-            this.buffer[this.writePosition] = values[i];
-            this.writePosition = (this.writePosition + 1) % this.buffer.length;
+        if (this.copyLastValueToBeginning) {
+            const remaining = this.buffer.length - this.writePosition;
+
+            if (values.length >= remaining) {
+                // First part fits into the remaining space
+                const firstPart = values.slice(0, remaining);
+                // Second part wraps around to the beginning
+                const secondPart = values.slice(remaining - 1);
+
+                // Write the part that fits until the end
+                this.doPushRangeInternal(firstPart);
+                //  Write the wrapped part starting at index 0
+                this.doPushRangeInternal(secondPart)
+            }
+            else {
+                this.doPushRangeInternal(values);
+            }
         }
-        this.validLength = Math.min(this.validLength + values.length, this.buffer.length);
+        else {
+            this.doPushRangeInternal(values);
+        }
     }
 
     /**

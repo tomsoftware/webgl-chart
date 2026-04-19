@@ -11,10 +11,10 @@ import { SeriesPoint, Scale, Annotations, SeriesLine, BasicChartLayout, SeriesBa
 let pauseAnimation = ref<boolean>(false);
 
 // generate time data
-const time = new GpuGrowingBuffer('float32', 1);
-const lineDate1 = new GpuGrowingBuffer('float32', 1);
-const pointData = new GpuGrowingBuffer('float32', 1);
-const lineData2 = new GpuGrowingBuffer('float32', 1);
+const time = new GpuGrowingBuffer('float32');
+const lineDate1 = new GpuGrowingBuffer('float32');
+const pointData = new GpuGrowingBuffer('float32');
+const lineData2 = new GpuGrowingBuffer('float32');
 
 // generate series data
 const series1 = new SeriesBar(time, lineDate1)
@@ -139,12 +139,17 @@ function populate(timeLengthInMinutes: number) {
   }
 }
 
+function zoomOut() {
+  scaleX.setRange(time.firstComponent(), time.lastComponent());
+  pauseAnimation.value = true;
+}
+
 </script>
 
 <template>
   <div class="grid-item">
     <button @click="pauseAnimation = !pauseAnimation">{{ pauseAnimation ? 'Run' : 'Pause'}}</button>
-    <button @click="scaleX.setRange(time.first, time.last)">Zoom out</button>
+    <button @click="zoomOut()">Zoom out</button>
     <button @click="scaleX.setRange(0, 1)">Reset zoom</button>
     <button @click="populate(1200)">Use 3 million data-points</button>
     <button @click="myChart.setMaxFrameRate(60);">Framerate 60 Hz</button>

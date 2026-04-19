@@ -1,7 +1,7 @@
 {
   "name": "@tomsoftware/webgl-chart",
-  "version": "0.0.15",
-  "description": "High performance web Chart Library to plot line-charts, area-charts, bubble-charts, bar-chart and annotations using WebGL",
+  "version": "1.0.0",
+  "description": "High performance web Chart Library to plot line-charts, area-charts, bubble-charts, bar-chart, rolling charts and annotations using WebGL",
   "main": "dist/index.js",
   "publishConfig": {
     "access": "public"

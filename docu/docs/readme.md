@@ -3,7 +3,7 @@ home: true
 title: Home
 actions:
   - text: Get Started
-    link: get-started.md
+    link: get-started/
     type: primary
 
   - text: API

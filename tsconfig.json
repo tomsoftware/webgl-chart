@@ -1,19 +1,17 @@
 {
-  "compilerOptions": {
-    "target": "es2015",
-    "module": "esnext",
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "bundler",
-    "baseUrl": ".",
-    "paths": {
-      "@tomsoftware/webgl-lib": [ "packages/webgl-lib/src" ],
-      "@tomsoftware/webgl-chart": [ "packages/webgl-chart/src" ],
-    }
-  },
   "files": [],
   "references": [
     { "path": "./packages/webgl-lib" },
-    { "path": "./packages/webgl-chart" }
-  ]
+    { "path": "./packages/webgl-chart" },
+    { "path": "./packages/webgl-chart-vue" },
+    { "path": "./packages/webgl-chart-react" }
+  ],
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": false
+  }
 }

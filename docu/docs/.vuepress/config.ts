@@ -8,7 +8,7 @@ export default defineUserConfig({
   lang: 'en-US',
 
   title: 'WebGl-Chart Documentation',
-  description: 'High performance web chart library to plot line-charts, area-charts, bubble-charts, bar-chart and annotations using WebGL',
+  description: 'High performance web chart library to plot line-charts, area-charts, bubble-charts, bar-chart, rolling charts and annotations using WebGL',
 
   head: [
     ['link', { rel: "icon", type: "image/x-icon", href: "/favicon.ico"}]
@@ -18,7 +18,7 @@ export default defineUserConfig({
     logo: '/webgl-chart-logo.svg',
     navbar: [
       '/',
-      '/get-started',
+      '/get-started/',
       {
         text: 'API',
         link: '/api/introduction',
@@ -33,6 +33,7 @@ export default defineUserConfig({
       }
     ],
     sidebar: {
+      '/get-started/': false,
       '/api/': [{
         text: 'API',
         collapsible: false,
@@ -60,6 +61,7 @@ export default defineUserConfig({
             'series-area',
             'series-bubble',
             'series-ranges',
+            'rolling-chart',
             'tooltip',
           ]
       }]
@@ -68,6 +70,9 @@ export default defineUserConfig({
 
   bundler: viteBundler({
     viteOptions: {
+      ssr: {
+        
+      },
       resolve: {
         alias: {
           '@tomsoftware/webgl-chart-vue': path.resolve(__dirname, '../../../packages/webgl-chart-vue/lib/index.ts'),

@@ -1,0 +1,124 @@
+name: Release Build & Publish (latest)
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish to npm?"
+        required: true
+        default: "no"
+        type: choice
+        options:
+          - "no"
+          - "yes"
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # TypeScript Build
+      - name: Build TypeScript packages
+        run: pnpm exec tsc -b packages/*
+
+
+      # webgl-lib
+      - name: Upload webgl-lib artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-lib-dist
+          path: packages/webgl-lib/dist
+
+
+      # webgl-chart
+      - name: Upload webgl-chart artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-chart-dist
+          path: packages/webgl-chart/dist
+
+
+      # webgl-chart-react
+      - name: Build React package
+        run: pnpm --filter webgl-chart-react build
+
+      - name: Upload webgl-chart-react artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-chart-react-dist
+          path: packages/webgl-chart-react/dist
+
+
+      # webgl-chart-vue
+      - name: Build Vue package
+        run: pnpm --filter webgl-chart-vue build
+
+      - name: Upload webgl-chart-vue artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-chart-vue-dist
+          path: packages/webgl-chart-vue/dist
+
+
+      # 3) Documentation
+      - name: Build documentation
+        run: |
+          cd docu
+          pnpm run docs:build
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: docu/docs/.vuepress/dist
+
+
+      # Publish @tomsoftware/webgl-lib
+      - name: Publish webgl-lib (last)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-lib
+        run: npm publish --tag last --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart
+      - name: Publish webgl-chart (last)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart
+        run: npm publish --tag last --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart-react
+      - name: Publish webgl-chart-react (last)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart-react
+        run: npm publish --tag last --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Publish @tomsoftware/webgl-chart-vue
+      - name: Publish webgl-chart-vue (last)
+        if: ${{ github.event.inputs.publish == 'yes' }}
+        working-directory: packages/webgl-chart-vue
+        run: npm publish --tag last --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
