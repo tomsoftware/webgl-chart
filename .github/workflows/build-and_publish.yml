@@ -136,12 +136,12 @@ jobs:
 
 
       # Publish @tomsoftware/webgl-lib
-      - name: Bump prerelease version (develop only)
+      - name: (webgl-lib) Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-lib
-        run: pnpm version prerelease --preid=next --no-git-tag-version
+        run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
 
-      - name: Publish webgl-lib
+      - name: (webgl-lib) Publish
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-lib
         run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
@@ -149,12 +149,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart
-      - name: Bump prerelease version (develop only)
+      - name: (webgl-chart) Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart
-        run: pnpm version prerelease --preid=next --no-git-tag-version
+        run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
 
-      - name: Publish webgl-chart
+      - name: (webgl-chart) Publish
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart
         run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
@@ -162,12 +162,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart-react
-      - name: Bump prerelease version (develop only)
+      - name: (webgl-chart-react) Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart-react
-        run: pnpm version prerelease --preid=next --no-git-tag-version
+        run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
 
-      - name: Publish webgl-chart-react
+      - name: (webgl-chart-react) Publish
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-react
         run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
@@ -175,12 +175,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # Publish @tomsoftware/webgl-chart-vue
-      - name: Bump prerelease version (develop only)
+      - name: (webgl-chart-vue) Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart-vue
-        run: pnpm version prerelease --preid=next --no-git-tag-version
+        run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
 
-      - name: Publish webgl-chart-vue
+      - name: (webgl-chart-vue) Publish
         if: ${{ needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-vue
         run: npm publish --tag ${{ needs.validate.outputs.tag }} --access public
