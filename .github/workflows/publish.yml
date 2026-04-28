@@ -1,0 +1,126 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to publish from"
+        required: true
+        default: develop
+        type: choice
+        options:
+          - develop
+          - main
+      tag:
+        description: "NPM tag to publish"
+        required: true
+        default: next
+        type: choice
+        options:
+          - next
+          - latest
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.set_config.outputs.branch }}
+      tag: ${{ steps.set_config.outputs.tag }}
+    steps:
+      - name: Determine publish configuration
+        id: set_config
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            BRANCH=develop
+            TAG=next
+          else
+            BRANCH="${{ github.event.inputs.branch }}"
+            TAG="${{ github.event.inputs.tag }}"
+          fi
+
+          if [ "$TAG" = "latest" ] && [ "$BRANCH" != "main" ]; then
+            echo "::error::'latest' can only be published from the main branch."
+            exit 1
+          fi
+
+          if [ "$TAG" = "next" ] && [ "$BRANCH" != "develop" ]; then
+            echo "::error::'next' can only be published from the develop branch."
+            exit 1
+          fi
+
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Show publish configuration
+        run: |
+          echo "Publish branch: ${{ steps.set_config.outputs.branch }}"
+          echo "Publish tag: ${{ steps.set_config.outputs.tag }}"
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.validate.outputs.branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build TypeScript packages
+        run: pnpm exec tsc -b packages/*
+
+      - name: Build React package
+        run: pnpm --filter webgl-chart-react build
+
+      - name: Build Vue package
+        run: pnpm --filter webgl-chart-vue build
+
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          TAG: ${{ needs.validate.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          publish_package() {
+            local dir="packages/$1"
+            local name
+            local base_version
+            local version
+
+            name=$(node -e "process.stdout.write(require('./$dir/package.json').name)")
+            base_version=$(node -e "process.stdout.write(require('./$dir/package.json').version)")
+            version="$base_version"
+
+            if [ "$TAG" = "next" ]; then
+              version="${base_version}-next.${GITHUB_RUN_NUMBER}"
+            fi
+
+            echo "Publishing $name@$version with tag '$TAG'"
+
+            if npm view "$name@$version" >/dev/null 2>&1; then
+              echo "Version $version already exists for $name, skipping publish."
+              return
+            fi
+
+            pnpm --dir "$dir" version "$version" --no-git-tag-version --no-workspaces-update --ignore-scripts
+            pnpm --dir "$dir" publish --tag "$TAG" --access public --no-git-checks
+          }
+
+          publish_package webgl-lib
+          publish_package webgl-chart
+          publish_package webgl-chart-react
+          publish_package webgl-chart-vue

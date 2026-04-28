@@ -1,0 +1,84 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build TypeScript packages
+        run: pnpm exec tsc -b packages/*
+
+      - name: Build React package
+        run: pnpm --filter webgl-chart-react build
+
+      - name: Build Vue package
+        run: pnpm --filter webgl-chart-vue build
+
+      ########## UMD bundle ##########
+      # webgl-lib -> bundle
+      - name: Build webgl-lib UMD bundle
+        run: pnpm --filter webgl-lib run build:umd
+
+      # webgl-chart -> bundle
+      - name: Build webgl-chart UMD bundle
+        run: pnpm --filter webgl-chart run build:umd
+
+      # webgl-chart-vue -> bundle
+      - name: Build webgl-chart-vue UMD bundle
+        run: pnpm --filter webgl-chart-vue run build:umd
+
+      ########## Documentation ##########
+      - name: Build documentation
+        run: |
+          cd docu
+          pnpm run docs:build
+
+      - name: Upload UMD packages artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: umd-packages
+          path: |
+            packages/webgl-lib/dist-umd
+            packages/webgl-chart/dist-umd
+            packages/webgl-chart-vue/dist-umd
+
+      - name: Upload NPM packages artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-packages
+          path: |
+            packages/webgl-lib/dist
+            packages/webgl-chart/dist
+            packages/webgl-chart-react/dist
+            packages/webgl-chart-vue/dist
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: documentation
+          path: docu/docs/.vuepress/dist
