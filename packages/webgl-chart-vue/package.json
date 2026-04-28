@@ -21,11 +21,13 @@
   "module": "./dist/webgl-chart-vue.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "dist-umd"
   ],
   "scripts": {
     "dev": "vite --force",
-    "build": "vite build"
+    "build": "vite build",
+    "build:umd": "vite build --config vite.config.umd.ts"
   },
   "peerDependencies": {
     "@tomsoftware/webgl-chart": "workspace:*",

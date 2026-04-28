@@ -79,28 +79,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      ########## NPM Package ##########
       # TypeScript Build
       - name: Build TypeScript packages
         run: pnpm exec tsc -b packages/*
 
-
-      # webgl-lib
+      # webgl-lib --> NPM-Pack
       - name: Upload webgl-lib artifact
         uses: actions/upload-artifact@v4
         with:
           name: webgl-lib-dist
           path: packages/webgl-lib/dist
 
-
-      # webgl-chart
+      # webgl-chart --> NPM-Pack
       - name: Upload webgl-chart artifact
         uses: actions/upload-artifact@v4
         with:
           name: webgl-chart-dist
           path: packages/webgl-chart/dist
 
-
-      # webgl-chart-react
+      # webgl-chart-react --> NPM-Pack
       - name: Build React package
         run: pnpm --filter webgl-chart-react build
 
@@ -110,8 +108,7 @@ jobs:
           name: webgl-chart-react-dist
           path: packages/webgl-chart-react/dist
 
-
-      # webgl-chart-vue
+      # webgl-chart-vue -> NPM
       - name: Build Vue package
         run: pnpm --filter webgl-chart-vue build
 
@@ -122,6 +119,38 @@ jobs:
           path: packages/webgl-chart-vue/dist
 
 
+      ########## UMD bundle ##########
+      # webgl-lib -> bundle
+      - name: Build webgl-lib UMD bundle
+        run: pnpm --filter webgl-lib run build:umd
+
+      - name: Upload webgl-lib-umd Bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-lib-bundle-umd
+          path: packages/webgl-lib/dist-umd/webgl-lib.umd.js
+
+      # webgl-chart -> bundle
+      - name: Build webgl-chart UMD bundle
+        run: pnpm --filter webgl-chart run build:umd
+
+      - name: Upload webgl-chart-umd Bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-chart-bundle-umd
+          path: packages/webgl-chart/dist-umd/webgl-chart.umd.js
+
+      # webgl-chart-vue -> bundle
+      - name: Build webgl-chart-vue UMD bundle
+        run: pnpm --filter webgl-chart-vue run build:umd
+
+      - name: Upload webgl-chart-vue-umd Bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webgl-chart-vue-bundle-umd
+          path: packages/webgl-chart-vue/dist-umd/webgl-chart-vue.umd.js
+
+      ########## Documentation ##########
       # Documentation
       - name: Build documentation
         run: |
@@ -135,6 +164,7 @@ jobs:
           path: docu/docs/.vuepress/dist
 
 
+      ########## Publish NPM ##########
       # Publish @tomsoftware/webgl-lib
       - name: (webgl-lib) Bump prerelease version (develop only)
         if: ${{ needs.validate.outputs.tag == 'next' }}

@@ -20,12 +20,14 @@
   ],
 
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build:umd": "vite build --config vite.config.umd.ts"
   },
   "dependencies": {
     "@tomsoftware/webgl-lib": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "~5.6.3"
+    "typescript": "~5.6.3",
+    "vite": "^6.1.0"
   }
 }
