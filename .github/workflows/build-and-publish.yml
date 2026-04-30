@@ -47,6 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.set_tag.outputs.tag }}
+      build_number: ${{ steps.set_tag.outputs.tag }}.${GITHUB_RUN_NUMBER}
     steps:
       - name: Determine tag (push vs manual)
         id: set_tag
@@ -178,54 +179,82 @@ jobs:
       # PUBLISH PACKAGES (controlled by checkboxes)
       ############################################
 
+      # setup
+      - name: Generate build suffix
+        id: set_tag
+        run: |
+          TAG="${{ needs.validate.outputs.tag }}"
+          if [ "$TAG" = "latest" ]; then
+            BUILD_SUFFIX=".${GITHUB_RUN_NUMBER}"
+          else
+            BUILD_SUFFIX="-next.${GITHUB_RUN_NUMBER}"
+          fi
+
+          echo "build_suffix=$BUILD_SUFFIX" >> $GITHUB_OUTPUT
+
       # webgl-lib
-      - name: (webgl-lib) Bump prerelease
-        if: ${{ github.event.inputs.publish_webgl_lib == 'true' && needs.validate.outputs.tag == 'next' }}
+      - name: (webgl-lib) Compute next version
+        id: version_lib
         working-directory: packages/webgl-lib
-        run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: (webgl-lib) Publish
         if: ${{ github.event.inputs.publish_webgl_lib == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-lib
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_lib.outputs.new_version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+
       # webgl-chart
-      - name: (webgl-chart) Bump prerelease
-        if: ${{ github.event.inputs.publish_webgl_chart == 'true' && needs.validate.outputs.tag == 'next' }}
+      - name: (webgl-chart) Compute next version
+        id: version_chart
         working-directory: packages/webgl-chart
-        run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: (webgl-chart) Publish
         if: ${{ github.event.inputs.publish_webgl_chart == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart.outputs.new_version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+
       # webgl-chart-react
-      - name: (webgl-chart-react) Bump prerelease
-        if: ${{ github.event.inputs.publish_webgl_chart_react == 'true' && needs.validate.outputs.tag == 'next' }}
+      - name: (webgl-chart-react) Compute next version
+        id: version_chart_react
         working-directory: packages/webgl-chart-react
-        run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: (webgl-chart-react) Publish
         if: ${{ github.event.inputs.publish_webgl_chart_react == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-react
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart_react.outputs.new_version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+
       # webgl-chart-vue
-      - name: (webgl-chart-vue) Bump prerelease
-        if: ${{ github.event.inputs.publish_webgl_chart_vue == 'true' && needs.validate.outputs.tag == 'next' }}
+      - name: (webgl-chart-vue) Compute next version
+        id: version_chart_vue
         working-directory: packages/webgl-chart-vue
-        run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: (webgl-chart-vue) Publish
         if: ${{ github.event.inputs.publish_webgl_chart_vue == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-vue
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart_vue.outputs.new_version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
