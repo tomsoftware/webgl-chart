@@ -1,0 +1,267 @@
+name: Build & Publish
+
+on:
+  push:
+    branches:
+      - develop
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Which npm tag should be used?"
+        required: true
+        default: "none"
+        type: choice
+        options:
+          - "none"
+          - "next"
+          - "latest"
+
+      publish_webgl_lib:
+        description: "Publish webgl-lib"
+        required: false
+        type: boolean
+        default: false
+
+      publish_webgl_chart:
+        description: "Publish webgl-chart"
+        required: false
+        type: boolean
+        default: false
+
+      publish_webgl_chart_react:
+        description: "Publish webgl-chart-react"
+        required: false
+        type: boolean
+        default: false
+
+      publish_webgl_chart_vue:
+        description: "Publish webgl-chart-vue"
+        required: false
+        type: boolean
+        default: false
+
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.set_tag.outputs.tag }}
+      build_number: ${{ steps.set_tag.outputs.tag }}.${GITHUB_RUN_NUMBER}
+    steps:
+      - name: Determine tag (push vs manual)
+        id: set_tag
+        run: |
+          # Default: none
+          TAG="none"
+
+          # If workflow_dispatch -> use user input
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          fi
+
+          # If push on develop -> force next
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG="next"
+          fi
+
+          echo "Final tag: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+
+      - name: Validate tag usage
+        run: |
+          TAG="${{ steps.set_tag.outputs.tag }}"
+          BRANCH="${{ github.ref }}"
+
+          echo "Branch: $BRANCH"
+          echo "Tag: $TAG"
+
+          # allow 'latest' only on 'main'
+          if [ "$TAG" = "latest" ] && [ "$BRANCH" != "refs/heads/main" ]; then
+            echo "::error::You can only publish 'latest' from the main branch."
+            exit 1
+          fi
+
+
+  build-and-publish:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+
+      ############################################
+      # BUILD PACKAGES
+      ############################################
+
+      - name: Build webgl-lib
+        run: pnpm exec tsc -b packages/webgl-lib
+
+      - name: Build webgl-chart
+        run: pnpm exec tsc -b packages/webgl-chart
+
+      - name: Build webgl-chart-react
+        run: pnpm --filter webgl-chart-react build
+
+      - name: Build webgl-chart-vue
+        run: pnpm --filter webgl-chart-vue build
+
+
+      ############################################
+      # BUILD DOCUMENTATION
+      ############################################
+
+      - name: Build documentation
+        run: |
+          cd docu
+          pnpm run docs:build
+
+      ############################################
+      # BUILD UMD
+      ############################################
+
+      - name: Build webgl-lib UMD bundle
+        run: pnpm --filter webgl-lib run build:umd
+
+      - name: Build webgl-chart UMD bundle
+        run: pnpm --filter webgl-chart run build:umd
+
+      - name: Build webgl-chart-vue UMD bundle
+        run: pnpm --filter webgl-chart-vue run build:umd
+
+      ############################################
+      # Upload artifacts
+      ############################################
+
+      - name: Collect UMD artifacts
+        run: |
+          mkdir -p dist-output-umd
+          cp packages/webgl-lib/dist-umd/*.umd.js dist-output-umd/
+          cp packages/webgl-chart/dist-umd/*.umd.js dist-output-umd/
+          cp packages/webgl-chart-vue/dist-umd/*.umd.js dist-output-umd/
+
+      - name: Upload UMD packages artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: umd-packages
+          path: dist-output-umd
+    
+
+      - name: Upload NPM packages artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-packages
+          path: |
+            packages/webgl-lib/dist
+            packages/webgl-chart/dist
+            packages/webgl-chart-react/dist
+            packages/webgl-chart-vue/dist
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: documentation
+          path: docu/docs/.vuepress/dist
+
+
+
+      ############################################
+      # PUBLISH PACKAGES (controlled by checkboxes)
+      ############################################
+
+      # setup
+      - name: Generate build suffix
+        id: set_tag
+        run: |
+          TAG="${{ needs.validate.outputs.tag }}"
+          if [ "$TAG" = "latest" ]; then
+            BUILD_SUFFIX=".${GITHUB_RUN_NUMBER}"
+          else
+            BUILD_SUFFIX="-next.${GITHUB_RUN_NUMBER}"
+          fi
+
+          echo "Suffix: $BUILD_SUFFIX"
+          echo "build_suffix=$BUILD_SUFFIX" >> $GITHUB_OUTPUT
+
+      # webgl-lib
+      - name: (webgl-lib) Compute next version
+        id: version_lib
+        working-directory: packages/webgl-lib
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: (webgl-lib) Publish
+        if: ${{ github.event.inputs.publish_webgl_lib == 'true' && needs.validate.outputs.tag != 'none' }}
+        working-directory: packages/webgl-lib
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_lib.outputs.new_version }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
+      # webgl-chart
+      - name: (webgl-chart) Compute next version
+        id: version_chart
+        working-directory: packages/webgl-chart
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: (webgl-chart) Publish
+        if: ${{ github.event.inputs.publish_webgl_chart == 'true' && needs.validate.outputs.tag != 'none' }}
+        working-directory: packages/webgl-chart
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart.outputs.new_version }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
+      # webgl-chart-react
+      - name: (webgl-chart-react) Compute next version
+        id: version_chart_react
+        working-directory: packages/webgl-chart-react
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: (webgl-chart-react) Publish
+        if: ${{ github.event.inputs.publish_webgl_chart_react == 'true' && needs.validate.outputs.tag != 'none' }}
+        working-directory: packages/webgl-chart-react
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart_react.outputs.new_version }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
+      # webgl-chart-vue
+      - name: (webgl-chart-vue) Compute next version
+        id: version_chart_vue
+        working-directory: packages/webgl-chart-vue
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version")
+          NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: (webgl-chart-vue) Publish
+        if: ${{ github.event.inputs.publish_webgl_chart_vue == 'true' && needs.validate.outputs.tag != 'none' }}
+        working-directory: packages/webgl-chart-vue
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart_vue.outputs.new_version }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

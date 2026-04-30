@@ -1,0 +1,97 @@
+<html>
+<head>
+    <title>WebGl Chart using VUE</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://chart.hmilch.net/dist/1.1/webgl-lib.umd.js"></script>
+    <script src="https://chart.hmilch.net/dist/1.1/webgl-chart.umd.js"></script>
+    <script src="https://chart.hmilch.net/dist/1.1/webgl-chart-vue.umd.js"></script>
+
+    <style>
+    #app {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        padding: 30px;
+    }
+
+    canvas {
+        display: block;
+        width: 100%;
+        height: 400px;
+    }
+
+    </style>
+
+</head>
+<body>
+
+<div id="app">
+  <h1>WebGl Chart using VUE</h1>
+
+  <chart-vue
+    :data="myChart"
+    @on-bind="onBind"
+    aria-label="My Chart"
+  ></chart-vue>
+</div>
+
+<script type="text/javascript">
+const { createApp, ref, onMounted } = Vue;  // Korrekt!
+
+const myApp = createApp({
+  setup() {
+    // Importing externals
+    const { BasicChartLayout, Scale, SeriesPoint } = window.WebGLChart;
+    const { Color, EventDispatcher, GpuGrowingBuffer, LayoutCell } = window.WebGLLib;
+    const { ChartConfig } = window.WebGLChartVue;
+
+    // generate data
+    const itemCount = 1000 /* Hz */ * 10;
+    const time = new GpuGrowingBuffer('float32', itemCount)
+        .generate(i => i * 0.001);
+
+    const data = GpuGrowingBuffer.generateFrom('float32', time, t => Math.sin(t));
+
+    const series1 = new SeriesPoint(time, data)
+        .setColor(Color.blue)
+        .setPointSize(2);
+
+    const scaleX = new Scale(0, 10);
+    const scaleY = new Scale(-1.2, 1.2);
+
+    const eventDispatcher = new EventDispatcher();
+    const baseContainer = new LayoutCell();
+
+    const basicLayout = new BasicChartLayout(eventDispatcher, baseContainer, scaleX);
+    basicLayout.addYScale(scaleY, 'Value');
+    basicLayout.xAxis.label?.setText('Time');
+
+    const myChart = new ChartConfig()
+      .setRenderCallback(context => {
+        context.calculateLayout(baseContainer);
+        eventDispatcher.dispatch(context);
+        basicLayout.draw(context);
+        series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
+      });
+
+    myChart.setMaxFrameRate(12);
+
+    function onBind(el) {
+      console.log("on bind!!!")
+      eventDispatcher.bind(el);
+    }
+
+    return { myChart, onBind };
+  }
+});
+
+// Register component & startup
+myApp.component("chart-vue", window.WebGLChartVue.Chart);
+myApp.mount('#app');
+
+</script>
+
+</body>
+</html>

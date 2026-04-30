@@ -18,11 +18,20 @@
     "react",
     "component"
   ],
+
+  "main": "./dist/webgl-chart-react.js",
   "module": "./dist/webgl-chart-react.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/webgl-chart-react.js"
+    }
+  },
+
   "scripts": {
     "dev": "vite --force",
     "build": "vite build"

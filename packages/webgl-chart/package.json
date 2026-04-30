@@ -2,7 +2,21 @@
   "name": "@tomsoftware/webgl-chart",
   "version": "1.1.0",
   "description": "High performance web Chart Library to plot line-charts, area-charts, bubble-charts, bar-chart, rolling charts and annotations using WebGL",
-  "main": "dist/index.js",
+
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+
   "publishConfig": {
     "access": "public"
   },
@@ -16,16 +30,20 @@
 
   "keywords": [
     "chart",
-    "webgl"
+    "webgl",
+    "plotting",
+    "html5-charts"
   ],
 
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build:umd": "vite build --config vite.config.umd.ts"
   },
   "dependencies": {
     "@tomsoftware/webgl-lib": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "~5.6.3"
+    "typescript": "~5.6.3",
+    "vite": "^6.1.0"
   }
 }

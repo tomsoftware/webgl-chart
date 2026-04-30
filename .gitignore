@@ -7,17 +7,22 @@ docu/node_modules/
 
 packages/webgl-chart/node_modules/
 packages/webgl-chart/dist/
+packages/webgl-chart/dist-umd/*
 
 packages/webgl-chart-vue/node_modules/
 packages/webgl-chart-vue/dist/
+packages/webgl-chart-vue/dist-umd/*
 
 packages/webgl-chart-react/node_modules/
 packages/webgl-chart-react/dist/
+packages/webgl-chart-react/dist-umd/*
 
 packages/webgl-lib/node_modules/
 packages/webgl-lib/dist/
+packages/webgl-lib/dist-umd/*
 
 example/react-basic-example/node_modules/
 example/vue-basic-example/node_modules/
 
 *.tsbuildinfo
+

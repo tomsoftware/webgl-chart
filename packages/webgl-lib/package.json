@@ -2,7 +2,21 @@
   "name": "@tomsoftware/webgl-lib",
   "version": "1.1.0",
   "description": "WebGL Library for handling data, basic layout, rendering loop, events and text drawing",
-  "main": "dist/index.js",
+
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+
   "publishConfig": {
     "access": "public"
   },
@@ -19,9 +33,11 @@
   ],
 
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "build:umd": "vite build --config vite.config.umd.ts"
   },
   "devDependencies": {
-    "typescript": "~5.6.3"
+    "typescript": "~5.6.3",
+    "vite": "^6.1.0"
   }
 }
