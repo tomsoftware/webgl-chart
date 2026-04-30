@@ -18,12 +18,20 @@
     "vue",
     "component"
   ],
+
   "module": "./dist/webgl-chart-vue.js",
+  "main": "./dist/webgl-chart-vue.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist",
-    "dist-umd"
+    "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/webgl-chart-vue.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+
   "scripts": {
     "dev": "vite --force",
     "build": "vite build",

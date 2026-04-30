@@ -2,14 +2,22 @@
   "name": "@tomsoftware/webgl-lib",
   "version": "1.1.0",
   "description": "WebGL Library for handling data, basic layout, rendering loop, events and text drawing",
+
   "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+
   "files": [
-    "dist",
-    "src",
-    "LICENSE",
-    "package.json",
-    "readme.md"
+    "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+
   "publishConfig": {
     "access": "public"
   },

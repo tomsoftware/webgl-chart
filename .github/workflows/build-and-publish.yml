@@ -17,6 +17,31 @@ on:
           - "next"
           - "latest"
 
+      publish_webgl_lib:
+        description: "Publish webgl-lib"
+        required: false
+        type: boolean
+        default: false
+
+      publish_webgl_chart:
+        description: "Publish webgl-chart"
+        required: false
+        type: boolean
+        default: false
+
+      publish_webgl_chart_react:
+        description: "Publish webgl-chart-react"
+        required: false
+        type: boolean
+        default: false
+
+      publish_webgl_chart_vue:
+        description: "Publish webgl-chart-vue"
+        required: false
+        type: boolean
+        default: false
+
+
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -51,7 +76,7 @@ jobs:
           echo "Branch: $BRANCH"
           echo "Tag: $TAG"
 
-          # allow 'last' only on 'main'
+          # allow 'latest' only on 'main'
           if [ "$TAG" = "latest" ] && [ "$BRANCH" != "refs/heads/main" ]; then
             echo "::error::You can only publish 'latest' from the main branch."
             exit 1
@@ -79,141 +104,128 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      ########## NPM Package ##########
-      # TypeScript Build
-      - name: Build TypeScript packages
-        run: pnpm exec tsc -b packages/*
 
-      # webgl-lib --> NPM-Pack
-      - name: Upload webgl-lib artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: webgl-lib-dist
-          path: packages/webgl-lib/dist
+      ############################################
+      # BUILD PACKAGES
+      ############################################
 
-      # webgl-chart --> NPM-Pack
-      - name: Upload webgl-chart artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: webgl-chart-dist
-          path: packages/webgl-chart/dist
+      - name: Build webgl-lib
+        run: pnpm exec tsc -b packages/webgl-lib
 
-      # webgl-chart-react --> NPM-Pack
-      - name: Build React package
+      - name: Build webgl-chart
+        run: pnpm exec tsc -b packages/webgl-chart
+
+      - name: Build webgl-chart-react
         run: pnpm --filter webgl-chart-react build
 
-      - name: Upload webgl-chart-react artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: webgl-chart-react-dist
-          path: packages/webgl-chart-react/dist
-
-      # webgl-chart-vue -> NPM
-      - name: Build Vue package
+      - name: Build webgl-chart-vue
         run: pnpm --filter webgl-chart-vue build
 
-      - name: Upload webgl-chart-vue artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: webgl-chart-vue-dist
-          path: packages/webgl-chart-vue/dist
 
+      ############################################
+      # BUILD DOCUMENTATION
+      ############################################
 
-      ########## UMD bundle ##########
-      # webgl-lib -> bundle
-      - name: Build webgl-lib UMD bundle
-        run: pnpm --filter webgl-lib run build:umd
-
-      - name: Upload webgl-lib-umd Bundle artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: webgl-lib-bundle-umd
-          path: packages/webgl-lib/dist-umd/webgl-lib.umd.js
-
-      # webgl-chart -> bundle
-      - name: Build webgl-chart UMD bundle
-        run: pnpm --filter webgl-chart run build:umd
-
-      - name: Upload webgl-chart-umd Bundle artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: webgl-chart-bundle-umd
-          path: packages/webgl-chart/dist-umd/webgl-chart.umd.js
-
-      # webgl-chart-vue -> bundle
-      - name: Build webgl-chart-vue UMD bundle
-        run: pnpm --filter webgl-chart-vue run build:umd
-
-      - name: Upload webgl-chart-vue-umd Bundle artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: webgl-chart-vue-bundle-umd
-          path: packages/webgl-chart-vue/dist-umd/webgl-chart-vue.umd.js
-
-      ########## Documentation ##########
-      # Documentation
       - name: Build documentation
         run: |
           cd docu
           pnpm run docs:build
 
+      ############################################
+      # BUILD UMD
+      ############################################
+
+      - name: Build webgl-lib UMD bundle
+        run: pnpm --filter webgl-lib run build:umd
+
+      - name: Build webgl-chart UMD bundle
+        run: pnpm --filter webgl-chart run build:umd
+
+      - name: Build webgl-chart-vue UMD bundle
+        run: pnpm --filter webgl-chart-vue run build:umd
+
+      ############################################
+      # Upload artifacts
+      ############################################
+      - name: Upload UMD packages artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: umd-packages
+          path: |
+            packages/webgl-lib/dist-umd
+            packages/webgl-chart/dist-umd
+            packages/webgl-chart-vue/dist-umd
+
+      - name: Upload NPM packages artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-packages
+          path: |
+            packages/webgl-lib/dist
+            packages/webgl-chart/dist
+            packages/webgl-chart-react/dist
+            packages/webgl-chart-vue/dist
+
       - name: Upload documentation artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: documentation
           path: docu/docs/.vuepress/dist
 
 
-      ########## Publish NPM ##########
-      # Publish @tomsoftware/webgl-lib
-      - name: (webgl-lib) Bump prerelease version (develop only)
-        if: ${{ needs.validate.outputs.tag == 'next' }}
+
+      ############################################
+      # PUBLISH PACKAGES (controlled by checkboxes)
+      ############################################
+
+      # webgl-lib
+      - name: (webgl-lib) Bump prerelease
+        if: ${{ github.event.inputs.publish_webgl_lib == 'true' && needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-lib
         run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
 
       - name: (webgl-lib) Publish
-        if: ${{ needs.validate.outputs.tag != 'none' }}
+        if: ${{ github.event.inputs.publish_webgl_lib == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-lib
         run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # Publish @tomsoftware/webgl-chart
-      - name: (webgl-chart) Bump prerelease version (develop only)
-        if: ${{ needs.validate.outputs.tag == 'next' }}
+      # webgl-chart
+      - name: (webgl-chart) Bump prerelease
+        if: ${{ github.event.inputs.publish_webgl_chart == 'true' && needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart
         run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
 
       - name: (webgl-chart) Publish
-        if: ${{ needs.validate.outputs.tag != 'none' }}
+        if: ${{ github.event.inputs.publish_webgl_chart == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart
         run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # Publish @tomsoftware/webgl-chart-react
-      - name: (webgl-chart-react) Bump prerelease version (develop only)
-        if: ${{ needs.validate.outputs.tag == 'next' }}
+      # webgl-chart-react
+      - name: (webgl-chart-react) Bump prerelease
+        if: ${{ github.event.inputs.publish_webgl_chart_react == 'true' && needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart-react
         run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
 
       - name: (webgl-chart-react) Publish
-        if: ${{ needs.validate.outputs.tag != 'none' }}
+        if: ${{ github.event.inputs.publish_webgl_chart_react == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-react
         run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # Publish @tomsoftware/webgl-chart-vue
-      - name: (webgl-chart-vue) Bump prerelease version (develop only)
-        if: ${{ needs.validate.outputs.tag == 'next' }}
+      # webgl-chart-vue
+      - name: (webgl-chart-vue) Bump prerelease
+        if: ${{ github.event.inputs.publish_webgl_chart_vue == 'true' && needs.validate.outputs.tag == 'next' }}
         working-directory: packages/webgl-chart-vue
         run: pnpm version prerelease --preid=next --no-git-tag-version --no-workspaces-update --ignore-scripts
 
       - name: (webgl-chart-vue) Publish
-        if: ${{ needs.validate.outputs.tag != 'none' }}
+        if: ${{ github.event.inputs.publish_webgl_chart_vue == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-vue
         run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
