@@ -27,8 +27,8 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/webgl-chart-vue.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/webgl-chart-vue.js"
     }
   },
 
