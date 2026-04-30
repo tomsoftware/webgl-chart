@@ -148,14 +148,20 @@ jobs:
       ############################################
       # Upload artifacts
       ############################################
+
+      - name: Collect UMD artifacts
+        run: |
+          mkdir -p dist-output-umd
+          cp packages/webgl-lib/dist-umd/*.umd.js dist-output-umd/
+          cp packages/webgl-chart/dist-umd/*.umd.js dist-output-umd/
+          cp packages/webgl-chart-vue/dist-umd/*.umd.js dist-output-umd/
+
       - name: Upload UMD packages artifact
         uses: actions/upload-artifact@v7
         with:
           name: umd-packages
-          path: |
-            packages/webgl-lib/dist-umd
-            packages/webgl-chart/dist-umd
-            packages/webgl-chart-vue/dist-umd
+          path: dist-output-umd
+    
 
       - name: Upload NPM packages artifact
         uses: actions/upload-artifact@v7
@@ -190,6 +196,7 @@ jobs:
             BUILD_SUFFIX="-next.${GITHUB_RUN_NUMBER}"
           fi
 
+          echo "Suffix: $BUILD_SUFFIX"
           echo "build_suffix=$BUILD_SUFFIX" >> $GITHUB_OUTPUT
 
       # webgl-lib
