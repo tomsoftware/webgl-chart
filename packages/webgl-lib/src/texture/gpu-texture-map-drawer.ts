@@ -5,26 +5,27 @@ import { TextureMap } from './texture-map';
 import { TextureMapItem } from './texture-map-item';
 import { Color } from '../color';
 import { Vector2 } from '../vector-2';
-import { GpuFixBuffer } from '../buffers/implementations/gpu-fix-buffer';
+import { TextureContext } from '../texture-context';
 import { GpuGrowingBuffer } from '../buffers/implementations/gpu-growing-buffer';
+import { GpuFixBuffer } from '../buffers/implementations/gpu-fix-buffer';
 
 export class TextureMapDrawer {
     /** position matrix of the rectangle to put texture on */
     private rectTransformation = new GpuGrowingBuffer('mat3x3', 250);
     /** width and height of the rectangle to draw the texture at (in pixels) */
-    private rectSize = new GpuGrowingBuffer('float32', 250, 2);
+    private rectSize = new GpuGrowingBuffer('vec2', 250);
     /** position of the texture in the texture-buffer */
-    private textureLocation = new GpuGrowingBuffer('float32', 250, 2);
+    private textureLocation = new GpuGrowingBuffer('vec2', 250);
     /** size (width/height) of the texture in the texture-buffer  */
-    private textureSize = new GpuGrowingBuffer('float32', 250, 2);
+    private textureSize = new GpuGrowingBuffer('vec2', 250);
 
     /** color for coloring the texture */
-    private color = new GpuGrowingBuffer('float32', 1000, 4);
+    private color = new GpuGrowingBuffer('vec4', 1000);
     private textureMap: TextureMap;
 
     // base instance data
-    private indexBuffer = new GpuFixBuffer('uint16', 6, 1);
-    private vertexOffset = new GpuFixBuffer('float32', 4, 2);
+    private indexBuffer = new GpuFixBuffer('int16', 6);
+    private vertexOffset = new GpuFixBuffer('vec2', 4);
 
     /** this is a unique id to identifies this shader programs */
     private static Id = 'gpu-texture-map-drawer';
@@ -62,7 +63,7 @@ export class TextureMapDrawer {
         this.color.pushRange(color.toArray());
     }
 
-    public addTexture(context: Context, src: TextureGenerator) {
+    public addTexture(context: TextureContext, src: TextureGenerator) {
         return this.textureMap.addTexture(context, src);
     }
 
@@ -152,7 +153,7 @@ export class TextureMapDrawer {
         // set uniforms
         context.setUniform(program, 'uniformCamTransformation', cameraTransformation);
         context.setUniform(program, 'uniformTexture', this.textureMap);
-        context.setUniform(program, 'uniformScalePixel', new Vector2(0.5 / context.width, 0.5 / context.width));
+        context.setUniform(program, 'uniformScalePixel', new Vector2(0.5 /context.width, 0.5 / context.width));
 
         // draw textures
         context.angleExtension?.drawElementsInstancedANGLE(
@@ -164,7 +165,7 @@ export class TextureMapDrawer {
         );
     }
 
-    /** 
+    /**
      * Return a html of the texture buffer used by the texture map 
      * - mainly for debugging purposes 
      **/

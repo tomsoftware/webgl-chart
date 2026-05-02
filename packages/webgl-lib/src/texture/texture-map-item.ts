@@ -1,5 +1,7 @@
 export class TextureMapItem {
+    /** position X in [0..1] in the texture image */
     public relativeX: number;
+    /** position Y in [0..1] in the texture image */
     public relativeY: number;
     /** width in pixels of the texture */
     public width: number;

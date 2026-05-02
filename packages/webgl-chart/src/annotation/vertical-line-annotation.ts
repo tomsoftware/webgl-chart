@@ -90,7 +90,7 @@ export class VerticalLineAnnotation {
             );
 
             // add label-text
-            const textureInfo = this.rectDrawer.textureMap.addTexture(context, text.getGenerator());
+            const textureInfo = this.rectDrawer.textureMap.addTexture(context.textureContext, text.getGenerator());
             this.rectDrawer.addRect(
                 new Vector2(this.x, position),
                 new Vector2(w, h),

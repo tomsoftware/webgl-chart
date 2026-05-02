@@ -1,8 +1,8 @@
-import type { Context } from '../context';
 import type { TextureGenerator } from './texture-generator';
 import { TextBoundingBox } from './text-bounding-box';
 import { Font } from './font';
 import { GpuTexture } from './gpu-texture';
+import { TextureContext } from '../texture-context';
 
 export class TextTextureGenerator implements TextureGenerator {
     private static cache: Map<string, TextTextureGenerator> = new Map();
@@ -37,7 +37,7 @@ export class TextTextureGenerator implements TextureGenerator {
         return this.text === other.text && this.font.compare(other.font);
     }
 
-    private setupCanvas(context: Context): OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D {
+    private setupCanvas(context: TextureContext): OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D {
         const canvas = context.canvas2d;
 
         const ctx = canvas.getContext2d();
@@ -52,12 +52,12 @@ export class TextTextureGenerator implements TextureGenerator {
         return ctx;
     }
 
-    public computerTextMetrics(context: Context): TextBoundingBox {
+    public computerTextMetrics(context: TextureContext): TextBoundingBox {
         if (this.textMetricsCache != null) {
             return this.textMetricsCache;
         }
 
-        console.trace('computerSize:', this.text);
+        console.log('computerSize:', this.text);
 
         if (this.text == '') {
             return this.textMetricsCache = new TextBoundingBox();
@@ -67,8 +67,8 @@ export class TextTextureGenerator implements TextureGenerator {
         return this.textMetricsCache = TextBoundingBox.fromTextMetrics(ctx.measureText(this.text));
     }
 
-    public computerTexture(context: Context): GpuTexture | null {
-        console.trace('computerTexture:', this.text);
+    public computerTexture(context: TextureContext): GpuTexture | null {
+        console.log('computerTexture:', this.text);
 
         if (this.text == '') {
             return new GpuTexture(0, 0, new Uint32Array(0));
