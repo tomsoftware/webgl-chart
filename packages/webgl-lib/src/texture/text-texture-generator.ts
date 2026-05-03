@@ -15,7 +15,7 @@ export class TextTextureGenerator implements TextureGenerator {
         this.font = font;
     }
 
-    /** return a instance of TextTextureGenerator but used cached on if available */
+    /** return a instance of TextTextureGenerator but used cached if not available */
     public static getCached(text: string, font: Font): TextTextureGenerator {
         const key = 't|' + font.key + '|' + text;
 

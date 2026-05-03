@@ -60,6 +60,7 @@ export default defineUserConfig({
             'series-bar',
             'series-area',
             'series-bubble',
+            'series-texture-point',
             'series-ranges',
             'rolling-chart',
             'tooltip',
