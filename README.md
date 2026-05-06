@@ -49,11 +49,24 @@ Free high performance web Chart Library to plot line-, bar-, area-, bubble-chart
 
 ## Install
 
+### NPM Packages
+
 | Package | Description
 |---|---|
-| [@tomsoftware/webgl-chart](https://www.npmjs.com/package/@tomsoftware/webgl-chart) | Core WebGL chart engine <br> `npm i @tomsoftware/webgl-chart --save` |
-| [@tomsoftware/webgl-chart-vue](https://www.npmjs.com/package/@tomsoftware/webgl-chart-vue) | Vue wrapper for core chart <br>  `npm i @tomsoftware/webgl-chart-vue --save` |
-| [@tomsoftware/webgl-chart-react](https://www.npmjs.com/package/@tomsoftware/webgl-chart-react) | React wrapper for core chart <br>  `npm i @tomsoftware/webgl-chart-react --save` |
+| [@tomsoftware/webgl-chart](https://www.npmjs.com/package/@tomsoftware/webgl-chart) | WebGL chart engine <br> `npm i @tomsoftware/webgl-chart --save` |
+| [@tomsoftware/webgl-chart-vue](https://www.npmjs.com/package/@tomsoftware/webgl-chart-vue) | Vue wrapper for chart <br>  `npm i @tomsoftware/webgl-chart-vue --save` |
+| [@tomsoftware/webgl-chart-react](https://www.npmjs.com/package/@tomsoftware/webgl-chart-react) | React wrapper for chart <br>  `npm i @tomsoftware/webgl-chart-react --save` |
+
+
+### UMD Bundles (Browser `<script>` usage)
+
+UMD builds are included in every release and can be used directly in the browser without any bundler.
+
+| Library | Description | Link |
+|---------|-------------|------|
+| **webgl-lib.umd.js** | Core WebGL utilities | https://chart.hmilch.net/dist/1.1/webgl-lib.umd.js |
+| **webgl-chart.umd.js** | WebGL chart engine | https://chart.hmilch.net/dist/1.1/webgl-chart.umd.js |
+| **webgl-chart-vue.umd.js** | Vue 3 wrapper (UMD) | https://chart.hmilch.net/dist/1.1/webgl-chart-vue.umd.js |
 
 
 # Documentation
@@ -61,7 +74,15 @@ See https://chart.hmilch.net/ for examples and documentation.
 
 
 # Examples
-Explore the [example](./example) folder for basic examples to get you started.
+Explore the [example](./example) folder or the [Features in the documentation](https://chart.hmilch.net/features/basic.html) for basic examples to get you started.
+
+## Live Examples
+
+| Example | Description | Link |
+|---------|-------------|------|
+| **Vanilla JS - Demo** | Single‑page HTML example using UMD bundles | https://chart.hmilch.net/dist/1.1/vanilla-js-example.html |
+| **Vue 3 - JSFiddle** | Interactive online example using UMD bundles and the Vue wrapper | https://jsfiddle.net/hzk2bry1/ |
+| **Vue 3 - Demo** | Single‑page HTML example using UMD bundles | https://chart.hmilch.net/dist/1.1/umd-vue-example.html |
 
 
 ## Basic usage (simplified)

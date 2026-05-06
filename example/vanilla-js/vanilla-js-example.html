@@ -1,0 +1,98 @@
+<html>
+<head>
+    <script src="https://chart.hmilch.net/dist/1.1/webgl-lib.umd.js"></script>
+    <script src="https://chart.hmilch.net/dist/1.1/webgl-chart.umd.js"></script>
+
+    <style>
+        #app {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 400px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <h1>WebGL-Chart - Vanilla JS</h1>
+    <canvas id="chartCanvas" role="img" aria-label="WebGL Chart"></canvas>
+</div>
+
+<script>
+    // Import from UMD bundles
+    const { GpuChart, BasicChartLayout, Scale, SeriesPoint } = window.WebGLChart;
+    const { GpuGrowingBuffer, Color, LayoutCell, EventDispatcher } = window.WebGLLib;
+
+    // Get canvas element
+    const canvas = document.getElementById("chartCanvas");
+
+    // Create chart instance
+    const gpuChart = new GpuChart();
+
+    // Bind chart to canvas
+    gpuChart.bind(canvas);
+
+    // Create event dispatcher and bind it to the canvas element
+    const eventDispatcher = new EventDispatcher();
+    eventDispatcher.bind(canvas); // <-- important for mouse / touch events
+
+    // Generate time data
+    const itemCount = 1000 * 10;
+    const time = new GpuGrowingBuffer("float32", itemCount)
+        .generate(i => i * 0.001);
+
+    // Generate series data (simple sine wave)
+    const data = GpuGrowingBuffer.generateFrom("float32", time, t => Math.sin(t));
+
+    const series1 = new SeriesPoint(time, data)
+        .setColor(Color.blue)
+        .setPointSize(2);
+
+    // Define scales
+    const scaleX = new Scale(0, 10);
+    const scaleY = new Scale(-1.2, 1.2);
+
+    // Define layout containers
+    const baseContainer = new LayoutCell();
+    const layout = new BasicChartLayout(eventDispatcher, baseContainer, scaleX);
+    layout.addYScale(scaleY, "Value");
+    layout.xAxis.label?.setText("Time");
+
+    // Set render callback
+    gpuChart.setRenderCallback(context => {
+        // Calculate layout
+        context.calculateLayout(baseContainer);
+
+        // Dispatch input events
+        eventDispatcher.dispatch(context);
+
+        // Draw layout elements (axes, grid, etc.)
+        layout.draw(context);
+
+        // Draw series
+        series1.draw(context, scaleX, scaleY, layout.chartCell);
+    });
+
+    // Limit max frame rate
+    gpuChart.setMaxFrameRate(12);
+
+    // Start rendering loop
+    gpuChart.render();
+
+    // Optional: clean up on page unload
+    window.addEventListener("beforeunload", () => {
+        gpuChart.dispose();
+    });
+</script>
+
+</body>
+</html>

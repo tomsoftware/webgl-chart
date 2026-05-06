@@ -1,6 +1,6 @@
 {
   "name": "@tomsoftware/webgl-chart-react",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "publishConfig": {
     "access": "public"
@@ -18,11 +18,20 @@
     "react",
     "component"
   ],
+
+  "main": "./dist/webgl-chart-react.js",
   "module": "./dist/webgl-chart-react.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/webgl-chart-react.js"
+    }
+  },
+
   "scripts": {
     "dev": "vite --force",
     "build": "vite build"
