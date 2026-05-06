@@ -7,6 +7,8 @@ export class Canvas2d {
     public devicePixelRatio: number;
 
     constructor(width: number, height: number, devicePixelRatio: number) {
+        this.devicePixelRatio = devicePixelRatio;
+
         if (typeof OffscreenCanvas !== 'undefined') {
             // https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas#browser_compatibility
             this.offscreenCan = new OffscreenCanvas(width, height);
@@ -14,6 +16,10 @@ export class Canvas2d {
         }
         else {
             // fallback
+            if (typeof document === 'undefined') {
+                return;
+            }
+
             this.htmlCan = document.createElement('canvas');
             this.htmlCan.width = width;
             this.htmlCan.height = height;
@@ -26,8 +32,6 @@ export class Canvas2d {
             alpha: true,
             willReadFrequently: true
         });
-
-        this.devicePixelRatio = devicePixelRatio;
     }
 
     /** returns the internal context. Ensure the size of the canvas with given arguments */
