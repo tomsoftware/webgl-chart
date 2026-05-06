@@ -5,7 +5,7 @@ import { Vector2 } from '../vector-2';
 import { EventTypes, EventValue } from './event-value';
 
 /** callback for received Events. Return true to consume event */
-export type EventHandler = (value: EventValue, layoutNode: LayoutNode, layoutArea: LayoutArea) => boolean | void;
+export type EventHandler = (value: EventValue, layoutArea: LayoutArea, layoutNode: LayoutNode) => boolean | void;
 
 class EventListenerInfo {
     public type: EventTypes;
@@ -65,7 +65,7 @@ export class EventDispatcher {
 
                 const area = listener.layoutNode.getArea(context.layoutCache);
                 if (area.contains(event.position)) {
-                    if (listener.callback(event, listener.layoutNode, area)) {
+                    if (listener.callback(event, area, listener.layoutNode)) {
                         break;
                     }
                 }

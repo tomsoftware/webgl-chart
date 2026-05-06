@@ -100,16 +100,18 @@ export class Scale {
         }
     }
     
+    /** apply panning to min and max of the scale */
     public pan(value: number) {
         const panValue = this.range * value;
         this.min -= panValue;
         this.max -= panValue;
     }
 
-    public zoom(value: number) {
+    /** apply zooming to min and max of the scale */
+    public zoom(value: number, position: number = 0.5) {
         const zoomValue = this.range * value;
-        this.min -= zoomValue;
-        this.max += zoomValue;
+        this.min -= zoomValue * position;
+        this.max += zoomValue * (1- position);
     }
 
     public setRange(min: number | null, max: number | null) {

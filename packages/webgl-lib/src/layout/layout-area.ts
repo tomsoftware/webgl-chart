@@ -4,11 +4,22 @@ import { Context } from '../context';
 import { Matrix3x3 } from '../matrix-3x3';
 import { Vector2 } from '../vector-2';
 
-
+/**
+ * Represents a rectangular region within the canvas, defined using
+ * normalized coordinates (0..1). All properties describe the area's
+ * position and size relative to the full canvas.
+ */
 export class LayoutArea {
+    /** Normalized left position of this area within the canvas (0..1) */
     public left: number;
+
+    /** Normalized top position of this area within the canvas (0..1) */
     public top: number;
+
+    /** Normalized width of this area relative to the canvas (0..1) */
     public width: number;
+
+    /** Normalized height of this area relative to the canvas (0..1) */
     public height: number;
 
     public static readonly fullArea = new LayoutArea(0, 0, 1, 1);

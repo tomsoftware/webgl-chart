@@ -39,7 +39,7 @@ basicLayout.xAxis.label?.setText('Time');
 const chartCell = basicLayout.chartCell;
 
 // add event handler to listen for mouse move in chart
-eventDispatcher.on(EventTypes.MouseMove, chartCell, (e, _, chartArea) => {
+eventDispatcher.on(EventTypes.MouseMove, chartCell, (e, chartArea) => {
     const position = e.position;
 
     // Set the value of the data1 to the value-position of the mouse
