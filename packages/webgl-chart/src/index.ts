@@ -1,6 +1,7 @@
 // root
 export * from './tooltip-line';
 export * from './tooltip-markers';
+export * from './webgl-chart';
 
 // series
 export * from './drawable-series';

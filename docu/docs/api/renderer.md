@@ -6,11 +6,11 @@ The renderer is used to draw all elements of the chart, including axes, series, 
 
 @tab plain js
 ```ts{6}
-const webGLRenderer = new WebGLRenderer();
+const gpuChart = new GpuChart();
 // bind the chart to a <canvas> element
-webGLRenderer.bind(document.getElementById('MyCanvas'));
-webGLRenderer.setMaxFrameRate(2); // Hz
-webGLRenderer.setRenderCallback((context) => {
+gpuChart.bind(document.getElementById('MyCanvas'));
+gpuChart.setMaxFrameRate(2); // Hz
+gpuChart.setRenderCallback((context) => {
     // render the chart here
 }
 ```

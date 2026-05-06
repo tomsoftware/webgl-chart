@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
+import { WebGlChart } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from './chart-config';
-import { WebGLRenderer } from '@tomsoftware/webgl-lib';
 
 interface Props {
   data: ChartConfig;
@@ -11,7 +11,7 @@ interface Props {
 
 const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedBy, onBind}) => {
   const chartCanvasRef = useRef<HTMLCanvasElement>(null);
-  const webGLRenderer = useRef<WebGLRenderer | null>(null);
+  const webGlChart = useRef<WebGlChart | null>(null);
 
   useEffect(() => {
     const cav = chartCanvasRef.current;
@@ -20,10 +20,10 @@ const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedBy, onBind}) => 
     }
 
     console.debug('webgl-chart mounted');
-    webGLRenderer.current = new WebGLRenderer();
-    webGLRenderer.current.bind(cav);
-    webGLRenderer.current.setMaxFrameRate(data.maxFrameRate);
-    webGLRenderer.current.setRenderCallback((context) => {
+    webGlChart.current = new WebGlChart();
+    webGlChart.current.bind(cav);
+    webGlChart.current.setMaxFrameRate(data.maxFrameRate);
+    webGlChart.current.setRenderCallback((context) => {
       if (data == null || data.onRender == null) {
         return;
       }
@@ -34,23 +34,23 @@ const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedBy, onBind}) => 
       onBind(cav);
     }
 
-    webGLRenderer.current.render();
+    webGlChart.current.render();
 
     return () => {
-      if (webGLRenderer.current == null) {
+      if (webGlChart.current == null) {
         return;
       }
       console.debug('webgl-chart unmounted!');
-      webGLRenderer.current.dispose();
+      webGlChart.current.dispose();
     };
   }, [data]);
 
 
   useEffect(() => {
-    if (webGLRenderer.current == null) {
+    if (webGlChart.current == null) {
       return;
     }
-    webGLRenderer.current.setMaxFrameRate(data.maxFrameRate);
+    webGlChart.current.setMaxFrameRate(data.maxFrameRate);
   }, [data.maxFrameRate]);
 
   return (

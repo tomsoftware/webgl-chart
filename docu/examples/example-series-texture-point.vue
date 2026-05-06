@@ -16,10 +16,10 @@ const y3Data = GpuGrowingBuffer.generateFrom('float32', xTimeData, (t) => Math.t
 
 // use a X as marker
 const series1 = new SeriesTexturePoint(xTimeData, y1Data)
-  .setColor(Color.blue.withAlpha(0.6))
+  .setColor(Color.blue)
   .setTextureGenerator(TextTextureGenerator.getCached('X', new Font('sans-serif', 10)));
 
-// use unicode as marker
+// use unicode letter as marker
 const series2 = new SeriesTexturePoint(xTimeData, y2Data)
   .setTextureGenerator(TextTextureGenerator.getCached('🦄', new Font('sans-serif', 15)));
 
@@ -80,11 +80,11 @@ function onBind(element: HTMLElement | null): void {
 }
 
 // this is for demonstration purees so the user can download the generated texture map
-// access the chart's webGLRenderer
+// access the chart's WebGlChart
 const myChart = ref<InstanceType<typeof Chart> | null>(null);
 
 function downloadTexture() {
-  const renderer = myChart.value?.webGLRenderer;
+  const renderer = myChart.value?.WebGlChart;
   if (renderer == null) {
     return;
   }

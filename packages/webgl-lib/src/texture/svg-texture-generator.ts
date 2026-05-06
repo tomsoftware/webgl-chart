@@ -1,6 +1,6 @@
-import { TextureContext } from "../texture-context";
-import { GpuTexture } from "./gpu-texture";
-import { TextureGenerator } from "./texture-generator";
+import { TextureContext } from '../texture-context';
+import { GpuTexture } from './gpu-texture';
+import { TextureGenerator } from './texture-generator';
 
 /** Generates a GPU texture from an SVG string. This can be used as a source for texture-map */
 export class SvgTextureGenerator implements TextureGenerator {
@@ -53,7 +53,7 @@ export class SvgTextureGenerator implements TextureGenerator {
     }
 
     private async loadTexture(context: TextureContext): Promise<void> {
-        const blob = new Blob([this.svg], { type: "image/svg+xml" });
+        const blob = new Blob([this.svg], { type: 'image/svg+xml' });
         const url = URL.createObjectURL(blob);
 
         try {

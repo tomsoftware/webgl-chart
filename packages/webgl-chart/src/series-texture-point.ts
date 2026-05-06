@@ -3,7 +3,7 @@ import { Color, Matrix3x3, Vector4, Vector2, GpuFixBuffer, RectDrawer } from '@t
 import type { DrawableSeries } from './drawable-series';
 import type { Scale } from './scales/scale';
 
-/** Renders a series of textured points using a single texture from a texture map */
+/** Renders a series of textured points/markers using a single texture from the context texture map */
 export class SeriesTexturePoint implements DrawableSeries {
     protected colorValue = new Vector4(1, 1, 1, 1);
     /** the texture generator can be called by the gpu-rendering to provide a image */
@@ -18,7 +18,6 @@ export class SeriesTexturePoint implements DrawableSeries {
     /** this is a unique id to identifies this shader programs */
     private static IdTexturePoint = 'gpu-series-texture-point';
 
-    constructor(x: AttributeBuffer, y: AttributeBuffer)
     constructor(x: AttributeBuffer, y: AttributeBuffer) {
         this.x = x;
         this.y = y;
@@ -58,6 +57,8 @@ export class SeriesTexturePoint implements DrawableSeries {
 
         uniform mat3 uniformCamTransformation;
         uniform vec2 uniformPointSize;
+        uniform vec2 uniformTextureSize;
+        uniform vec2 uniformTextureLocation;
 
         varying vec2 o_texcoord;
         varying vec2 o_position;
@@ -68,11 +69,12 @@ export class SeriesTexturePoint implements DrawableSeries {
             vec3 worldPos = centerWorld + offsetWorld;
 
             gl_Position = vec4(worldPos.xy, 0.0, 1.0);
-            o_texcoord = vec2(
+            vec2 baseTex = vec2(
                 0.0 + (vertexOffset.x + 1.0) * 0.5,
                 1.0 - (vertexOffset.y + 1.0) * 0.5
             );
 
+            o_texcoord = uniformTextureLocation + baseTex * uniformTextureSize;
 
             o_position = worldPos.xy;
         }
@@ -87,8 +89,6 @@ export class SeriesTexturePoint implements DrawableSeries {
         uniform vec4 uniformColor;
         uniform vec4 uniformBounds;
         uniform sampler2D uniformTexture;
-        uniform vec2 uniformTextureLocation;
-        uniform vec2 uniformTextureSize;
 
         void main() {
             if (o_position.x < uniformBounds.x || o_position.x > uniformBounds.z ||
@@ -96,7 +96,7 @@ export class SeriesTexturePoint implements DrawableSeries {
                 discard;
             }
 
-            vec2 texCoord = uniformTextureLocation + o_texcoord * uniformTextureSize;
+            vec2 texCoord = o_texcoord;
             gl_FragColor = texture2D(uniformTexture, texCoord) * uniformColor;
         }
     `;

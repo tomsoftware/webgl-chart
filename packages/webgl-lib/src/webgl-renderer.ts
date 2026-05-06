@@ -1,9 +1,9 @@
-import { Context } from "./context";
-import { Matrix3x3 } from "./matrix-3x3";
+import { Context } from './context';
+import { Matrix3x3 } from './matrix-3x3';
 
 export type RenderCallback = (context: Context) => void;
 
-export class WebGLRenderer {
+export class WebGlRenderer {
     private element: HTMLCanvasElement | null = null;
     private gl: WebGLRenderingContext | null = null;
     private context: Context | null = new Context(1);
@@ -18,7 +18,7 @@ export class WebGLRenderer {
     private boundResizeCallback: (() => void) | null = null;
 
     /** set max framerate */
-    public setMaxFrameRate(fps: number): WebGLRenderer {
+    public setMaxFrameRate(fps: number): WebGlRenderer {
         this.frameDelay = 1000 / fps;
         return this;
     }
@@ -37,7 +37,7 @@ export class WebGLRenderer {
     }
 
     /** bind gpu chart to a html a Canvas element */
-    public bind(element: HTMLCanvasElement): WebGLRenderer {
+    public bind(element: HTMLCanvasElement): WebGlRenderer {
         if (element == null) {
             throw new Error('element is null');
         }
@@ -116,14 +116,14 @@ export class WebGLRenderer {
     }
 
     private updateSize(element: HTMLCanvasElement) {
-        const contentSize = WebGLRenderer.getElementContentWidth(element);
+        const contentSize = WebGlRenderer.getElementContentWidth(element);
         element.width = Math.floor(contentSize.width);
         element.height = Math.floor(contentSize.height);
         return contentSize;
     }
 
     /** this will draw the chart elements */
-    public drawScene(time: number): WebGLRenderer {
+    public drawScene(time: number): WebGlRenderer {
         const gl = this.gl;
         if ((gl == null) || (this.context == null) || (this.element == null)) {
             return this;
