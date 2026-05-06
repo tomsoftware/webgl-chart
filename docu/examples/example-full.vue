@@ -135,7 +135,7 @@ const chart1 = new ChartConfig()
 
       if (debugTexture == true) {
         debugTexture = false;
-        const img = context.exportTextureHtmlImage();
+        const img = context.textureContext.exportTextureHtmlImage();
         if (img == null) {
           return;
         }

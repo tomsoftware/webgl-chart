@@ -8,25 +8,32 @@ import { Matrix3x3 } from './matrix-3x3';
 import { Color } from './color';
 
 export class TextureContext {
+    public textureMap;
     private offscreenCanvas2d: Canvas2d;
-    private textureDrawer = new TextureMapDrawer(new TextureMap());
+    private textureDrawer;
 
     public constructor(devicePixelRatio: number = 1) {
         this.offscreenCanvas2d = new Canvas2d(300, 100, devicePixelRatio);
+        this.textureMap = new TextureMap();
+        this.textureDrawer = new TextureMapDrawer(this.textureMap);
     }
 
     public init(devicePixelRatio: number) {
-        this.canvas2d.devicePixelRatio = devicePixelRatio;
+        this.offscreenCanvas2d.devicePixelRatio = devicePixelRatio;
     }
      
     /** 
-     * provides a offscreen canvas context in 2d that can be used
+     * provides a cached offscreen canvas context in 2d that can be used
      *  for temporal generating of textures
+     * It uses the devicePixelRatio of real output canvas
      **/
-    public get canvas2d() {
-        return this.offscreenCanvas2d;
+    public getContext2d(minWidth: number = 0, minHeight: number = 0) {
+        return this.offscreenCanvas2d.getContext2d(minWidth, minHeight);
     }
 
+    public get devicePixelRatio(): number {
+        return this.offscreenCanvas2d.devicePixelRatio;
+    }
 
     public addTexture(src: TextureGenerator): TextureMapItem | null {
         if (src == null) {

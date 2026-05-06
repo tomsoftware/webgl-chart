@@ -11,8 +11,6 @@ export class SeriesTexturePoint implements DrawableSeries {
     protected x: AttributeBuffer;
     protected y: AttributeBuffer;
 
-    private rectDrawer = new RectDrawer();
-
     // base instance data
     private indexBuffer = new GpuFixBuffer('uint16', 6);
     private vertexOffset = new GpuFixBuffer('vec2', 4);
@@ -70,7 +68,12 @@ export class SeriesTexturePoint implements DrawableSeries {
             vec3 worldPos = centerWorld + offsetWorld;
 
             gl_Position = vec4(worldPos.xy, 0.0, 1.0);
-            o_texcoord = (vertexOffset + 1.0) * 0.5;
+            o_texcoord = vec2(
+                0.0 + (vertexOffset.x + 1.0) * 0.5,
+                1.0 - (vertexOffset.y + 1.0) * 0.5
+            );
+
+
             o_position = worldPos.xy;
         }
     `;
@@ -128,12 +131,6 @@ export class SeriesTexturePoint implements DrawableSeries {
 
         const m = p.multiply(l.values).multiply(s.values);
 
-        const textureId = this.rectDrawer.textureMap.bind(context);
-        if (textureId == null) {
-            console.error('SeriesTexturePoint.draw: Unable to bind texture!');
-            return;
-        }
-
         const program = context.useProgram(
             SeriesTexturePoint.IdTexturePoint,
             SeriesTexturePoint.vertexShader,
@@ -150,7 +147,7 @@ export class SeriesTexturePoint implements DrawableSeries {
             textureInfo.width / context.width,
             textureInfo.height / context.height
         ));
-        context.setUniform(program, 'uniformTexture', this.rectDrawer.textureMap);
+        context.setUniform(program, 'uniformTexture', context.textureContext.textureMap);
         context.setUniform(program, 'uniformTextureLocation', new Vector2(textureInfo.relativeX, textureInfo.relativeY));
         context.setUniform(program, 'uniformTextureSize', new Vector2(textureInfo.relativeWidth, textureInfo.relativeHeight));
         context.setUniform(program, 'uniformColor', this.colorValue);

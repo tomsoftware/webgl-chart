@@ -1,4 +1,4 @@
-import { RenderCallback } from '@tomsoftware/webgl-chart';
+import { RenderCallback } from '@tomsoftware/webgl-lib';
 import { ref } from 'vue';
 
 export class ChartConfig {

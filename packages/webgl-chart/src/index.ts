@@ -1,7 +1,6 @@
 // root
 export * from './tooltip-line';
 export * from './tooltip-markers';
-export * from './gpu-chart';
 
 // series
 export * from './drawable-series';

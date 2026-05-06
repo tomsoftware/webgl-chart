@@ -38,14 +38,12 @@ export class TextTextureGenerator implements TextureGenerator {
     }
 
     private setupCanvas(context: TextureContext): OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D {
-        const canvas = context.canvas2d;
-
-        const ctx = canvas.getContext2d();
+        const ctx = context.getContext2d();
         if (ctx == null) {
             throw new Error('unable to get 2d context');
         }
 
-        ctx.font = this.font.getCssFont(canvas.devicePixelRatio);
+        ctx.font = this.font.getCssFont(context.devicePixelRatio);
         // we always use white so we can multiply the real font color in the fragment shader
         ctx.fillStyle = 'white';
 

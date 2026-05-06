@@ -11,6 +11,7 @@ export * from './rect-drawer';
 export * from './uniform';
 export * from './vector-2';
 export * from './vector-4';
+export * from './webgl-renderer';
 
 // buffers
 export * from './buffers/implementations/gpu-fix-buffer';
@@ -52,3 +53,4 @@ export * from './texture/text-texture-generator';
 export * from './texture/texture-generator';
 export * from './texture/texture-map';
 export * from './texture/texture-map-item';
+export * from './texture/svg-texture-generator';

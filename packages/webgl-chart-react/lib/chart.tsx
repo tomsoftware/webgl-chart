@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import { GpuChart } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from './chart-config';
+import { WebGLRenderer } from '@tomsoftware/webgl-lib';
 
 interface Props {
   data: ChartConfig;
@@ -11,7 +11,7 @@ interface Props {
 
 const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedBy, onBind}) => {
   const chartCanvasRef = useRef<HTMLCanvasElement>(null);
-  const gpuChart = useRef<GpuChart | null>(null);
+  const webGLRenderer = useRef<WebGLRenderer | null>(null);
 
   useEffect(() => {
     const cav = chartCanvasRef.current;
@@ -20,10 +20,10 @@ const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedBy, onBind}) => 
     }
 
     console.debug('webgl-chart mounted');
-    gpuChart.current = new GpuChart();
-    gpuChart.current.bind(cav);
-    gpuChart.current.setMaxFrameRate(data.maxFrameRate);
-    gpuChart.current.setRenderCallback((context) => {
+    webGLRenderer.current = new WebGLRenderer();
+    webGLRenderer.current.bind(cav);
+    webGLRenderer.current.setMaxFrameRate(data.maxFrameRate);
+    webGLRenderer.current.setRenderCallback((context) => {
       if (data == null || data.onRender == null) {
         return;
       }
@@ -34,23 +34,23 @@ const Chart: React.FC<Props> = ({ data, ariaLabel, ariaDescribedBy, onBind}) => 
       onBind(cav);
     }
 
-    gpuChart.current.render();
+    webGLRenderer.current.render();
 
     return () => {
-      if (gpuChart.current == null) {
+      if (webGLRenderer.current == null) {
         return;
       }
       console.debug('webgl-chart unmounted!');
-      gpuChart.current.dispose();
+      webGLRenderer.current.dispose();
     };
   }, [data]);
 
 
   useEffect(() => {
-    if (gpuChart.current == null) {
+    if (webGLRenderer.current == null) {
       return;
     }
-    gpuChart.current.setMaxFrameRate(data.maxFrameRate);
+    webGLRenderer.current.setMaxFrameRate(data.maxFrameRate);
   }, [data.maxFrameRate]);
 
   return (
