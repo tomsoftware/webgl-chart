@@ -4,10 +4,6 @@ import { GpuGrowingBuffer, LayoutCell, Color, EventDispatcher, TextTextureGenera
 import { Scale, BasicChartLayout, SeriesTexturePoint } from '@tomsoftware/webgl-chart';
 import { ref } from 'vue';
 
-
-// access the chart's webGLRenderer
-const myChart = ref<InstanceType<typeof Chart> | null>(null);
-
 // Generate data
 const numPoints = 200;
 
@@ -17,20 +13,30 @@ const y2Data = GpuGrowingBuffer.generateFrom('float32', xTimeData, (t) => Math.c
 const y3Data = GpuGrowingBuffer.generateFrom('float32', xTimeData, (t) => Math.tan(t * 1));
 
 // create series drawer
+
+// use a X as marker
 const series1 = new SeriesTexturePoint(xTimeData, y1Data)
   .setColor(Color.blue.withAlpha(0.6))
-  .setTextureGenerator(TextTextureGenerator.getCached('X', new Font('sans-serif', 20)));
+  .setTextureGenerator(TextTextureGenerator.getCached('X', new Font('sans-serif', 10)));
 
+// use unicode as marker
 const series2 = new SeriesTexturePoint(xTimeData, y2Data)
-  .setTextureGenerator(TextTextureGenerator.getCached('🦄', new Font('sans-serif', 40)));
+  .setTextureGenerator(TextTextureGenerator.getCached('🦄', new Font('sans-serif', 15)));
 
-const symbolTexture = new SvgTextureGenerator('svg-triangle', `
-<svg height="220" width="500" xmlns="http://www.w3.org/2000/svg">
-  <polygon points="100, 10 150, 190 50, 190" style="fill:lime;stroke:purple;stroke-width:3" />
-</svg>`, /* width: */ 100);
+// use svg as marker
+const starMarkerTexture = new SvgTextureGenerator('svg-marker-star', `
+<svg xmlns="http://www.w3.org/2000/svg" width="300px" height="275px">
+  <path
+    fill="white"
+    stroke="black"
+    stroke-width="10"
+    d="M150,25 L179,111 L269,111 L197,165 L223,251  L150,200 L77,251  L103,165 L31,111 L121,111Z"
+  />
+</svg>`, /* width: */ 30);
 
 const series3 = new SeriesTexturePoint(xTimeData, y3Data)
-  .setTextureGenerator(symbolTexture);
+  .setTextureGenerator(starMarkerTexture)
+  .setColor(Color.green);
 
 
 // Scales
@@ -61,8 +67,8 @@ const chartData = new ChartConfig()
     // draw elements of chart-layout
     basicLayout.draw(context);
 
-    //series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
-    //series2.draw(context, scaleX, scaleY, basicLayout.chartCell);
+    series1.draw(context, scaleX, scaleY, basicLayout.chartCell);
+    series2.draw(context, scaleX, scaleY, basicLayout.chartCell);
     series3.draw(context, scaleX, scaleY, basicLayout.chartCell);
   });
 chartData.setMaxFrameRate(15);
@@ -72,6 +78,10 @@ chartData.setMaxFrameRate(15);
 function onBind(element: HTMLElement | null): void {
   eventDispatcher.bind(element);
 }
+
+// this is for demonstration purees so the user can download the generated texture map
+// access the chart's webGLRenderer
+const myChart = ref<InstanceType<typeof Chart> | null>(null);
 
 function downloadTexture() {
   const renderer = myChart.value?.webGLRenderer;
@@ -97,7 +107,7 @@ function downloadTexture() {
     @on-bind="onBind"
     class="chart"
   />
-  <button @click="downloadTexture">Download Texture</button>
+  <button @click="downloadTexture">Download Texture Map</button>
 </template>
 
 <style scoped>

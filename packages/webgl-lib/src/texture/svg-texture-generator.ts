@@ -2,15 +2,28 @@ import { TextureContext } from "../texture-context";
 import { GpuTexture } from "./gpu-texture";
 import { TextureGenerator } from "./texture-generator";
 
+/** Generates a GPU texture from an SVG string. This can be used as a source for texture-map */
 export class SvgTextureGenerator implements TextureGenerator {
+    /** Unique key used to identify the texture */
     public readonly textureKey: string;
     private readonly svg: string;
+    /** Optional target width for rasterization (null = auto) */
     private readonly width: number | null;
+      /** Optional target height for rasterization (null = auto) */
     private readonly height: number | null;
 
+    /** Cached GPU texture once generated */
     private _texture: GpuTexture | null = null;
+    /** Promise used to prevent duplicate loading operations */
     private _loading: Promise<void> | null = null;
 
+    /**
+     * Creates a new SVG texture generator.
+     * @param textureKey - Unique identifier for the texture
+     * @param svg - SVG markup as a string
+     * @param width - Optional rasterization width
+     * @param height - Optional rasterization height
+     */
     constructor(textureKey: string, svg: string, width?: number, height?: number) {
         this.textureKey = textureKey;
         this.svg = svg;
@@ -110,7 +123,11 @@ export class SvgTextureGenerator implements TextureGenerator {
         };
     }
 
-    /** Returns the precomputed GPU texture (synchronous) */
+    /** Returns the precomputed GPU texture synchronously
+     * If the texture is not yet loaded, this method triggers asynchronous
+     * loading but still returns `null` immediately. The texture will become
+     * available later once loading completes.
+     */
     public computerTexture(context: TextureContext): GpuTexture | null {
         if (this._texture) {
             return this._texture;

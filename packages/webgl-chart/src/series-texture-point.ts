@@ -64,7 +64,7 @@ export class SeriesTexturePoint implements DrawableSeries {
 
         void main() {
             vec3 centerWorld = uniformCamTransformation * vec3(x, y, 1.0);
-            vec3 offsetWorld = vec3(vertexOffset * uniformPointSize * 0.5, 0.0);
+            vec3 offsetWorld = vec3(vertexOffset * uniformPointSize, 0.0);
             vec3 worldPos = centerWorld + offsetWorld;
 
             gl_Position = vec4(worldPos.xy, 0.0, 1.0);
