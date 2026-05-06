@@ -1,18 +1,14 @@
 import type { Color } from './color';
-import type { TextureGenerator } from './texture/texture-generator';
 import type { IUniformValue } from './uniform';
 import type { LayoutNode } from './layout/layout-node';
 import { Vector2 } from './vector-2';
-import { Canvas2d } from './canvas-2d';
 import { GlBufferTypes, GpuBufferState } from './buffers/gpu-buffer-state';
 import { GpuProgram } from './gpu-program';
-import { TextureMapDrawer } from './texture/gpu-texture-map-drawer';
 import { LayoutArea } from './layout/layout-area';
 import { LayoutStore } from './layout/layout-cache';
 import { LineDrawer } from './line-drawer';
 import { Matrix3x3 } from './matrix-3x3';
-import { TextureMap } from './texture/texture-map';
-import { TextureMapItem } from './texture/texture-map-item';
+import { TextureContext } from './texture-context';
 import { GpuBufferView } from './buffers/gpu-buffer-view';
 import { AttributeBuffer } from './buffers/attribute-buffer';
 
@@ -21,7 +17,6 @@ export class Context {
     public gl!: WebGLRenderingContext;
     public programs = new Map<string, GpuProgram>();
     public buffers = new Map<AttributeBuffer, GpuBufferState>();
-    private textureDrawer = new TextureMapDrawer(new TextureMap());
     private lineDrawer = new LineDrawer();
     /** width of the canvas we draw to */
     public width: number = 0;
@@ -29,21 +24,14 @@ export class Context {
     public height: number = 0;
     /** time of this draw call */
     public time: number = 0;
-    private offscreenCanvas2d: Canvas2d;
     public layoutCache = new LayoutStore();
     public projectionMatrix = Matrix3x3.Identity;
     public pixelScale = new Vector2();
 
-    public constructor(devicePixelRatio: number = 1) {
-        this.offscreenCanvas2d = new Canvas2d(300, 100, devicePixelRatio);
-    }
+    public textureContext: TextureContext;
 
-    /** 
-     * provides a offscreen canvas context in 2d that can be used
-     *  for temporal generating of textures
-     **/
-    public get canvas2d() {
-        return this.offscreenCanvas2d;
+    public constructor(devicePixelRatio: number = 1) {
+        this.textureContext = new TextureContext(devicePixelRatio); 
     }
 
     /** reset the context for a new rendering iteration */
@@ -52,10 +40,10 @@ export class Context {
         this.time = time;
         this.width = width * devicePixelRatio;
         this.height = height * devicePixelRatio;
-        this.canvas2d.devicePixelRatio = devicePixelRatio;
+        this.textureContext.init(devicePixelRatio);
 
         // reset the texture drawer
-        this.textureDrawer.clear();
+        this.textureContext.clear();
         this.lineDrawer.clear();
 
         this.projectionMatrix = Matrix3x3.projection(1, height / width);
@@ -87,7 +75,7 @@ export class Context {
             for (const buffer of this.buffers.values()) {
                 buffer.dispose(this.gl);
             }
-            this.textureDrawer.dispose(this.gl);
+            this.textureContext.dispose(this.gl);
             this.lineDrawer.dispose(this.gl);
         }
 
@@ -149,15 +137,6 @@ export class Context {
         state.bindBuffer(this.gl, GlBufferTypes.ELEMENT_ARRAY_BUFFER);
     }
 
-
-    public addTexture(src: TextureGenerator): TextureMapItem | null {
-        if (src == null) {
-            return null;
-        }
-
-        return this.textureDrawer.addTexture(this, src);
-    }
-
     public setUniform(program: GpuProgram, name: string, value: IUniformValue) {
         const gl = this.gl;
         if (gl == null) {
@@ -210,10 +189,6 @@ export class Context {
         this.lineDrawer.addLine(p4, p1, color);
     }
 
-    public drawTexture(textureInfo: TextureMapItem, transformation: Matrix3x3, color: Color) {
-        this.textureDrawer.add(transformation, textureInfo, color);
-    }
-
     /**
      * texture drawing are cached and batched
      * this will write out all textures */
@@ -223,8 +198,7 @@ export class Context {
             m = m.multiply(transformation.values);
         }
 
-        this.textureDrawer.draw(this, m);
-        this.textureDrawer.clear();
+        this.textureContext.flushTextures(this, m);
     }
 
     /**
@@ -266,13 +240,5 @@ export class Context {
         program.use();
 
         return program;
-    }
-
-    /** 
-     * Return a html of the texture buffer used by the texture map
-     * - mainly for debugging purposes 
-     **/
-    public exportTextureHtmlImage() {
-        return this.textureDrawer.exportToHtmlImage();
     }
 }

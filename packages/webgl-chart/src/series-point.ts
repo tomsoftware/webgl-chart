@@ -100,7 +100,9 @@ export class SeriesPoint implements DrawableSeries {
         // set uniforms
         context.setUniform(program, 'uniformCamTransformation', m);
         context.setUniform(program, 'uniformColor', this.colorValue);
-        context.setUniform(program, 'uniformPointSize', this.pointSize.boundFromArray(this.getMinMaxPointSize(context.gl)));
+        context.setUniform(program, 'uniformPointSize', this.pointSize.boundFromArray(
+            this.getMinMaxPointSize(context.gl)
+        ));
 
         // set clipping bounds
         const p1 = new Vector2(chartArea.left, chartArea.top).transform(p);

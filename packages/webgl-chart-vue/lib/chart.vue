@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import { GpuChart } from '@tomsoftware/webgl-chart';
 import { ChartConfig } from './chart-config';
+import { WebGlChart } from '@tomsoftware/webgl-chart';
+
 
 interface Props {
   data: ChartConfig
@@ -16,13 +17,13 @@ const emit = defineEmits<{
   onBind: [element: HTMLElement]
 }>();
 
-const gpuChart = new GpuChart();
+const webGlChart = new WebGlChart();
 
 watch(
-    () => props.data.maxFrameRate.value,
-    (newValue) => {
-      gpuChart.setMaxFrameRate(newValue);
-    }
+  () => props.data.maxFrameRate.value,
+  (newValue) => {
+    webGlChart.setMaxFrameRate(newValue);
+  }
 );
 
 onMounted(() => {
@@ -33,9 +34,9 @@ onMounted(() => {
 
   console.debug('webgl-chart mounted');
 
-  gpuChart.bind(cav);
-  gpuChart.setMaxFrameRate(props.data.maxFrameRate.value);
-  gpuChart.setRenderCallback((context) => {
+  webGlChart.bind(cav);
+  webGlChart.setMaxFrameRate(props.data.maxFrameRate.value);
+  webGlChart.setRenderCallback((context) => {
     if ((props.data == null) || ((props.data.onRender == null))) {
       return;
     }
@@ -44,13 +45,15 @@ onMounted(() => {
 
   emit('onBind', cav);
 
-  gpuChart.render();
+  webGlChart.render();
 });
 
 onBeforeUnmount(() => {
   console.debug('webgl-chart unmounted!');
-  gpuChart.dispose();
+  webGlChart.dispose();
 });
+
+defineExpose({ WebGlChart: webGlChart });
 
 </script>
 

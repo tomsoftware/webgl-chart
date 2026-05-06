@@ -30,7 +30,6 @@
     "resolveJsonModule": true,
     "composite": true,
 
-    "baseUrl": ".",
     "paths": {
       "@tomsoftware/webgl-lib": ["../packages/webgl-lib/src/index"],
       "@tomsoftware/webgl-chart": ["../packages/webgl-chart/src/index"],

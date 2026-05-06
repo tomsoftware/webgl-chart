@@ -26,7 +26,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
     /** return the width we need to print the tick-values */
     protected getTickHeight(context: Context) {
         const g = TextTextureGenerator.getCached('0', this.tickFont);
-        const m = g.computerTextMetrics(context);
+        const m = g.computerTextMetrics(context.textureContext);
         return m.height;
     }
 
@@ -59,7 +59,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
 
         // get font width
         const g = TextTextureGenerator.getCached('0', this.tickFont);
-        const m = g.computerTextMetrics(context);
+        const m = g.computerTextMetrics(context.textureContext);
 
         const ticks = this.scale.calculateTicks(m.width, area.width * context.width, false);
         const positionScaling = area.width / this.scale.range;

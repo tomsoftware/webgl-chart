@@ -1,13 +1,14 @@
 // root
 export * from './tooltip-line';
 export * from './tooltip-markers';
-export * from './gpu-chart';
+export * from './webgl-chart';
 
 // series
 export * from './drawable-series';
 export * from './series-point';
 export * from './series-line';
 export * from './series-bubble';
+export * from './series-texture-point';
 export * from './series-area';
 export * from './series-bar';
 export * from './series-range-rect';

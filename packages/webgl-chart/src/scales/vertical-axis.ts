@@ -28,7 +28,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
     /** return the width we need to print the tick-values */
     protected getTickWidth(context: Context) {
         const g = TextTextureGenerator.getCached('0', this.tickFont);
-        const m = g.computerTextMetrics(context);
+        const m = g.computerTextMetrics(context.textureContext);
 
         const ticks = this.scale.calculateTicks(m.height, 0.5 * context.width, true);
 
@@ -88,7 +88,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
 
         // get font hight
         const g = TextTextureGenerator.getCached('0', this.tickFont);
-        const m = g.computerTextMetrics(context);
+        const m = g.computerTextMetrics(context.textureContext);
         const tickLetterHightHalf= context.pixelToScreenY(m.height * 0.5);
 
         // calculate ticks

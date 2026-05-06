@@ -1,8 +1,8 @@
-import type { Context } from '../context';
 import type { TextureGenerator } from './texture-generator';
 import { TextBoundingBox } from './text-bounding-box';
 import { Font } from './font';
 import { GpuTexture } from './gpu-texture';
+import { TextureContext } from '../texture-context';
 
 export class TextTextureGenerator implements TextureGenerator {
     private static cache: Map<string, TextTextureGenerator> = new Map();
@@ -15,7 +15,7 @@ export class TextTextureGenerator implements TextureGenerator {
         this.font = font;
     }
 
-    /** return a instance of TextTextureGenerator but used cached on if available */
+    /** return a instance of TextTextureGenerator but used cached if not available */
     public static getCached(text: string, font: Font): TextTextureGenerator {
         const key = 't|' + font.key + '|' + text;
 
@@ -37,22 +37,20 @@ export class TextTextureGenerator implements TextureGenerator {
         return this.text === other.text && this.font.compare(other.font);
     }
 
-    private setupCanvas(context: Context): OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D {
-        const canvas = context.canvas2d;
-
-        const ctx = canvas.getContext2d();
+    private setupCanvas(context: TextureContext): OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D {
+        const ctx = context.getContext2d();
         if (ctx == null) {
             throw new Error('unable to get 2d context');
         }
 
-        ctx.font = this.font.getCssFont(canvas.devicePixelRatio);
+        ctx.font = this.font.getCssFont(context.devicePixelRatio);
         // we always use white so we can multiply the real font color in the fragment shader
         ctx.fillStyle = 'white';
 
         return ctx;
     }
 
-    public computerTextMetrics(context: Context): TextBoundingBox {
+    public computerTextMetrics(context: TextureContext): TextBoundingBox {
         if (this.textMetricsCache != null) {
             return this.textMetricsCache;
         }
@@ -67,7 +65,7 @@ export class TextTextureGenerator implements TextureGenerator {
         return this.textMetricsCache = TextBoundingBox.fromTextMetrics(ctx.measureText(this.text));
     }
 
-    public computerTexture(context: Context): GpuTexture | null {
+    public computerTexture(context: TextureContext): GpuTexture | null {
         console.trace('computerTexture:', this.text);
 
         if (this.text == '') {

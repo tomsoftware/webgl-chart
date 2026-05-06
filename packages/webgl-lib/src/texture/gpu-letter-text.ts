@@ -92,7 +92,7 @@ export class GpuLetterText implements IHeightProvider, IWidthProvider {
         let w = 0;
         let h = 0;
         for(const g of this.generators) {
-            const m = g.computerTextMetrics(context);
+            const m = g.computerTextMetrics(context.textureContext);
             h = Math.max(h, m.height);
             w = w + m.width;
         }
@@ -138,15 +138,15 @@ export class GpuLetterText implements IHeightProvider, IWidthProvider {
 
         let posX = 0;
         for (const g of this.generators) {
-            const state = context.addTexture(g);
+            const state = context.textureContext.addTexture(g);
             if (state == null) {
                 continue;
             }
-            const metric = g.computerTextMetrics(context);
+            const metric = g.computerTextMetrics(context.textureContext);
             const p = m.translate((posX + state.width / 2) * scaleX, -metric.bottom / 2 * scaleY);
             posX += metric.width;
 
-            context.drawTexture(state, p, this.color);
+            context.textureContext.drawTexture(state, p, this.color);
         }
     }
 
@@ -177,12 +177,12 @@ export class GpuLetterText implements IHeightProvider, IWidthProvider {
         let posY = -alignFullSize.height * 0.5;
 
         for (const g of this.generators) {
-            const state = context.addTexture(g);
+            const state = context.textureContext.addTexture(g);
             if (state == null) {
                 continue;
             }
             // get size of the texture
-            const metric = g.computerTextMetrics(context);
+            const metric = g.computerTextMetrics(context.textureContext);
 
             // calc position
             const x = context.pixelToScreenX(posX + state.width * 0.5);
@@ -192,7 +192,7 @@ export class GpuLetterText implements IHeightProvider, IWidthProvider {
 
             posX += metric.width;
 
-            context.drawTexture(state, p, this.color);
+            context.textureContext.drawTexture(state, p, this.color);
         }
     }
 }

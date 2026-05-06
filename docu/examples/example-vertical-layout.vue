@@ -10,7 +10,7 @@ const topCell = vertical.addRelativeCell(1);
 const bottomCell = vertical.addRelativeCell(1);
 
 const topBorder = new LayoutBorder(Color.blue);
-const bottomBorder = new LayoutBorder(Color.yellow);
+const bottomBorder = new LayoutBorder(Color.red);
 
 const topText = new GpuText('Top', undefined, Color.black);
 const bottomText = new GpuText('Bottom', undefined, Color.black);
@@ -29,11 +29,25 @@ const chartData = new ChartConfig()
     bottomText.draw(context, bottomCell, Alignment.centerCenter);
   });
 chartData.setMaxFrameRate(15);
+
 </script>
 
 <template>
-  <chart
-    :data="chartData"
-    class="chart"
-  />
+  <div class="padding">
+    <chart
+      :data="chartData"
+      class="chart"
+    />
+  </div>
+
 </template>
+
+<style scoped>
+.chart {
+  background-color: white;
+}
+.padding {
+  background-color: lightgrey;
+  padding: 10px;
+}
+</style>

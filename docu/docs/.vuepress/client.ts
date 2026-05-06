@@ -19,14 +19,16 @@ import ExampleSeriesBar from '../../examples/example-series-bar.vue';
 import ExampleSeriesRangeRect from '../../examples/example-series-range-rect.vue';
 import ExampleSeriesRangeLine from '../../examples/example-series-range-line.vue';
 import ExampleSeriesCandlestick from '../../examples/example-series-candlestick.vue';
+import ExampleSeriesTexturePoint from '../../examples/example-series-texture-point.vue';
 import ExampleAxisGrid from '../../examples/example-axis-grid.vue';
 import ExampleAxisOrientation from '../../examples/example-axis-orientation.vue';
 import ExampleAisTickFormat from '../../examples/example-axis-tick-format.vue';
 import ExampleBufferPush from '../../examples/example-buffer-push.vue';
 import ExampleBufferRing from '../../examples/example-buffer-ring.vue';
 import ExampleBufferWrite from '../../examples/example-buffer-write.vue';
-import ExampleBufferRingBreaking from '../../examples/example-buffer-ring-breaking.vue'
-import ExampleBufferRingWrapping from '../../examples/example-buffer-ring-wrapping.vue'
+import ExampleBufferRingBreaking from '../../examples/example-buffer-ring-breaking.vue';
+import ExampleBufferRingWrapping from '../../examples/example-buffer-ring-wrapping.vue';
+
 
 export default defineClientConfig({
   enhance({ app }) {
@@ -61,6 +63,7 @@ export default defineClientConfig({
     app.component('example-series-range-rect', ExampleSeriesRangeRect);
     app.component('example-series-range-line', ExampleSeriesRangeLine);
     app.component('example-series-candlestick', ExampleSeriesCandlestick);
+    app.component('example-series-texture-point', ExampleSeriesTexturePoint);
     app.component('example-axis-grid', ExampleAxisGrid);
     app.component('example-axis-orientation', ExampleAxisOrientation);
     app.component('example-axis-tick-format', ExampleAisTickFormat);

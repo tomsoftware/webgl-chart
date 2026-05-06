@@ -3,6 +3,8 @@ import type { GpuTexture } from './gpu-texture';
 import type { TextureGenerator } from './texture-generator';
 import { TextureMapItem } from './texture-map-item';
 import type { IUniformValue } from '../uniform';
+import { TextureContext } from '../texture-context';
+import { Vector2 } from '../vector-2';
 
 class TextureSlot {
     // current fill state of the slot
@@ -82,6 +84,11 @@ export class TextureMap implements IUniformValue {
         return newSlot.allocateSlot(w);
     }
 
+    /** size (width / height) of the texture-map-buffer in pixels */
+    public get textureSize(): Vector2 {
+        return new Vector2(this.width, this.height);
+    }
+
     /** draw a texture from the  */
     public bind(context: Context): WebGLTexture | null {
         const gl = context.gl;
@@ -132,7 +139,7 @@ export class TextureMap implements IUniformValue {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     }
 
-    public addTexture(context: Context, texture: TextureGenerator): TextureMapItem | null {
+    public addTexture(context: TextureContext, texture: TextureGenerator): TextureMapItem | null {
         const textureKey = texture.textureKey;
         const item = this.textures.get(textureKey);
         if (item != null) {

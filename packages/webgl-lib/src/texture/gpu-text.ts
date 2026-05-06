@@ -1,4 +1,3 @@
-import type { Context } from '../context';
 import type { LayoutNode } from '../layout/layout-node';
 import type { TextBoundingBox } from './text-bounding-box';
 import { Font } from './font';
@@ -7,6 +6,8 @@ import { ScreenUnit, ScreenPosition } from '../layout/screen-position';
 import { Alignment } from '../alignment';
 import { Color } from '../color';
 import { TextTextureGenerator } from './text-texture-generator';
+import { TextureContext } from '../texture-context';
+import { Context } from '../context';
 import { IHeightProvider, IWidthProvider } from '../layout/size-provider';
 
 export class GpuText implements IHeightProvider, IWidthProvider {
@@ -56,7 +57,7 @@ export class GpuText implements IHeightProvider, IWidthProvider {
     }
 
     public getWidth(context: Context): ScreenPosition {
-        const size = this.getBoundingBox(context);
+        const size = this.getBoundingBox(context.textureContext);
 
         return new ScreenPosition(
             size.width,
@@ -65,7 +66,7 @@ export class GpuText implements IHeightProvider, IWidthProvider {
     }
 
     public getHeight(context: Context): ScreenPosition {
-        const size = this.getBoundingBox(context);
+        const size = this.getBoundingBox(context.textureContext);
 
         return new ScreenPosition(
             size.height,
@@ -73,15 +74,15 @@ export class GpuText implements IHeightProvider, IWidthProvider {
         );
     }
 
-    /** returns the width and height of of text with transformation e.g. rotation */
-    public getBoundingBox(context: Context): TextBoundingBox {
+    /** returns the width and height of the text with transformation e.g. rotation */
+    public getBoundingBox(context: TextureContext): TextBoundingBox {
         return this.generator
             .computerTextMetrics(context)
             .transform(Matrix3x3.rotateDeg(this.rotationDeg));
     }
 
     public draw(context: Context, layout: LayoutNode, alignment: Alignment | null = null, transformation: Matrix3x3 | null = null) {
-        const state = context.addTexture(this.generator);
+        const state = context.textureContext.addTexture(this.generator);
         if (state == null) {
             // unable to generate texture
             return;
@@ -91,7 +92,7 @@ export class GpuText implements IHeightProvider, IWidthProvider {
         let area = layout.getArea(context.layoutCache);
 
         // to make the text to be always in the area we shrink the area by the size of the text
-        const size = this.getBoundingBox(context);
+        const size = this.getBoundingBox(context.textureContext);
         area = area.adjustMargin(context.pixelToScreenX(size.width * 0.5), context.pixelToScreenY(size.height * 0.5));
 
         // apply alignment
@@ -108,6 +109,6 @@ export class GpuText implements IHeightProvider, IWidthProvider {
         }
 
         // finally draw the texture
-        context.drawTexture(state, m, this.color);
+        context.textureContext.drawTexture(state, m, this.color);
     }
 }

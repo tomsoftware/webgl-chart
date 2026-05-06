@@ -49,11 +49,25 @@ const chartData = new ChartConfig()
     textIntersection.draw(context, intersection, Alignment.centerCenter);
   });
 chartData.setMaxFrameRate(15);
+
 </script>
 
 <template>
-  <chart
-    :data="chartData"
-    class="chart"
-  />
+  <div class="padding">
+    <chart
+      :data="chartData"
+      class="chart"
+    />
+  </div>
+
 </template>
+
+<style scoped>
+.chart {
+  background-color: white;
+}
+.padding {
+  background-color: lightgrey;
+  padding: 10px;
+}
+</style>

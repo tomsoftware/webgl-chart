@@ -9,7 +9,7 @@ const horizontal = baseContainer.addLayout(new HorizontalLayout());
 const leftCell = horizontal.addRelativeCell(1);
 const rightCell = horizontal.addRelativeCell(1);
 
-const leftBorder = new LayoutBorder(Color.green);
+const leftBorder = new LayoutBorder(Color.darkGreen);
 const rightBorder = new LayoutBorder(Color.red);
 
 const leftText = new GpuText('Left', undefined, Color.black);
@@ -29,11 +29,25 @@ const chartData = new ChartConfig()
     rightText.draw(context, rightCell, Alignment.centerCenter);
   });
 chartData.setMaxFrameRate(15);
+
 </script>
 
 <template>
-  <chart
-    :data="chartData"
-    class="chart"
-  />
+  <div class="padding">
+    <chart
+      :data="chartData"
+      class="chart"
+    />
+  </div>
+
 </template>
+
+<style scoped>
+.chart {
+  background-color: white;
+}
+.padding {
+  background-color: lightgrey;
+  padding: 10px;
+}
+</style>
