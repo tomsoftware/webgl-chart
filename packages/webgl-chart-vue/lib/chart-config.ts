@@ -1,10 +1,10 @@
-import { RenderCallback } from '@tomsoftware/webgl-lib';
+import { ChartRenderCallback } from '@tomsoftware/webgl-chart';
 import { ref } from 'vue';
 
 export class ChartConfig {
-    public onRender: RenderCallback | null = null;
+    public onRender: ChartRenderCallback | null = null;
 
-    public setRenderCallback(callback: RenderCallback): ChartConfig {
+    public setRenderCallback(callback: ChartRenderCallback): ChartConfig {
         this.onRender = callback;
         return this;
     }
