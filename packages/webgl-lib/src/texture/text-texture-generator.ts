@@ -55,7 +55,7 @@ export class TextTextureGenerator implements TextureGenerator {
             return this.textMetricsCache;
         }
 
-        console.log('computerSize:', this.text);
+        console.trace('computerSize:', this.text);
 
         if (this.text == '') {
             return this.textMetricsCache = new TextBoundingBox();
@@ -66,7 +66,7 @@ export class TextTextureGenerator implements TextureGenerator {
     }
 
     public computerTexture(context: TextureContext): GpuTexture | null {
-        console.log('computerTexture:', this.text);
+        console.trace('computerTexture:', this.text);
 
         if (this.text == '') {
             return new GpuTexture(0, 0, new Uint32Array(0));

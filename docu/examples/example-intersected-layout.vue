@@ -68,6 +68,6 @@ chartData.setMaxFrameRate(15);
 }
 .padding {
   background-color: lightgrey;
-  padding:10px
+  padding: 10px;
 }
 </style>
