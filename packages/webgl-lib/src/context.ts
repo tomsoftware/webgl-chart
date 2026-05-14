@@ -176,6 +176,7 @@ export class Context {
         const root = new LayoutArea(0, 0, 1, this.height / this.width);
 
         rootCell.calculate(this, this.layoutCache, root);
+        console.log(this.layoutCache);
     }
 
     public drawLine(p1: Vector2, p2: Vector2, color: Color): void {

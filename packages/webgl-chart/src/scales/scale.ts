@@ -1,5 +1,8 @@
+import { EventHandler } from "@tomsoftware/webgl-lib";
+
 /** Scales are used to scale axis and chart-data */
 export class Scale {
+    private changeEventHandler = new EventHandler<Scale, [Scale]>();
     public min: number;
     public max: number;
 
@@ -100,11 +103,26 @@ export class Scale {
         }
     }
     
+    /** register event handler */
+    public on(eventType: 'changed', callback: (scale: Scale) => void) {
+      this.changeEventHandler.add(this, callback);
+    }
+
+    /** Notify all listeners */
+    private emitChange() {
+        return;
+        for (const listener of this.changeEventHandler.listeners) {
+            listener.callback(this);
+        }
+    }
+
     /** apply panning to min and max of the scale */
     public pan(value: number) {
         const panValue = this.range * value;
         this.min -= panValue;
         this.max -= panValue;
+
+        this.emitChange();
     }
 
     /** apply zooming to min and max of the scale */
@@ -112,6 +130,8 @@ export class Scale {
         const zoomValue = this.range * value;
         this.min -= zoomValue * position;
         this.max += zoomValue * (1- position);
+
+        this.emitChange();
     }
 
     public setRange(min: number | null, max: number | null) {
@@ -126,5 +146,7 @@ export class Scale {
             this.min = max;
             this.max = min;
         }
+
+        this.emitChange();
     }
 }

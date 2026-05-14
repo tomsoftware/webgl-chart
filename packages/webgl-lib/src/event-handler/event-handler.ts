@@ -2,26 +2,14 @@ import type { Context } from '../context';
 import type { LayoutArea } from '../layout/layout-area';
 import type { LayoutNode } from '../layout/layout-node';
 import { Vector2 } from '../vector-2';
+import { EventHandler } from './event-handler_new';
 import { EventTypes, EventValue } from './event-value';
 
-/** callback for received Events. Return true to consume event */
-export type EventHandler = (value: EventValue, layoutArea: LayoutArea, layoutNode: LayoutNode) => boolean | void;
-
-class EventListenerInfo {
-    public type: EventTypes;
-    public callback: EventHandler;
-    public layoutNode: LayoutNode;
-
-    public constructor(type: EventTypes, layoutNode: LayoutNode, callback: EventHandler) {
-        this.type = type;
-        this.layoutNode = layoutNode;
-        this.callback = callback;
-    }
-}
+type EventCallbackType = (event: EventValue, area: LayoutArea, node: LayoutNode) => boolean | void;
 
 export class EventDispatcher {
     private el: HTMLElement | null = null;
-    private listeners: Map<EventHandler, EventListenerInfo> = new Map();
+    private eventRouter = new Map<string, EventHandler<LayoutNode, [EventValue, LayoutArea, LayoutNode]>>();
     private eventQueue: EventValue[] = [];
     // touch distance of last 2-finger gesture
     private initialDistance: number | null = null;
@@ -29,6 +17,13 @@ export class EventDispatcher {
     private lastMouseButtons: number = 0;
     private lastMousePanningPosition: Vector2 | null = null;
     private mouseDownPosition: Vector2 | null = null;
+
+    constructor() {
+        // add event handler in map
+        this.eventRouter.set(EventTypes.MouseMove, new EventHandler<LayoutNode, [EventValue, LayoutArea, LayoutNode]>());
+        this.eventRouter.set(EventTypes.Pan, new EventHandler<LayoutNode, [EventValue, LayoutArea, LayoutNode]>());
+        this.eventRouter.set(EventTypes.Wheel, new EventHandler<LayoutNode, [EventValue, LayoutArea, LayoutNode]>());
+    }
 
     public bind(el: HTMLElement | null) {
         if (el === this.el) {
@@ -44,8 +39,8 @@ export class EventDispatcher {
     }
 
     /** register a new event on a layout element */
-    public on(type: EventTypes, layoutNode: LayoutNode, callback: EventHandler) {
-        this.listeners.set(callback, new EventListenerInfo(type, layoutNode, callback));
+    public on(type: EventTypes, layoutNode: LayoutNode, callback: EventCallbackType) {
+        this.eventRouter.get(type)?.add(layoutNode, callback);
     }
 
     /** dispatch incoming events to the listeners */
@@ -58,14 +53,16 @@ export class EventDispatcher {
         this.eventQueue = [];
 
         for (const event of queue) {
-            for (const listener of this.listeners.values()) {
-                if (event.type !== listener.type) {
-                    continue;
-                }
+            const handler = this.eventRouter.get(event.type);
+            if (handler == null ){
+                continue;
+            }
 
-                const area = listener.layoutNode.getArea(context.layoutCache);
+            for (const listener of handler?.listeners) {
+
+                const area = listener.source.getArea(context.layoutCache);
                 if (area.contains(event.position)) {
-                    if (listener.callback(event, area, listener.layoutNode)) {
+                    if (listener.callback(event, area, listener.source)) {
                         break;
                     }
                 }
@@ -180,7 +177,7 @@ export class EventDispatcher {
     }
 
     private handleMouseMove(event: MouseEvent) {
-        if (this.listeners.size === 0) {
+        if (this.eventRouter.size === 0) {
             return;
         }
 
@@ -193,7 +190,7 @@ export class EventDispatcher {
 
     /** raise the panning event */
     private handlePanning(event: MouseEvent | Touch) {
-        if (this.listeners.size === 0) {
+        if (this.eventRouter.size === 0) {
             return;
         }
 
@@ -275,7 +272,7 @@ export class EventDispatcher {
 
     /** handle mouse wheel event --> mouse-zoom */
     private onMouseWheel = (event: WheelEvent) : boolean => {
-        if (this.listeners.size === 0) {
+        if (this.eventRouter.size === 0) {
             return true;
         }
 
