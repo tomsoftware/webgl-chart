@@ -15,7 +15,16 @@ export class EventHandler<T, C extends any[] = []> {
 
     /** Register a listener */
     public add(source: T, callback: CallbackType<C>): void {
-        this.listeners.push(new EventInfo(source, callback));
+        const newEventInfo = new EventInfo(source, callback);
+        const oldIndex = this.listeners.findIndex(l => l.callback === callback);
+        if (oldIndex >= 0) {
+            // This callback was re-added / update so replace the old one
+            this.listeners[oldIndex] = newEventInfo;
+        }
+        else {
+            // new listener - add it
+            this.listeners.push(newEventInfo);
+        }
     }
 
     /** Remove a listener */

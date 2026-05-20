@@ -110,7 +110,6 @@ export class Scale {
 
     /** Notify all listeners */
     private emitChange() {
-        return;
         for (const listener of this.changeEventHandler.listeners) {
             listener.callback(this);
         }

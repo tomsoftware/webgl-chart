@@ -17,6 +17,7 @@ export * from './webgl-renderer';
 export * from './buffers/implementations/gpu-fix-buffer';
 export * from './buffers/implementations/gpu-growing-buffer';
 export * from './buffers/implementations/gpu-ring-buffer';
+export * from './buffers/implementations/gpu-buffer-types';
 export * from './buffers/gpu-writable-buffer';
 export * from './buffers/gpu-buffer-view';
 export * from './buffers/attribute-buffer';

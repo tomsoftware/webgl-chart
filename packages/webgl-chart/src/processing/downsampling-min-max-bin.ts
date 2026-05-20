@@ -1,87 +1,67 @@
-import { GpuFixBuffer, GpuReadableBuffer } from "@tomsoftware/webgl-lib";
+import { GpuBufferDataType, GpuFixBuffer, GpuReadableBuffer, TypedArray } from "@tomsoftware/webgl-lib";
 
 /**
  * DownsamplingMinMaxBin computes per‑bin minimum and maximum values
- * for a given input buffer. This is a classic LOD (Level of Detail)
- * reduction technique used for rendering large datasets efficiently.
- *
- * For each bin (typically one bin per horizontal pixel), the algorithm
- * scans the corresponding range of indices in the source buffer and
- * extracts:
- *   - the minimum value in that bin
- *   - the maximum value in that bin
- *
- * The result is two GPU‑resident buffers (minValues and maxValues)
- * that can be rendered as vertical min/max bars or used as input
- * for further GPU processing.
- *
- * This class does not compute the bin boundaries itself. Instead,
- * it expects a buffer of bin descriptors (usually produced by a
- * UniformSampler or similar X‑downsampler).
+ * for a given input buffer. 
  */
-export class DownsamplingMinMaxBin {
-    public readonly minValues = new GpuFixBuffer('float32', 100);
-    public readonly maxValues = new GpuFixBuffer('float32', 100);
+export class DownsamplingMinMaxBin<T extends TypedArray>  {
+    public readonly minValues: GpuFixBuffer<T>;
+    public readonly maxValues: GpuFixBuffer<T>;
     private readonly values: GpuReadableBuffer;
 
     /**
      * Creates a new Min/Max downsampler.
      * @param values The source buffer containing the full dataset.
      */
-    public constructor(values: GpuReadableBuffer) {
+    public constructor(type: GpuBufferDataType, values: GpuReadableBuffer, numberOfPoints: number) {
         this.values = values;
+        this.minValues = new GpuFixBuffer(type, numberOfPoints);
+        this.maxValues = new GpuFixBuffer(type, numberOfPoints);
     }
 
     /**
-     * Computes the min/max values for each bin.
-     *
-     * @param bins A GPU buffer describing the bin boundaries.
-     *             Each entry typically contains the start and end
-     *             index of the bin in the source data.
-     *
-     * @returns An object containing two GPU buffers:
-     *          - min: buffer of per‑bin minimum values
-     *          - max: buffer of per‑bin maximum values
-     *
-     * The caller can upload these buffers to the GPU for rendering
-     * or further processing.
+     * Computes the minValues and maxValues for each bin.
      */
-    public process(bins: GpuReadableBuffer) {
-       const binCount = bins.count;
-
+    public process(binIndexes: Uint32Array) {
+        const binCount = binIndexes.length;
         this.minValues.ensureCapacity(binCount);
         this.maxValues.ensureCapacity(binCount);
 
         this.minValues.clear();
         this.maxValues.clear();
 
-        for (let i = 0; i < binCount; i++) {
-            // Bin-Definition lesen: [startIndex, endIndex]
-            const start = bins.getComponentAt(i, 0);
-            const end   = bins.getComponentAt(i, 1);
+        const values = this.values;
 
-            // Ungültige Bins überspringen
-            if (start > end) {
-                this.minValues.push(Number.POSITIVE_INFINITY);
-                this.maxValues.push(Number.NEGATIVE_INFINITY);
-                continue;
-            }
+        let binIndex = 0;
+        const startIndex = binIndexes[0];
+        const endIndex = binIndexes[binIndexes.length - 1];
+        let nextIndex = binIndexes[binIndex + 1];
 
-            let min = Number.POSITIVE_INFINITY;
-            let max = Number.NEGATIVE_INFINITY;
+        let min = values.getComponentAt(startIndex);
+        let max = min;
 
-            // Bereich clampen
-            const s = Math.max(0, start);
-            const e = Math.min(this.values.count - 1, end);
+        for (let i = startIndex; i <= endIndex; i++) {
+            const v = values.getComponentAt(i);
 
-            for (let idx = s; idx <= e; idx++) {
-                const v = this.values.getComponentAt(idx, 0);
+            if (i < nextIndex) {
+                // update state
                 if (v < min) min = v;
                 if (v > max) max = v;
             }
+            else {
+                // we reach next bin
+                // save value
+                this.minValues.push(min);
+                this.maxValues.push(max);
 
-            this.minValues.push(min);
-            this.maxValues.push(max);
+                // save next bin
+                binIndex++;
+                nextIndex = binIndexes[binIndex + 1];
+
+                // create new state
+                min = v;
+                max = min;
+            }
         }
 
         return { min: this.minValues, max: this.maxValues };

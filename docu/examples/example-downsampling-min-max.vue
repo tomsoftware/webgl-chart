@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
 import { LayoutCell, Color, EventDispatcher, GpuFixBuffer } from '@tomsoftware/webgl-lib';
-import {SeriesPoint, BasicChartLayout, Scale, DownsamplingMinMaxBin, UniformSampler,
+import {SeriesPoint, BasicChartLayout, Scale, DownsamplingMinMaxBin, UniformSampler, SeriesArea,
   } from '@tomsoftware/webgl-chart';
 
 // generate data
-const N = 50_000_000;
-const xMax = 2_000_000;
+const N = 10_000_000;
+const xMax = 20_000_000;
 
-const itemCount = 10 * 1000 * 1000; // nanoseconds;
-const x = new GpuFixBuffer('float32', itemCount)
+const x = new GpuFixBuffer('float32', N)
     .generate((i) =>  (i / (N - 1)) * xMax );
 
 const y1 = GpuFixBuffer.generateFrom('float32', x, (i) => {
@@ -19,8 +18,8 @@ const y1 = GpuFixBuffer.generateFrom('float32', x, (i) => {
 });
 
 // define data processing
-const downsamplingMinMaxBinX = new UniformSampler(x);
-const downsamplingMinMaxBinY1 = new DownsamplingMinMaxBin(y1);
+const downsamplingMinMaxBinX = new UniformSampler('float32', x, 1000);
+const downsamplingMinMaxBinY1 = new DownsamplingMinMaxBin('float32', y1, 1000);
 
 
 // generate series data
@@ -32,11 +31,12 @@ const seriesY1_max = new SeriesPoint(downsamplingMinMaxBinX.result, downsampling
     .setColor(Color.black)
     .setPointSize(1);
 
-
+const seriesArea = new SeriesArea(downsamplingMinMaxBinX.result, downsamplingMinMaxBinY1.minValues, downsamplingMinMaxBinY1.maxValues)
+  .setColor(Color.blue, Color.lightBlue);
 
 // scales define the range that is shown by the axis
 const scaleX = new Scale(0, xMax);
-const scaleY = new Scale(0, 1);
+const scaleY = new Scale(-1.4, 1.4);
 
 // handel events
 const eventDispatcher = new EventDispatcher();
@@ -49,11 +49,16 @@ const basicLayout = new BasicChartLayout(eventDispatcher, baseContainer, scaleX)
 basicLayout.addYScale(scaleY, 'Value');
 basicLayout.xAxis.label?.setText('Time');
 
-scaleX.on("changed", (scale) => {
+function processDownSampling(scale: Scale) {
   const result = downsamplingMinMaxBinX.process(scale.min, scale.max, 1000 /* always reduce to 100 points */);
-  downsamplingMinMaxBinY1.process(result);
-})
+  downsamplingMinMaxBinY1.process(result.indexes);
+}
 
+scaleX.on('changed', (scale) => {
+  processDownSampling(scale);
+});
+
+processDownSampling(scaleX);
 
 // set render callback: here you need to define what elements you want to draw
 const myChart = new ChartConfig()
@@ -69,6 +74,7 @@ const myChart = new ChartConfig()
       basicLayout.draw(context);
 
       // draw the series
+      seriesArea.draw(context, scaleX, scaleY, basicLayout.chartCell);
       seriesY1_min.draw(context, scaleX, scaleY, basicLayout.chartCell);
       seriesY1_max.draw(context, scaleX, scaleY, basicLayout.chartCell);
   });
