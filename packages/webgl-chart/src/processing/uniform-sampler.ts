@@ -41,58 +41,71 @@ export class UniformSampler<T extends TypedArray> {
      * @param numberOfPoints The number of samples to return.
      * @returns A new array containing uniformly spaced samples.
      */
-    public process(min: number, max: number, numberOfPoints: number) {
-        // Sanity checks
+     public process(min: number, max: number, numberOfPoints: number) {
         if (numberOfPoints <= 0) {
             this.result.clear();
-
             return {
-                indexes: this.indexes,
+                indexes: this.indexes.subarray(0, 0),
                 values: this.result
             };
         }
 
-        // Find fist end last index
         const minIndexValue = this.values.findIndex(min);
         const maxIndexValue = this.values.findIndex(max);
 
         const startIndex = Math.min(minIndexValue, maxIndexValue);
         const endIndex = Math.max(minIndexValue, maxIndexValue);
 
-        if (endIndex <= startIndex) {
+        if (endIndex < startIndex) {
             this.result.clear();
-
             return {
-                indexes: this.indexes,
+                indexes: this.indexes.subarray(0, 0),
                 values: this.result
             };
         }
 
+        const available = endIndex - startIndex + 1;
+
+        // If there are not enough points -> return all
+        if (available <= numberOfPoints) {
+            this.result.ensureCapacity(available);
+            this.result.clear();
+
+            for (let i = 0; i < available; i++) {
+                const idx = startIndex + i;
+                const value = this.values.getComponentAt(idx, 0);
+
+                this.indexes[i] = idx;
+                this.result.push(value);
+            }
+
+            return {
+                indexes: this.indexes.subarray(0, available),
+                values: this.result
+            };
+        }
+
+        // Normales gleichmäßiges Sampling
         this.result.ensureCapacity(numberOfPoints);
         this.result.clear();
 
-        // Only one value
         if (numberOfPoints === 1) {
             const midIndex = Math.round((startIndex + endIndex) * 0.5);
             const v = this.values.getComponentAt(midIndex, 0);
             this.result.push(v);
-            this.indexes[0] = 0;
+            this.indexes[0] = midIndex;
 
             return {
-                indexes: this.indexes,
+                indexes: this.indexes.subarray(0, 1),
                 values: this.result
             };
         }
 
-        // more then one value
         const range = endIndex - startIndex;
         const step = range / (numberOfPoints - 1);
 
         for (let i = 0; i < numberOfPoints; i++) {
-            let idx = startIndex + i * step;
-            // round to integer / index
-            idx = Math.round(idx);
-            // clamp to man / min
+            let idx = Math.round(startIndex + i * step);
             if (idx < startIndex) idx = startIndex;
             if (idx > endIndex) idx = endIndex;
 
@@ -103,9 +116,8 @@ export class UniformSampler<T extends TypedArray> {
         }
 
         return {
-            indexes: this.indexes,
+            indexes: this.indexes.subarray(0, numberOfPoints),
             values: this.result
         };
     }
-
 }

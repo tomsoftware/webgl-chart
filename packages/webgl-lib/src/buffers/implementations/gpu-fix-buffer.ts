@@ -27,6 +27,13 @@ export class GpuFixBuffer<T extends TypedArray> extends GpuBufferBase<T> {
         );
     }
 
+    /** replace the internal buffer of this fix buffer */
+    protected setBuffer(newBuffer: T) {
+        this.buffer = newBuffer;
+        this.validLength = newBuffer.length;
+        this.currentDataVersion++;
+    }
+
     protected doEnsureCapacity(size: number): void {
         if (size > this.buffer.length) {
             console.warn(`GpuFixBuffer<${this.typeName}>: requested capacity ${size} exceeds fixed capacity ${this.buffer.length}.`);
