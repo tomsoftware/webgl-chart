@@ -34,7 +34,7 @@ export class DownsamplingMinMaxBin<T extends TypedArray>  {
 
         let binIndex = 0;
         const startIndex = binIndexes[0];
-        const endIndex = binIndexes[binIndexes.length - 1];
+        const endIndex = Math.min(values.count, binIndexes[binIndexes.length - 1] + 1);
         let nextIndex = binIndexes[binIndex + 1];
 
         let min = values.getComponentAt(startIndex);
