@@ -112,6 +112,7 @@ export class LayoutArea {
         );
     }
 
+    /** Converts the position of this area to a translation matrix */
     public toMatrix(): Matrix3x3 {
         return Matrix3x3.translate(this.left, this.top);
     }
@@ -126,10 +127,20 @@ export class LayoutArea {
         );
     }
 
+    /** Converts an absolute point into a coordinate relative to this layout area. */
+    public relativePoint(pos: Vector2): Vector2 {
+        return new Vector2(
+            (pos.x - this.left) / this.width,
+            (pos.y - this.top) / this.height
+        );
+    }
+
+    /** Create a new LayoutArea from position values (left, top, right, bottom) */
     public static fromPos(x1: number, y1: number, x2: number, y2: number): LayoutArea {
         return new LayoutArea(x1, y1, Math.max(0, x2 - x1), Math.max(y2 - y1));
     }
 
+    /** Draws a rect to the given context with the size of this area */
     public drawBorder(context: Context, color: Color) {
         context.drawRect(this.p0, this.p1, this.p2, this.p3, color);
     }

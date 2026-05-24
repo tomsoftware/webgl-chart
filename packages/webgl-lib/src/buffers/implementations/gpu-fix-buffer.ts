@@ -69,8 +69,8 @@ export class GpuFixBuffer<T extends TypedArray> extends GpuBufferBase<T> {
         const newBuffer = new GpuFixBuffer(type, source.length);
 
         for (let i = 0; i < source.length; i++) {
-            const srcValue = source.getAttributeAt(i);
-            newBuffer.push(func(srcValue[0]));
+            const srcValue = source.getComponentAt(i);
+            newBuffer.push(func(srcValue));
         }
 
         return newBuffer;

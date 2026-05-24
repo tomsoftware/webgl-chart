@@ -2,7 +2,12 @@
 
 Downsampling reduces the number of points that are rendered while keeping important visual features (peaks and valleys). This library provides a simple and efficient two-step downsampling pipeline based on uniform sampling for the X axis and min/max binning for Y values.
 
-## Downsampling drawing Min-Max in *SeriesArea*
+## Drawing reduced Min-Max values as *SeriesArea*
+This example
+- selects uniformly spaced sample indices for the visible X range using `UniformSampler`.
+- computes the minimum and maximum Y values for each bin defined by the sampled X indices using `DownsamplingMinMaxBin`.
+- draws ara chart between min and max values
+- draw min and max points
 
 <example-downsampling-min-max />
 
@@ -12,12 +17,6 @@ Downsampling reduces the number of points that are rendered while keeping import
   @[code](../../examples/example-downsampling-min-max.vue)
 </details>
 
-## Overview
-
-The typical pipeline uses two processing classes:
-
-- `UniformSampler` — selects uniformly spaced sample indices for the visible X range.
-- `DownsamplingMinMaxBin` — computes the minimum and maximum Y values for each bin defined by the sampled X indices.
 
 This approach preserves local extrema which are important for visual fidelity while drastically reducing the number of points to render.
 
@@ -64,8 +63,4 @@ processDownSampling(scaleX, pixelWidth);
 - Use the plotted area width (not the full canvas width) to adapt sampling to the actual viewport of the series.
 - Re-run the downsampling whenever the X-scale changes or the layout is resized.
 - If processing becomes expensive on rapid interactions, debounce the call or throttle updates to a lower frame rate.
-
-## See also
-
-- Example: [docu/examples/example-downsampling-min-max.vue](../../examples/example-downsampling-min-max.vue)
 

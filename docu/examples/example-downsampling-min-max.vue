@@ -1,23 +1,33 @@
 <script setup lang="ts">
 import { Chart, ChartConfig} from '@tomsoftware/webgl-chart-vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { LayoutCell, Color, EventDispatcher, GpuFixBuffer } from '@tomsoftware/webgl-lib';
 import {SeriesPoint, BasicChartLayout, Scale, DownsamplingMinMaxBin, UniformSampler, SeriesArea,
   } from '@tomsoftware/webgl-chart';
 
 // generate data
-const N = 10_000_000;
+const N = 25_000_000;
 const xMax = 20_000_000;
 
 const x = new GpuFixBuffer('float32', N)
-    .generate((i) =>  (i / (N - 1)) * xMax );
+const y1 = new GpuFixBuffer('float32', N);
 
-const y1 = GpuFixBuffer.generateFrom('float32', x, (i) => {
-    return 0.2 * Math.cos(i * 0.000002) +
-           0.4 * Math.cos(i * 0.0003) +
-           0.3 * Math.cos(i * 0.0011) +
-           0.1 * (Math.random() - 0.5);
-});
+function createData() {
+  new Promise(resolve => {
+    x.generate((i) =>  (i / (N - 1)) * xMax );
+
+    y1.generate((i) => {
+        const t = x.getComponentAt(i);
+        return 0.2 * Math.cos(t * 0.000002) +
+              0.4 * Math.cos(t * 0.0003) +
+              0.3 * Math.cos(t * 0.0011) +
+              0.1 * (Math.random() - 0.5);
+    });
+
+    needsDownsampling = true;
+    resolve(0);
+  });
+}
 
 // define data processing
 const downsamplingMinMaxBinX = new UniformSampler('float32', x, 2000);
@@ -53,14 +63,16 @@ basicLayout.xAxis.label?.setText('Time');
 let needsDownsampling = true;
 
 // UI indicators
-const totalPoints = x.count;
+const totalPoints = ref(0);
 const displayedPoints = ref(0);
 
 function processDownSampling(scale: Scale, pixelWidth: number) {
   const result = downsamplingMinMaxBinX.process(scale.min, scale.max, pixelWidth /* reduce to plotted pixel width */);
   downsamplingMinMaxBinY1.process(result.indexes);
+
   // update UI indicator: each bin produces a min and a max point
   displayedPoints.value = downsamplingMinMaxBinY1.minValues.count + downsamplingMinMaxBinY1.maxValues.count;
+  totalPoints.value = y1.count;
 }
 
 scaleX.on('changed', () => {
@@ -100,6 +112,11 @@ function onBind(element: HTMLElement | null): void {
 
 // manage chart options
 myChart.setMaxFrameRate(12);
+
+onMounted(() => {
+  createData();
+});
+
 
 </script>
 
