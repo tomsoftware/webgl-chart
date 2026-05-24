@@ -199,9 +199,6 @@ jobs:
           echo "Suffix: $BUILD_SUFFIX"
           echo "build_suffix=$BUILD_SUFFIX" >> $GITHUB_OUTPUT
 
-      - name: Bump all versions
-        run: pnpm -r version ${{ steps.set_tag.outputs.build_suffix }} --no-git-tag-version
-
       # webgl-lib
       - name: (webgl-lib) Compute next version
         id: version_lib
@@ -213,7 +210,7 @@ jobs:
 
       - name: (webgl-lib) Set version
         working-directory: packages/webgl-lib
-        run: pnpm version ${{ steps.version_lib.outputs.new_version }} --no-git-tag-version
+        run: pnpm pkg set version=${{ steps.version_lib.outputs.new_version }}
 
       - name: (webgl-lib) Publish
         if: ${{ github.event.inputs.publish_webgl_lib == 'true' && needs.validate.outputs.tag != 'none' }}
@@ -234,7 +231,7 @@ jobs:
 
       - name: (webgl-chart) Set version
         working-directory: packages/webgl-chart
-        run: pnpm version ${{ steps.version_chart.outputs.new_version }} --no-git-tag-version
+        run: pnpm pkg set version=${{ steps.version_chart.outputs.new_version }}
 
       - name: (webgl-chart) Publish
         if: ${{ github.event.inputs.publish_webgl_chart == 'true' && needs.validate.outputs.tag != 'none' }}
@@ -255,7 +252,7 @@ jobs:
 
       - name: (webgl-chart-react) Set version
         working-directory: packages/webgl-chart-react
-        run: pnpm version ${{ steps.version_chart_react.outputs.new_version }} --no-git-tag-version
+        run: pnpm pkg set version=${{ steps.version_chart_react.outputs.new_version }}
 
       - name: (webgl-chart-react) Publish
         if: ${{ github.event.inputs.publish_webgl_chart_react == 'true' && needs.validate.outputs.tag != 'none' }}
@@ -276,7 +273,7 @@ jobs:
 
       - name: (webgl-chart-vue) Set version
         working-directory: packages/webgl-chart-vue
-        run: pnpm version ${{ steps.version_chart_vue.outputs.new_version }} --no-git-tag-version
+        run: pnpm pkg set version=${{ steps.version_chart_vue.outputs.new_version }}
 
       - name: (webgl-chart-vue) Publish
         if: ${{ github.event.inputs.publish_webgl_chart_vue == 'true' && needs.validate.outputs.tag != 'none' }}
