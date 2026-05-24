@@ -208,10 +208,14 @@ jobs:
           NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
+      - name: (webgl-lib) Set version
+        working-directory: packages/webgl-lib
+        run: pnpm version ${{ steps.version_lib.outputs.new_version }} --no-git-tag-version
+
       - name: (webgl-lib) Publish
         if: ${{ github.event.inputs.publish_webgl_lib == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-lib
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_lib.outputs.new_version }}
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -225,10 +229,14 @@ jobs:
           NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
+      - name: (webgl-chart) Set version
+        working-directory: packages/webgl-chart
+        run: pnpm version ${{ steps.version_chart.outputs.new_version }} --no-git-tag-version
+
       - name: (webgl-chart) Publish
         if: ${{ github.event.inputs.publish_webgl_chart == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart.outputs.new_version }}
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -242,10 +250,14 @@ jobs:
           NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
+      - name: (webgl-chart-react) Set version
+        working-directory: packages/webgl-chart-react
+        run: pnpm version ${{ steps.version_chart_react.outputs.new_version }} --no-git-tag-version
+
       - name: (webgl-chart-react) Publish
         if: ${{ github.event.inputs.publish_webgl_chart_react == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-react
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart_react.outputs.new_version }}
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -259,9 +271,13 @@ jobs:
           NEW_VERSION="${BASE_VERSION}${{ steps.set_tag.outputs.build_suffix }}"
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
+      - name: (webgl-chart-vue) Set version
+        working-directory: packages/webgl-chart-vue
+        run: pnpm version ${{ steps.version_chart_vue.outputs.new_version }} --no-git-tag-version
+
       - name: (webgl-chart-vue) Publish
         if: ${{ github.event.inputs.publish_webgl_chart_vue == 'true' && needs.validate.outputs.tag != 'none' }}
         working-directory: packages/webgl-chart-vue
-        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks --new-version ${{ steps.version_chart_vue.outputs.new_version }}
+        run: pnpm publish --tag ${{ needs.validate.outputs.tag }} --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
