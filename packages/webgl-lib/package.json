@@ -1,6 +1,6 @@
 {
   "name": "@tomsoftware/webgl-lib",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "WebGL Library for handling data, basic layout, rendering loop, events and text drawing",
 
   "main": "./dist/index.js",
