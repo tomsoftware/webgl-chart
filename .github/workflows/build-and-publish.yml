@@ -199,6 +199,9 @@ jobs:
           echo "Suffix: $BUILD_SUFFIX"
           echo "build_suffix=$BUILD_SUFFIX" >> $GITHUB_OUTPUT
 
+      - name: Bump all versions
+        run: pnpm -r version ${{ steps.set_tag.outputs.build_suffix }} --no-git-tag-version
+
       # webgl-lib
       - name: (webgl-lib) Compute next version
         id: version_lib
