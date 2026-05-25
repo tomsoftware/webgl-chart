@@ -2,7 +2,7 @@ import type { Context } from '../context';
 import type { LayoutArea } from '../layout/layout-area';
 import type { LayoutNode } from '../layout/layout-node';
 import { Vector2 } from '../vector-2';
-import { EventHandler } from './event-handler_new';
+import { EventHandler } from './event-handler';
 import { EventTypes, EventValue } from './event-value';
 
 type EventCallbackType = (event: EventValue, area: LayoutArea, node: LayoutNode) => boolean | void;
