@@ -28,7 +28,7 @@ export class GpuFixBuffer<T extends TypedArray> extends GpuBufferBase<T> {
     }
 
     /** replace the internal buffer of this fix buffer */
-    protected setBuffer(newBuffer: T) {
+    public setBuffer(newBuffer: T) {
         this.buffer = newBuffer;
         this.validLength = newBuffer.length;
         this.currentDataVersion++;

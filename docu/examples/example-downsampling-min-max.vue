@@ -13,11 +13,13 @@ const x = new GpuFixBuffer('float32', N)
 const y1 = new GpuFixBuffer('float32', N);
 
 function createData() {
+  // handle in promise to make it 
   new Promise(resolve => {
-    x.generate((i) =>  (i / (N - 1)) * xMax );
+    const v = 1 / (N - 1) * xMax;
+    x.generate((i) => i * v);
 
     y1.generate((i) => {
-        const t = x.getComponentAt(i);
+        const t = i * v;
         return 0.2 * Math.cos(t * 0.000002) +
               0.4 * Math.cos(t * 0.0003) +
               0.3 * Math.cos(t * 0.0011) +
