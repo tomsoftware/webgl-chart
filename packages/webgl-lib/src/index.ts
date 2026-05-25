@@ -24,7 +24,7 @@ export * from './buffers/attribute-buffer';
 export * from './buffers/gpu-readable-buffer';
 
 // event-handler
-export * from './event-handler/event-handler';
+export * from './event-handler/event-dispatcher';
 export * from './event-handler/event-value';
 export * from './event-handler/event-handler_new';
 
