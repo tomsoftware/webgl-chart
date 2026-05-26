@@ -43,6 +43,7 @@ export default defineUserConfig({
           'renderer',
           'buffers',
           'layout',
+          'scale',
           'chart-axis',
           'draw-text',
           'event-handling'
