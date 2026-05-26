@@ -28,7 +28,6 @@ import ExampleBufferRing from '../../examples/example-buffer-ring.vue';
 import ExampleBufferWrite from '../../examples/example-buffer-write.vue';
 import ExampleBufferRingBreaking from '../../examples/example-buffer-ring-breaking.vue';
 import ExampleBufferRingWrapping from '../../examples/example-buffer-ring-wrapping.vue';
-import ExampleDownsamplingMinMax from '../../examples/example-downsampling-min-max.vue';
 
 export default defineClientConfig({
   enhance({ app }) {
@@ -72,8 +71,6 @@ export default defineClientConfig({
     app.component('example-buffer-write', ExampleBufferWrite);
     app.component('example-buffer-ring-breaking', ExampleBufferRingBreaking);
     app.component('example-buffer-ring-wrapping', ExampleBufferRingWrapping);
-    app.component('example-downsampling-min-max', ExampleDownsamplingMinMax);
-    
   },
   setup() {},
   rootComponents: [],

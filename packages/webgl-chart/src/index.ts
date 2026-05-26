@@ -29,7 +29,3 @@ export * from './scales/axis-base';
 export * from './scales/horizontal-axis';
 export * from './scales/scale';
 export * from './scales/vertical-axis';
-
-// processing
-export * from './processing/downsampling-min-max-bin';
-export * from './processing/uniform-sampler';

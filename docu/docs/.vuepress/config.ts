@@ -63,7 +63,6 @@ export default defineUserConfig({
             'series-texture-point',
             'series-ranges',
             'rolling-chart',
-            'downsampling',
             'tooltip',
           ]
       }]
