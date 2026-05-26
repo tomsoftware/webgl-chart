@@ -61,11 +61,12 @@ export class BasicYAxisLayout {
         eventDispatcher.on(EventTypes.Pan, this.cell, this.onPan);
     }
 
-    private onWheel = (event: EventValue) => {
-        this.scale.zoom(event.wheelDelta / 600);
+    private onWheel = (event: EventValue, area: LayoutArea) => {
+        const localPos = area.relativePoint(event.position);
+        this.scale.zoom(event.wheelDelta / 600, 1 - localPos.y);
     }
 
-    private onPan = (event: EventValue, _layoutNode: LayoutNode, area: LayoutArea) => {
+    private onPan = (event: EventValue, area: LayoutArea) => {
         this.scale.pan(- event.panDeltaY / area.height);
     }
 

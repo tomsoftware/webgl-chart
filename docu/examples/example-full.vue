@@ -112,7 +112,7 @@ eventDispatcher.on(EventTypes.Wheel, columnChartCell, (event) => {
   scaleX.zoom(event.wheelDelta / 600);
 });
 
-eventDispatcher.on(EventTypes.Pan, columnChartCell, (event, _layoutNode, area) => {
+eventDispatcher.on(EventTypes.Pan, columnChartCell, (event, area) => {
   scaleX.pan(event.panDeltaX / area.width);
 });
 
@@ -121,7 +121,7 @@ eventDispatcher.on(EventTypes.Wheel, yAxis2Cell, (event) => {
   scaleY.zoom(event.wheelDelta / 600);
 });
 
-eventDispatcher.on(EventTypes.Pan, yAxis2Cell, (event, _layoutNode, area) => {
+eventDispatcher.on(EventTypes.Pan, yAxis2Cell, (event, area) => {
   scaleY.pan(- event.panDeltaY / area.height);
 });
 

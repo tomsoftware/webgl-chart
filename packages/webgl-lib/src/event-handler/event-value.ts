@@ -1,10 +1,10 @@
 import type { Vector2 } from '../vector-2';
 
 export enum EventTypes {
-    Unknown,
-    Wheel,
-    Pan,
-    MouseMove
+    Unknown = "",
+    Wheel = "Wheel",
+    Pan = "Pan",
+    MouseMove = "MouseMove"
 }
 
 export class EventValue {

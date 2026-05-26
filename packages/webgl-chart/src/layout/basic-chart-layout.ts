@@ -77,11 +77,12 @@ export class BasicChartLayout {
         context.flush();
     }
 
-    private onWheel = (event: EventValue) => {
-        this.xScale.zoom(event.wheelDelta / 600);
+    private onWheel = (event: EventValue, area: LayoutArea) => {
+        const localPos = area.relativePoint(event.position);
+        this.xScale.zoom(event.wheelDelta / 600, localPos.x);
     }
 
-    private onPan = (event: EventValue, _layoutNode: LayoutNode, area: LayoutArea) => {
+    private onPan = (event: EventValue, area: LayoutArea) => {
         this.xScale.pan(event.panDeltaX / area.width);
     }
 

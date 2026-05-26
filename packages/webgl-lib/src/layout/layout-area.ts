@@ -4,11 +4,22 @@ import { Context } from '../context';
 import { Matrix3x3 } from '../matrix-3x3';
 import { Vector2 } from '../vector-2';
 
-
+/**
+ * Represents a rectangular region within the canvas, defined using
+ * normalized coordinates (0..1). All properties describe the area's
+ * position and size relative to the full canvas.
+ */
 export class LayoutArea {
+    /** Normalized left position of this area within the canvas (0..1) */
     public left: number;
+
+    /** Normalized top position of this area within the canvas (0..1) */
     public top: number;
+
+    /** Normalized width of this area relative to the canvas (0..1) */
     public width: number;
+
+    /** Normalized height of this area relative to the canvas (0..1) */
     public height: number;
 
     public static readonly fullArea = new LayoutArea(0, 0, 1, 1);
@@ -101,6 +112,7 @@ export class LayoutArea {
         );
     }
 
+    /** Converts the position of this area to a translation matrix */
     public toMatrix(): Matrix3x3 {
         return Matrix3x3.translate(this.left, this.top);
     }
@@ -115,10 +127,20 @@ export class LayoutArea {
         );
     }
 
+    /** Converts an absolute point into a coordinate relative to this layout area. */
+    public relativePoint(pos: Vector2): Vector2 {
+        return new Vector2(
+            (pos.x - this.left) / this.width,
+            (pos.y - this.top) / this.height
+        );
+    }
+
+    /** Create a new LayoutArea from position values (left, top, right, bottom) */
     public static fromPos(x1: number, y1: number, x2: number, y2: number): LayoutArea {
         return new LayoutArea(x1, y1, Math.max(0, x2 - x1), Math.max(y2 - y1));
     }
 
+    /** Draws a rect to the given context with the size of this area */
     public drawBorder(context: Context, color: Color) {
         context.drawRect(this.p0, this.p1, this.p2, this.p3, color);
     }

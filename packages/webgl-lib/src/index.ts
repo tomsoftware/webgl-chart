@@ -17,14 +17,16 @@ export * from './webgl-renderer';
 export * from './buffers/implementations/gpu-fix-buffer';
 export * from './buffers/implementations/gpu-growing-buffer';
 export * from './buffers/implementations/gpu-ring-buffer';
+export * from './buffers/implementations/gpu-buffer-types';
 export * from './buffers/gpu-writable-buffer';
 export * from './buffers/gpu-buffer-view';
 export * from './buffers/attribute-buffer';
 export * from './buffers/gpu-readable-buffer';
 
 // event-handler
-export * from './event-handler/event-handler';
+export * from './event-handler/event-dispatcher';
 export * from './event-handler/event-value';
+export * from './event-handler/event-handler';
 
 // layout
 export * from './layout/horizontal-item';

@@ -1,3 +1,4 @@
+import { GpuReadableBuffer } from '../gpu-readable-buffer';
 import { TypedArray } from '../gpu-writable-buffer';
 import { GpuBufferBase } from './gpu-buffer-base';
 import { GpuBufferDataType, resolveGpuBufferDataType } from './gpu-buffer-types';
@@ -24,6 +25,13 @@ export class GpuFixBuffer<T extends TypedArray> extends GpuBufferBase<T> {
             info.glType,
             info.bytesPerComponent
         );
+    }
+
+    /** replace the internal buffer of this fix buffer */
+    public setBuffer(newBuffer: T) {
+        this.buffer = newBuffer;
+        this.validLength = newBuffer.length;
+        this.currentDataVersion++;
     }
 
     protected doEnsureCapacity(size: number): void {
@@ -54,5 +62,17 @@ export class GpuFixBuffer<T extends TypedArray> extends GpuBufferBase<T> {
         if (itemsToWrite < values.length) {
             console.warn(`GpuFixBuffer<${this.typeName}>: truncated ${values.length - itemsToWrite} value(s) because capacity is fixed.`);
         }
+    }
+
+    /** Creates a new buffer from an existing readable buffer, applying a transformation function to each element */
+    static generateFrom(type: GpuBufferDataType, source: GpuReadableBuffer, func: (srcValue: number) => number) {
+        const newBuffer = new GpuFixBuffer(type, source.length);
+
+        for (let i = 0; i < source.length; i++) {
+            const srcValue = source.getComponentAt(i);
+            newBuffer.push(func(srcValue));
+        }
+
+        return newBuffer;
     }
 }
