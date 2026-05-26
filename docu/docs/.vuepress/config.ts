@@ -43,6 +43,7 @@ export default defineUserConfig({
           'renderer',
           'buffers',
           'layout',
+          'scale',
           'chart-axis',
           'draw-text',
           'event-handling'
@@ -63,6 +64,7 @@ export default defineUserConfig({
             'series-texture-point',
             'series-ranges',
             'rolling-chart',
+            'downsampling',
             'tooltip',
           ]
       }]

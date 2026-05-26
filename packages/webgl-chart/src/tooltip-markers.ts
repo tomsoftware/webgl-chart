@@ -76,7 +76,7 @@ export class TooltipMarkers {
             const m = l.multiply(s.values);
 
             // get the best fitting value from the time-axis
-            const timeValue = series.scaleX.valueAt(chartArea.left, position.x, chartArea.right);
+            const timeValue = series.scaleX.mapFromRange(chartArea.left, position.x, chartArea.right);
             const timeIndex = series.valuesX.findIndex(timeValue);
             if (timeIndex == null) {
                 continue;

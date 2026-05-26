@@ -15,9 +15,16 @@ export class Scale {
         return (+this.max) - (+this.min);
     }
 
-    /** Maps a given value in a given system to the corresponding internal value */
-    public valueAt(minValue: number, value: number, maxValue: number) {
-        var relativeValue = (value - minValue) / (maxValue - minValue);
+    /**
+     * Maps a value from a given source range into this scale's internal range.
+     *
+     * @param sourceMin  The lower bound of the external coordinate system.
+     * @param sourceValue The value within the external coordinate system to map.
+     * @param sourceMax  The upper bound of the external coordinate system.
+     * @returns The corresponding value mapped into this scale's [min, max] range.
+     */
+    public mapFromRange(sourceMin: number, sourceValue: number, sourceMax: number) {
+        var relativeValue = (sourceValue - sourceMin) / (sourceMax - sourceMin);
         return this.min + (this.max - this.min) * relativeValue;
     }
 

@@ -27,10 +27,8 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
 
     /** return the width we need to print the tick-values */
     protected getTickWidth(context: Context) {
-        const g = TextTextureGenerator.getCached('0', this.tickFont);
-        const m = g.computerTextMetrics(context.textureContext);
-
-        const ticks = this.scale.calculateTicks(m.height, 0.5 * context.width, true);
+        // calculate ticks need to be drawn
+        const ticks = this.generateTicksInfo(context).ticks;
 
         // get some samples to measure
         const tick1 = this.formatTickLabel(ticks[0]);
@@ -50,6 +48,17 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         const tickTextWidth = this.getTickWidth(context).toPixel(context);
 
         return new ScreenPosition(labelWidth + tickTextWidth + this.tickLength + this.tickTextPadding * 2 + this.labelPadding, ScreenUnit.Pixel);
+    }
+
+    private generateTicksInfo(context: Context) {
+        // get font hight
+        const generator = TextTextureGenerator.getCached('0', this.tickFont);
+        const metric = generator.computerTextMetrics(context.textureContext);
+
+        return {
+            metric,
+            ticks: this.scale.calculateTicks(metric.height, 0.5 * context.width, true)
+        }
     }
 
     public draw(context: Context, axisLayout: LayoutNode, chartLayout: LayoutNode | null = null) {
@@ -86,17 +95,14 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
             this.label.draw(context, axisLayout, labelAlign, Matrix3x3.translate(labelPadding, 0));
         }
 
-        // get font hight
-        const g = TextTextureGenerator.getCached('0', this.tickFont);
-        const m = g.computerTextMetrics(context.textureContext);
-        const tickLetterHightHalf= context.pixelToScreenY(m.height * 0.5);
-
         // calculate ticks
-        const ticks = this.scale.calculateTicks(m.height, area.height * context.width, true);
+        const ticksInfo = this.generateTicksInfo(context);
         const positionScaling = area.height / this.scale.range;
 
+        const tickLetterHightHalf = context.pixelToScreenY(ticksInfo.metric.height * 0.5);
+
         // draw every tick with label
-        for (const tick of ticks) {
+        for (const tick of ticksInfo.ticks) {
             const yOffset = (this.scale.max - tick) * positionScaling;
 
             if (this.orientation === VerticalAxisOrientation.Right) {
