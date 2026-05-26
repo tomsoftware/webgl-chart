@@ -53,14 +53,14 @@ eventDispatcher.on(EventTypes.MouseMove, chartCell, (e, chartArea) => {
     }
 
     // find the x-index of the mouse position in the time data
-    const timeValue = scaleX.valueAt(chartArea.left, position.x, chartArea.right);
+    const timeValue = scaleX.mapFromRange(chartArea.left, position.x, chartArea.right);
     const timeIndex = time.findIndex(timeValue);
     if (timeIndex < 0) {
       return;
     }
 
     // scale mouse y-position to chart-scale-value
-    const mouseValueY = scaleY.valueAt(chartArea.bottom, position.y, chartArea.top);
+    const mouseValueY = scaleY.mapFromRange(chartArea.bottom, position.y, chartArea.top);
 
     // update the chart data
     data1.setComponentAt(timeIndex, 0, mouseValueY);
