@@ -191,7 +191,8 @@ jobs:
         run: |
           TAG="${{ needs.validate.outputs.tag }}"
           if [ "$TAG" = "latest" ]; then
-            BUILD_SUFFIX=".${GITHUB_RUN_NUMBER}"
+            # release build numbers can only have the format "MAJOR.MINOR.PATCH"
+            BUILD_SUFFIX=""
           else
             BUILD_SUFFIX="-next.${GITHUB_RUN_NUMBER}"
           fi
