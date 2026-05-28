@@ -55,11 +55,11 @@ export class Scale {
     }
 
     private calculateSize(step: number, letterSize: number, ignoreNumberOfLetters: boolean) {
-        const num = Math.ceil(this.range / step);
+        const num = Math.round(this.range / step);
 
         let maxTickPixelSize: number;
         if (ignoreNumberOfLetters) {
-            maxTickPixelSize = letterSize * 2;
+            maxTickPixelSize = letterSize;
         }
         else {
             const test1 = Math.round(this.min / step) * step;

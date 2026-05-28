@@ -25,39 +25,57 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         return this.label.getWidth(context);
     }
 
+    private cachedTickWidth: ScreenPosition = new ScreenPosition(0, ScreenUnit.Pixel);
+    private cachedTicksKey: string = '';
+
     /** return the width we need to print the tick-values */
-    protected getTickWidth(context: Context) {
+    protected getMaxTickWidth(context: Context) {
         // calculate ticks need to be drawn
-        const ticks = this.generateTicksInfo(context).ticks;
+        const ticksInfo = this.generateTicksInfo(context, 0.5);
 
-        // get some samples to measure
-        const tick1 = this.formatTickLabel(ticks[0]);
-        const tick2 = this.formatTickLabel(ticks[ticks.length - 1]);
+        // can we use the cache
+        if (this.cachedTicksKey === ticksInfo.hash) {
+            return this.cachedTickWidth;
+        }
 
-        // find the tick-text with the most chars
-        const maxTickText = (tick1.length > tick2.length) ? tick1: tick2;
+        // check all ticks to find the max width
+        let maxWidth = new ScreenPosition(0, ScreenUnit.Pixel);
+        for (const t of ticksInfo.ticks) {
+            // calculate the text-width
+            const label = this.formatTickLabel(t);
+            const tickGpuText = new GpuLetterText(label, this.tickFont);
+            const tickWidth = tickGpuText.getWidth(context);
+            if (maxWidth.value < tickWidth.value) {
+                maxWidth = tickWidth;
+            }
+        }
 
-        // calculate the text-width
-        const tickGpuText = new GpuLetterText(maxTickText, this.tickFont);
-        return tickGpuText.getWidth(context);
+        // cache value
+        this.cachedTicksKey = ticksInfo.hash;
+        this.cachedTickWidth = maxWidth;
+
+        return maxWidth;
     }
 
     /** calculate the width need for this axis */
     public getWidth(context: Context): ScreenPosition {
         const labelWidth = this.getLabelWidth(context).toPixel(context);
-        const tickTextWidth = this.getTickWidth(context).toPixel(context);
+        const tickTextWidth = this.getMaxTickWidth(context).toPixel(context);
 
         return new ScreenPosition(labelWidth + tickTextWidth + this.tickLength + this.tickTextPadding * 2 + this.labelPadding, ScreenUnit.Pixel);
     }
 
-    private generateTicksInfo(context: Context) {
+    private generateTicksInfo(context: Context, areaHeight: number) {
         // get font hight
         const generator = TextTextureGenerator.getCached('0', this.tickFont);
         const metric = generator.computerTextMetrics(context.textureContext);
 
+        const ticks = this.scale.calculateTicks(metric.height, areaHeight * context.height * 1.5, true);
+
         return {
             metric,
-            ticks: this.scale.calculateTicks(metric.height, 0.5 * context.width, true)
+            ticks,
+            hash: ticks[0] + '#' + ticks[ticks.length - 1] + '#' + length
         }
     }
 
@@ -96,7 +114,7 @@ export class VerticalAxis extends AxisBase implements IWidthProvider {
         }
 
         // calculate ticks
-        const ticksInfo = this.generateTicksInfo(context);
+        const ticksInfo = this.generateTicksInfo(context, area.height);
         const positionScaling = area.height / this.scale.range;
 
         const tickLetterHightHalf = context.pixelToScreenY(ticksInfo.metric.height * 0.5);

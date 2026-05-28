@@ -15,6 +15,7 @@ export class HorizontalAxis extends AxisBase implements IHeightProvider {
         this.orientation = orientation;
         return this;
     }
+    
     /** return the height of the label */
     protected getLabelHeight(context: Context) {
         if (this.label == null) {
