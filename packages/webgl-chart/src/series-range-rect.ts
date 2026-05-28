@@ -134,7 +134,8 @@ export class SeriesRangeRect implements DrawableSeries {
 
         // Bind buffers
         context.setArrayBuffer(program, 'vertexOffset', this.vertexOffset);
-
+        context.setElementBuffer(this.indexBuffer);
+        
         // Bind instance attributes
         context.setInstanceBuffer(program, 'x', this.x);
         context.setInstanceBuffer(program, 'y1', this.y1);  // lower

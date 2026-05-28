@@ -18,6 +18,7 @@ export class Context {
     public programs = new Map<string, GpuProgram>();
     public buffers = new Map<AttributeBuffer, GpuBufferState>();
     private lineDrawer = new LineDrawer();
+    private currentProgramId: string | null = null;
     /** width of the canvas we draw to */
     public width: number = 0;
     /** height of the canvas we draw to */
@@ -218,7 +219,32 @@ export class Context {
     public flush(transformation?: Matrix3x3) {
         this.flushTextures(transformation);
         this.flushLines(transformation);
-}
+    }
+
+    /** cleanup shader state - disables all vertex attributes and unbinds program */
+    public cleanup(): void {
+        const gl = this.gl;
+        if (gl == null) {
+            return;
+        }
+
+        this.cleanupMemory(gl);
+
+        // deactivate program
+        gl.useProgram(null);
+    }
+
+    private cleanupMemory(gl: WebGLRenderingContext): void {
+        // disable all vertex attribute arrays to prevent state leakage
+        const maxAttributes = gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+        for (let i = 0; i < maxAttributes; i++) {
+            gl.disableVertexAttribArray(i);
+        }
+
+        // unbind buffers
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    }
 
     /** create and use a gl-shader-program */
     public useProgram(id: string, vertexShader: string, fragmentShader: string) {
@@ -227,8 +253,14 @@ export class Context {
             throw new Error('Context.useProgram: gl is null');
         }
 
+        // cleanup previous program state only when switching programs
+        if (this.currentProgramId !== null && this.currentProgramId !== id) {
+            this.cleanupMemory(gl);
+        }
+
         let program = this.programs.get(id);
         if (program == null) {
+            // unknown shader -> compile
             program = new GpuProgram(gl);
             program.addVertexShader(vertexShader);
             program.addFragmentShader(fragmentShader);
@@ -238,6 +270,7 @@ export class Context {
         }
 
         program.use();
+        this.currentProgramId = id;
 
         return program;
     }
